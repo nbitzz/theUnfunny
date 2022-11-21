@@ -102,7 +102,7 @@ command.action = async (interaction) => {
 
     if (interaction.options.getSubcommand() == "file") file_url = interaction.options.getAttachment("file",true).proxyURL
     else if (interaction.options.getSubcommand() == "url") file_url = interaction.options.getString("url",true)
-    else if (interaction.options.getSubcommand() == "sfx") file_url = builtinSFX[interaction.options.getString("sfx",true)]
+    else if (interaction.options.getSubcommand() == "sfx") file_url = builtinSFX[interaction.options.getString("name",true)]
     else return
 
     // get audio
