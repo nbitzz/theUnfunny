@@ -26,7 +26,6 @@ client.on("ready",() => {
     
     console.log(`[theUnfunny] Hi, I'm ${client.user.tag}.`)
 
-
 })
 
 client.on("guildMemberAdd",(member) => {
@@ -67,7 +66,7 @@ client.on("guildMemberAdd",(member) => {
                 ],
                 files: [
                     {
-                        attachment: '../assets/icon.png',
+                        attachment: process.cwd()+'/assets/unfunny/icon.png',
                         name: 'icon.png'
                     }
                 ]
