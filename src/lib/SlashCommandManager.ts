@@ -1,14 +1,14 @@
 import { Client, Collection, SlashCommandBuilder, REST, Routes, ChatInputCommandInteraction } from "discord.js";
 
 export class SlashCommand {
-    readonly builder: SlashCommandBuilder
+    readonly builder: SlashCommandBuilder|Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
     readonly assetPath: string
     readonly type:string = "SCM.SlashCommand"
-    action?: (interaction:ChatInputCommandInteraction) => {}
+    action?: (interaction:ChatInputCommandInteraction) => void
 
     ephmeralReply?:boolean
 
-    constructor(command:SlashCommandBuilder) {
+    constructor(command:SlashCommandBuilder|Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">,) {
         this.builder = command
         this.assetPath = `${process.cwd()}/assets/commands/${command.name}/`
     }
