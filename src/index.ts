@@ -100,9 +100,17 @@ client.on("guildMemberAdd",(member) => {
     }
 })
 
+// handle slash commands
+
+client.on("interactionCreate",(int) => {
+    if (int.isChatInputCommand()) {
+        commands.call(int)
+    }
+})
+
 // login
 
-fs.readFile("../config.json").then((buf) => {
+fs.readFile(process.cwd()+"/config.json").then((buf) => {
     _config = JSON.parse(buf.toString())
     client.login(_config.token)
 }).catch((err) => {

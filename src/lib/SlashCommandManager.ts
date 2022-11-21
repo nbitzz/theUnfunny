@@ -54,18 +54,14 @@ export class SlashCommandManager {
         if (command && command.action) {
             int.deferReply({
                 ephemeral:command.ephmeralReply
-            })
-
-            // error handling (lol)
-            try {
-                command.action(int)
-            } catch(err) {
-                int.reply({
-                    ephemeral:true,
+            }).then(() => {
+                if (command && command.action) command.action(int)
+            }).catch((err) => {
+                int.editReply({
                     content:"Oops, something broke. Try that again, maybe?"
                 })
                 console.error(err)
-            }
+            })
         }
     }
 
