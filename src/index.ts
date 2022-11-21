@@ -1,5 +1,6 @@
 import fs from "fs/promises"
 import Discord, { Client, IntentsBitField } from "discord.js"
+import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 
 let client = new Client({
     intents: [
@@ -17,6 +18,8 @@ let _config:{
     token:string
 }
 
+let commands = new SlashCommandManager(client)
+
 client.on("messageCreate",() => {
     
 })
@@ -25,6 +28,28 @@ client.on("ready",() => {
     if (!client.user) return 
     
     console.log(`[theUnfunny] Hi, I'm ${client.user.tag}.`)
+    console.log(`[theUnfunny] Collecting commands...`)
+
+    fs.readdir(process.cwd()+"/out/commands").then((fn) => {
+        fn.forEach((name) => {
+            let command = require(process.cwd()+"/out/commands/"+name)
+
+            if (isSlashCommand(command)) {
+                commands.add(command)
+            }
+        })
+
+        console.log(`[theUnfunny] Registering commands...`)
+        commands.register().then((apiReply) => {
+            if (Array.isArray(apiReply)) {
+                console.log(`[theUnfunny] ${apiReply.length} commands registered.`)
+            }
+        }).catch((e) => {console.error(e);process.exit()})
+    }).catch((err) => {
+        console.error("[theUnfunny] readdir failed")
+        console.error(err)
+        process.exit()
+    })
 
 })
 

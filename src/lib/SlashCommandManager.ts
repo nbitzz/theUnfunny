@@ -3,6 +3,7 @@ import { Client, Collection, SlashCommandBuilder, REST, Routes, ChatInputCommand
 export class SlashCommand {
     readonly builder: SlashCommandBuilder
     readonly assetPath: string
+    readonly type:string = "SCM.SlashCommand"
     action?: (interaction:ChatInputCommandInteraction) => {}
 
     ephmeralReply?:boolean
@@ -13,9 +14,10 @@ export class SlashCommand {
     }
 }
 
-export default class SlashCommandManager {
+export class SlashCommandManager {
     private commands:SlashCommand[] = []
     private readonly client: Client
+    readonly type:string = "SCM.SlashCommandManager"
 
     constructor(client: Client) {
         this.client = client
@@ -74,3 +76,7 @@ export default class SlashCommandManager {
         this.commands.push(command)
     }
 }
+
+// type guard
+
+export let isSlashCommand = (sc: any): sc is SlashCommand => {return sc.type=="SCM.SlashCommand"} 
