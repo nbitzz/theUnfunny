@@ -10,7 +10,8 @@ let client = new Client({
         IntentsBitField.Flags.DirectMessages,
         IntentsBitField.Flags.GuildMessageReactions,
         IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildPresences
+        IntentsBitField.Flags.GuildPresences,
+        IntentsBitField.Flags.GuildVoiceStates
     ]
 })
 
