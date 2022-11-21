@@ -10,7 +10,7 @@ let builtinSFX:{[key:string]:string} = require(`${process.cwd()}/assets/commands
 let sfxMap:APIApplicationCommandOptionChoice<string>[] = []
 
 for (let [key,value] of Object.entries(builtinSFX)) {
-    sfxMap.push({name:key,value:value})
+    sfxMap.push({name:key,value:key})
 }
 
 // init slash command
@@ -102,7 +102,7 @@ command.action = async (interaction) => {
 
     if (interaction.options.getSubcommand() == "file") file_url = interaction.options.getAttachment("file",true).proxyURL
     else if (interaction.options.getSubcommand() == "url") file_url = interaction.options.getString("url",true)
-    else if (interaction.options.getSubcommand() == "sfx") file_url = interaction.options.getString("sfx",true)
+    else if (interaction.options.getSubcommand() == "sfx") file_url = builtinSFX[interaction.options.getString("sfx",true)]
     else return
 
     // get audio
