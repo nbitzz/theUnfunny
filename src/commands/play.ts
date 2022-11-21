@@ -142,7 +142,6 @@ command.action = async (interaction) => {
                 })
                 conn.on(VoiceConnectionStatus.Ready, () => {
                     player.once(AudioPlayerStatus.Playing,() => {
-                        console.log("playing")
                         conn.subscribe(player)
                         player.on(AudioPlayerStatus.Idle,() => {
                             if (conn) {
