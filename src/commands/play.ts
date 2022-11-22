@@ -257,7 +257,7 @@ command.action = async (interaction) => {
                             embeds: [
                                 new EmbedBuilder()
                                     .setColor("Green")
-                                    .setDescription(`🎵  Playing`)
+                                    .setDescription(`Playing sound effect`)
                             ]
                         })
 
