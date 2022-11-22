@@ -62,10 +62,10 @@ client.on("guildMemberAdd",(member) => {
         if (  
             member.guild.systemChannel &&
             !member.guild.systemChannelFlags.has(
-                Discord.SystemChannelFlagsBitField.Flags.SuppressJoinNotifications
+                Discord.GuildSystemChannelFlags.SuppressJoinNotifications
             ) &&
             member.permissionsIn(member.guild.systemChannel).has(
-                Discord.PermissionsBitField.Flags.SendMessages
+                Discord.PermissionFlagsBits.SendMessages
             )
         ) {
             /* 
