@@ -11,7 +11,8 @@ let client = new Client({
         IntentsBitField.Flags.GuildMessageReactions,
         IntentsBitField.Flags.MessageContent,
         IntentsBitField.Flags.GuildPresences,
-        IntentsBitField.Flags.GuildVoiceStates
+        IntentsBitField.Flags.GuildVoiceStates,
+        IntentsBitField.Flags.GuildMembers
     ]
 })
 
@@ -56,7 +57,6 @@ client.on("ready",() => {
 
 client.on("guildMemberAdd",(member) => {
     if (member.id == client.user?.id) {
-
         // Tried to make this look as neat as possible.
         // maybe switch to if (bool) return?
         if (  

@@ -1,0 +1,16 @@
+[
+    {
+        "name":"Pokemon Gen1",
+        "emoji": "🔴",
+        "type": "json",
+        "shuffle": false,
+        "file":"pokemon.json"
+    },
+    {
+        "name":"Server Members",
+        "emoji":"💻",
+        "type":"generator",
+        "shuffle":true,
+        "file":"serverMembers.js"
+    }
+]

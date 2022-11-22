@@ -20,6 +20,8 @@ let command = new SlashCommand(
         )
 )
 
+command.allowInDMs = true
+
 command.action = async (interaction) => {
     // todo: change this to use fs, maybe
     let defaultList = require(command.assetPath+"Defaults.json")
@@ -35,7 +37,7 @@ command.action = async (interaction) => {
         if (res.data.length<1000) break
 
         if (i == 0) {
-            interaction.editReply({
+            await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Uhoh.")

@@ -1,12 +1,13 @@
-import { Client, Collection, SlashCommandBuilder, REST, Routes, ChatInputCommandInteraction } from "discord.js";
+import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction } from "discord.js";
 
 export class SlashCommand {
     readonly builder: SlashCommandBuilder|Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">
     readonly assetPath: string
     readonly type:string = "SCM.SlashCommand"
-    action?: (interaction:ChatInputCommandInteraction) => void
+    action?: (interaction:ChatInputCommandInteraction) => Promise<any>
 
     ephmeralReply?:boolean
+    allowInDMs?:boolean
 
     constructor(command:SlashCommandBuilder|Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">) {
         this.builder = command
@@ -31,6 +32,10 @@ export class SlashCommandManager {
             console.log("[SlashCommandManager] Registering commands...")
             
             if (this.client.user) {
+                this.commands.forEach((e) => {
+                    e.builder.setDMPermission(e.allowInDMs)
+                })
+
                 let result = await this.client.rest.put(
                     Routes.applicationCommands(this.client.user.id),
                     { body: this.commands.map(e => e.builder.toJSON()) }
@@ -55,13 +60,19 @@ export class SlashCommandManager {
             int.deferReply({
                 ephemeral:command.ephmeralReply
             }).then(() => {
-                if (command && command.action) command.action(int)
-            }).catch((err) => {
-                int.editReply({
-                    content:"Oops, something broke. Try that again, maybe?"
-                })
-                console.error(err)
+                if (command && command.action) {
+                    command.action(int).catch((err) => {
+                        // error handling
+                        int.editReply({
+                            embeds:[
+                                {description:"Oops, something broke. Maybe try that again?",color:0xff0000}
+                            ]
+                        })
+                        console.error(err)
+                    })
+                }
             })
+
         }
     }
 

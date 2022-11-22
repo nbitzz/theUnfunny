@@ -1,6 +1,6 @@
 {
   "name": "theunfunny",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This bot is unfunny.",
   "main": "out/index.js",
   "scripts": {
