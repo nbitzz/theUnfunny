@@ -1,5 +1,5 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 
 // you can change these if you're selfhosting i guess
