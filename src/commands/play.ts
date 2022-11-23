@@ -81,8 +81,8 @@ let command = new SlashCommand(
             new SlashCommandSubcommandBuilder()
                 .setName("tts")
                 .setDescription("Use GoogleTTS to say something")
-                    .addAttachmentOption(
-                        new SlashCommandAttachmentOption()
+                    .addStringOption(
+                        new SlashCommandStringOption()
                             .setName("string")
                             .setDescription("Text to speak (max 200char)")
                             .setRequired(true)
