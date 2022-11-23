@@ -2,10 +2,6 @@ import { getVoiceConnection } from "@discordjs/voice";
 import { SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 
-// you can change these if you're selfhosting i guess
-
-let MAX_PAGES = 10
-
 // init slash command
 
 let command = new SlashCommand(
