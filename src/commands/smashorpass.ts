@@ -236,7 +236,7 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
         // use == instead of >= so that people
         // can set MAX_SKIPS_IN_A_ROW to -1
         // to disable it
-        if (skipsInARow > MAX_SKIPS_IN_A_ROW) {
+        if (skipsInARow == MAX_SKIPS_IN_A_ROW) {
             channel.send({
                 embeds: [{description:"Game closed for inactivity",color:0xFF0000}],
                 components:[]
