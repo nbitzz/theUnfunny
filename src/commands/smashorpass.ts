@@ -57,14 +57,14 @@ function shuffle(array:Array<any>) {
     return array;
 }
 
-function getFinishEmbed(color:ColorResolvable,type:string,title:string,image:string,footer:string,score:Scores) {
+function getFinishEmbed(color:ColorResolvable,type:string,title:string,image:string,footer:string,score:Scores,ms:number) {
     return new EmbedBuilder()
         .setTitle(title)
         .setColor(color)
         .setThumbnail(image)
         .setDescription(`🟩 Smash **${score.smash}**  🟥 Pass **${score.pass}**`)
         .setFooter({text:footer})
-        .setAuthor({name:type})
+        .setAuthor({name:`${type} in ${Math.floor(ms/10)/100}s`})
 }
 
 function sleep(ms:number):Promise<void> {
@@ -107,6 +107,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
 
     return new Promise((resolve,reject) => {
         let answered = false
+        let stamp = Date.now()
 
         let coll = sopF.createMessageComponentCollector({
             componentType:ComponentType.Button,
@@ -149,7 +150,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                                 getFinishEmbed(
                                     "Green",
                                     "Smash!",
-                                    frame.name,frame.image,footer,{smash:scores.smash+1,pass:scores.pass}
+                                    frame.name,frame.image,footer,{smash:scores.smash+1,pass:scores.pass},Date.now()-stamp
                                 )
                             ],
                             components:[]
@@ -164,7 +165,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                                 getFinishEmbed(
                                     "Red",
                                     "Pass!",
-                                    frame.name,frame.image,footer,{smash:scores.smash,pass:scores.pass+1}
+                                    frame.name,frame.image,footer,{smash:scores.smash,pass:scores.pass+1},Date.now()-stamp
                                 )
                             ],
                             components:[]
