@@ -1,10 +1,52 @@
 [
     {
         "name":"Pokemon Gen1",
-        "emoji": "🔴",
+        "emoji": "1️⃣",
         "type": "json",
         "shuffle": false,
         "file":"pokemon.json"
+    },
+    {
+        "name":"Pokemon Gen2",
+        "emoji": "2️⃣",
+        "type": "json",
+        "shuffle": false,
+        "file":"pokemon_gen2.json"
+    },
+    {
+        "name":"Pokemon Gen3",
+        "emoji": "3️⃣",
+        "type": "json",
+        "shuffle": false,
+        "file":"pokemon_gen3.json"
+    },
+    {
+        "name":"Pokemon Gen4-Gen8",
+        "emoji": "4️⃣",
+        "type": "json",
+        "shuffle": false,
+        "file":"pokemon_gen4to8.json"
+    },
+    {
+        "name":"US Presidents",
+        "emoji": "🇺🇸",
+        "type": "json",
+        "shuffle": true,
+        "file":"murica.json"
+    },
+    {
+        "name":"Five Nights at Freddy's",
+        "emoji": "🐻",
+        "type": "json",
+        "shuffle": true,
+        "file":"fnaf.json"
+    },
+    {
+        "name":"Fictional Characters",
+        "emoji": "📚",
+        "type": "json",
+        "shuffle": true,
+        "file":"fictional_characters.json"
     },
     {
         "name":"Server Members",
