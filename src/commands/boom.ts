@@ -1,9 +1,8 @@
 import axios from "axios";
-import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption, SlashCommandAttachmentOption, SlashCommandSubcommandBuilder, APIApplicationCommandAutocompleteGuildInteraction, APIApplicationCommandOptionChoice, SlashCommandNumberOption, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle } from "discord.js";
-import { AudioPlayer, AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnectionStatus } from "@discordjs/voice";
+import { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, ComponentType, ButtonBuilder, ButtonStyle } from "discord.js";
+import { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnectionStatus } from "@discordjs/voice";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { Readable } from "stream"
-import getLinks from "../lib/links";
 
 let _config = require("../../config.json") // todo: maybe change this
 

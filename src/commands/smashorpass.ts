@@ -127,6 +127,8 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                     sopF.edit({
                         embeds: [{description:"You have either quit the game or a moderator has forcefully closed the session.",color:0xFF0000}],
                         components:[]
+                    }).catch((err) => {
+                        console.error(err)
                     })
                     resolve("quit")
                     return
@@ -151,6 +153,8 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                                 )
                             ],
                             components:[]
+                        }).catch((err) => {
+                            console.error(err)
                         })
                         resolve("smash")                        
                     break
@@ -164,6 +168,8 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                                 )
                             ],
                             components:[]
+                        }).catch((err) => {
+                            console.error(err)
                         })
                         resolve("pass")                        
                     break
@@ -183,6 +189,8 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                     )
                 ],
                 components:[]
+            }).catch((err) => {
+                console.error(err)
             })
 
             resolve("skip")

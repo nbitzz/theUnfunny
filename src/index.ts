@@ -109,6 +109,12 @@ client.on("interactionCreate",(int) => {
     }
 })
 
+// error handling? i guess??
+
+client.on("error",(err) => {
+    console.error(err)
+})
+
 // login
 
 fs.readFile(process.cwd()+"/config.json").then((buf) => {
