@@ -4,6 +4,7 @@ import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceCha
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { Readable } from "stream"
 import getLinks from "../lib/links";
+import { getAudioUrl } from "google-tts-api"
 
 // get list of sfx
 
@@ -76,6 +77,24 @@ let command = new SlashCommand(
                             .setRequired(false)
                     )
         )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("tts")
+                .setDescription("Use GoogleTTS to say something")
+                    .addAttachmentOption(
+                        new SlashCommandAttachmentOption()
+                            .setName("string")
+                            .setDescription("Text to speak (max 200char)")
+                            .setRequired(true)
+                    )
+                    .addNumberOption(
+                        new SlashCommandNumberOption()
+                            .setName("volume")
+                            .setDescription("Audio volume")
+                            .setMinValue(0)
+                            .setRequired(false)
+                    )
+        )
 )
 
 command.action = async (interaction) => {
@@ -105,6 +124,19 @@ command.action = async (interaction) => {
     if (interaction.options.getSubcommand() == "file") file_url = interaction.options.getAttachment("file",true).proxyURL
     else if (interaction.options.getSubcommand() == "url") file_url = interaction.options.getString("url",true)
     else if (interaction.options.getSubcommand() == "sfx") file_url = builtinSFX[interaction.options.getString("name",true)]
+    else if (interaction.options.getSubcommand() == "tts") {
+        let tx = interaction.options.getString("text",true)
+        if (tx.length > 200) {
+            interaction.editReply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor("Red")
+                        .setDescription("fuck yoy 🖕")
+                ]
+            })
+        }
+        file_url = getAudioUrl(tx)
+    }
     else return
 
     let links = getLinks(file_url)
