@@ -186,7 +186,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                     getFinishEmbed(
                         "Greyple",
                         "Skipped",
-                        frame.name,frame.image,footer,scores
+                        frame.name,frame.image,footer,scores,20000
                     )
                 ],
                 components:[]
