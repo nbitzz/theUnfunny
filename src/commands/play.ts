@@ -131,9 +131,10 @@ command.action = async (interaction) => {
                 embeds: [
                     new EmbedBuilder()
                         .setColor("Red")
-                        .setDescription("fuck yoy 🖕")
+                        .setDescription("String must be under 200 characters")
                 ]
             })
+            return
         }
         file_url = getAudioUrl(tx)
     }
