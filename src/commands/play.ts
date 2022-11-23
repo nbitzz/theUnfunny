@@ -83,7 +83,7 @@ let command = new SlashCommand(
                 .setDescription("Use GoogleTTS to say something")
                     .addStringOption(
                         new SlashCommandStringOption()
-                            .setName("string")
+                            .setName("text")
                             .setDescription("Text to speak (max 200char)")
                             .setRequired(true)
                     )
