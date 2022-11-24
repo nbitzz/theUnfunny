@@ -1,5 +1,5 @@
 import fs from "fs/promises"
-import Discord, { Client, IntentsBitField } from "discord.js"
+import Discord, { APIApplicationCommand, Client, IntentsBitField } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 
 let client = new Client({
@@ -92,7 +92,7 @@ client.on("guildMemberAdd",(member) => {
                 ],
                 files: [
                     {
-                        attachment: process.cwd()+'/assets/unfunny/icon.png',
+                        attachment: process.cwd()+'/assets/unfunny/banner.png',
                         name: 'icon.png'
                     }
                 ]

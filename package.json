@@ -1,6 +1,6 @@
 {
   "name": "theunfunny",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "This bot is unfunny.",
   "main": "out/index.js",
   "scripts": {
@@ -14,7 +14,6 @@
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.13.0",
     "axios": "^1.1.3",
-    "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.6.0",
     "ffmpeg-static": "^5.1.0",
     "google-tts-api": "^2.0.2",

@@ -199,10 +199,11 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
     })
 }
 
-async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Promise<Scores> {
+async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Promise<{score:Scores,gameBegin:number}> {
+    let gameBegin = Date.now()
     let gameOwnerTemp = interaction.member
     let channel = interaction.channel
-    if (!gameOwnerTemp || !channel || channel.isDMBased()) return {smash:0,pass:0}
+    if (!gameOwnerTemp || !channel || channel.isDMBased()) return {score:{smash:0,pass:0},gameBegin:Date.now()}
 
     let gameOwner = await channel.guild.members.fetch(gameOwnerTemp.user.id)
 
@@ -254,7 +255,7 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
         }
     }
 
-    return score
+    return {score:score,gameBegin:gameBegin}
 }
 
 command.action = async (interaction) => {
@@ -345,7 +346,10 @@ command.action = async (interaction) => {
                     shuffle(game)
                 }
 
-                SOPGame(game,interaction).then((score) => {
+                SOPGame(game,interaction).then((sc) => {
+                    let score = sc.score
+                    let seconds = Math.floor((Date.now()-sc.gameBegin)/1000)
+
                     interaction.channel?.send({
                         embeds: [
                             new EmbedBuilder()
@@ -353,7 +357,9 @@ command.action = async (interaction) => {
                                 .setColor("Blurple")
                                 .addFields(
                                     {name:"Smash",value:score.smash.toString(),inline:true},
-                                    {name:"Pass",value:score.pass.toString(),inline:true}
+                                    {name:"Pass",value:score.pass.toString(),inline:true},
+                                    // ${seconds%60<10 ? "0" : ""}
+                                    {name:"Time",value:`${Math.floor(seconds/60)}m ${seconds%60}s`,inline:true}
                                 )
                         ]
                     })
