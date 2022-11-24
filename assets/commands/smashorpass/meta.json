@@ -63,6 +63,13 @@
         "file":"serverMembers.js"
     },
     {
+        "name":"Server Emojis",
+        "emoji":"🤔",
+        "type":"generator",
+        "shuffle":true,
+        "file":"serverEmoji.js"
+    },
+    {
         "name":"Everything",
         "emoji":"🌎",
         "type":"generator",
