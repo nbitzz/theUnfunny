@@ -49,6 +49,13 @@
         "file":"fictional_characters.json"
     },
     {
+        "name":"Animal Crossing Villagers",
+        "emoji": "🏡",
+        "type": "json",
+        "shuffle": true,
+        "file":"animalcrossing.json"
+    },
+    {
         "name":"Server Members",
         "emoji":"💻",
         "type":"generator",
