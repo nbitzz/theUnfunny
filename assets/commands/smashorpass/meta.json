@@ -61,5 +61,12 @@
         "type":"generator",
         "shuffle":true,
         "file":"serverMembers.js"
+    },
+    {
+        "name":"Everything",
+        "emoji":"🌎",
+        "type":"generator",
+        "shuffle":true,
+        "file":"everything.js"
     }
 ]

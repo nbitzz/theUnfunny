@@ -407,7 +407,7 @@ command.action = async (interaction) => {
                     })
                 })
             }).catch((err) => {
-                interaction.editReply({embeds: [{description:"File read failed",color:0xFF0000}]})
+                interaction.editReply({embeds: [{description:"File read/list generation failed",color:0xFF0000}]})
                 console.error(err)
             })
         }
