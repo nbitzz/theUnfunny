@@ -48,7 +48,7 @@ command.action = async (interaction) => {
                             {
                                 value:"no",
                                 label:"Nope.",
-                                description:`${left} has less results than/the same amount of results as ${right}`,
+                                description:`${left} has less results than ${right}`,
                                 emoji:`🔴`
                             }
                         )
