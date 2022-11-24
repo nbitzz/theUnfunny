@@ -1,5 +1,5 @@
 import fs from "fs/promises"
-import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { title } from "process";
 
@@ -41,6 +41,18 @@ interface Frame {
 interface Scores {
     smash:number,
     pass:number
+}
+
+enum Result {
+    Smash,
+    Pass,
+    Skipped
+}
+
+interface FrameLog {
+    name:string,
+    result:Result,
+    time:number
 }
 
 // funcs
@@ -199,11 +211,12 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
     })
 }
 
-async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Promise<{score:Scores,gameBegin:number}> {
+async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Promise<{score:Scores,gameBegin:number,gameLog:FrameLog[]}> {
     let gameBegin = Date.now()
     let gameOwnerTemp = interaction.member
     let channel = interaction.channel
-    if (!gameOwnerTemp || !channel || channel.isDMBased()) return {score:{smash:0,pass:0},gameBegin:Date.now()}
+    let gameLog:FrameLog[] = []
+    if (!gameOwnerTemp || !channel || channel.isDMBased()) return {score:{smash:0,pass:0},gameBegin:Date.now(),gameLog:[]}
 
     let gameOwner = await channel.guild.members.fetch(gameOwnerTemp.user.id)
 
@@ -224,22 +237,38 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
 
     for (let i = 0; i < game.length; i++) {
         let frame = game[i]
+        let d = Date.now()
         let decision = await SOPFrame(frame,gameOwner,channel,`${i+1}/${game.length}`,score)
         
         switch(decision) {
             case "smash":
                 skipsInARow = 0
                 score.smash++
+                gameLog.push({
+                    name:frame.name,
+                    result:Result.Smash,
+                    time:Date.now()-d
+                })
             break
             case "pass":
                 skipsInARow = 0
                 score.pass++
+                gameLog.push({
+                    name:frame.name,
+                    result:Result.Pass,
+                    time:Date.now()-d
+                })
             break
             case "quit":
                 quit = true
             break;
             case "skip":
                 skipsInARow++
+                gameLog.push({
+                    name:frame.name,
+                    result:Result.Skipped,
+                    time:20000
+                })
             break;
         }
         if (quit) break
@@ -255,7 +284,7 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
         }
     }
 
-    return {score:score,gameBegin:gameBegin}
+    return {score:score,gameBegin:gameBegin,gameLog:gameLog}
 }
 
 command.action = async (interaction) => {
@@ -349,6 +378,7 @@ command.action = async (interaction) => {
                 SOPGame(game,interaction).then((sc) => {
                     let score = sc.score
                     let seconds = Math.floor((Date.now()-sc.gameBegin)/1000)
+                    let dt = new Date()
 
                     interaction.channel?.send({
                         embeds: [
@@ -361,6 +391,18 @@ command.action = async (interaction) => {
                                     // ${seconds%60<10 ? "0" : ""}
                                     {name:"Time",value:`${Math.floor(seconds/60)}m ${seconds%60}s`,inline:true}
                                 )
+                        ],
+                        files:[
+                            new AttachmentBuilder(Buffer.from(`Smash or Pass - "${mt.name}"\nPlayed by ${interaction.user.tag} on ${dt.getUTCMonth()+1}/${dt.getUTCDate()}/${dt.getUTCFullYear()} (MM/DD/YY, UTC)\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\nTotal Smashes | ${score.smash}\nTotal Passes  | ${score.pass}\nTotal         | ${sc.gameLog.length}\nTime          | ${Math.floor(seconds/60)}m ${seconds%60}s\n${"-".repeat(40)}\n`+(sc.gameLog.map((e) => {
+                                let spTab = {
+                                    [Result.Skipped]:"Skipped",
+                                    [Result.Smash]:  "Smash! ",
+                                    [Result.Pass]:   "Pass!  "
+                                }
+                                let time = `${Math.floor(e.time/10)/100}s`
+                                return `${time+" ".repeat(6-time.length)} | ${spTab[e.result]} | ${e.name}`
+                            }).join("\n"))))
+                            .setName("smashorpass.txt")
                         ]
                     })
                 })
