@@ -1,7 +1,7 @@
 import fs from "fs/promises"
 import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
-import { title } from "process";
+import { EZSave, getSave } from "../lib/ezsave"
 
 /*
     This code is pretty bad.
@@ -54,6 +54,23 @@ interface FrameLog {
     result:Result,
     time:number
 }
+
+interface GameSave {
+    log:FrameLog[],
+    meta:Meta,
+    position:number,
+    frames:Frame[]
+    scores:Scores,
+    timeSoFar:number
+}
+
+// bad type guard but i'm too lazy to care
+
+let isGameSave = (a:any):a is GameSave => {return true}
+
+// save
+
+let saves:EZSave<GameSave> = getSave(process.cwd()+"/.data/smashorpass.json")
 
 // funcs
 
@@ -109,6 +126,10 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                         .setCustomId("sop.pass")
                         .setStyle(ButtonStyle.Danger)
                         .setLabel("Pass"),
+                    new ButtonBuilder()
+                        .setCustomId("sop.save")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("💾"),
                     new ButtonBuilder()
                         .setCustomId("sop.quit")
                         .setStyle(ButtonStyle.Secondary)
@@ -186,6 +207,17 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                         })
                         resolve("pass")                        
                     break
+                    case "sop.save":
+                        answered=true
+                        coll.stop()
+                        sopF.edit({
+                            embeds: [{description:"💾 Game saved. Your save will expire in 24 hours.",color:0xFF0000}],
+                            components:[]
+                        }).catch((err) => {
+                            console.error(err)
+                        })
+                        resolve("save")                    
+                    break
                 }
             }
         })
@@ -211,12 +243,13 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
     })
 }
 
-async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Promise<{score:Scores,gameBegin:number,gameLog:FrameLog[]}> {
+async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction,listMeta:Meta,save?:GameSave):Promise<{score:Scores,gameBegin:number,gameLog:FrameLog[],noDisplayMessage:boolean}> {
     let gameBegin = Date.now()
     let gameOwnerTemp = interaction.member
     let channel = interaction.channel
     let gameLog:FrameLog[] = []
-    if (!gameOwnerTemp || !channel || channel.isDMBased()) return {score:{smash:0,pass:0},gameBegin:Date.now(),gameLog:[]}
+
+    if (!gameOwnerTemp || !channel || channel.isDMBased()) return {score:{smash:0,pass:0},gameBegin:Date.now(),gameLog:[],noDisplayMessage:true}
 
     let gameOwner = await channel.guild.members.fetch(gameOwnerTemp.user.id)
 
@@ -233,9 +266,16 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
     }
 
     let quit = false;
-    let skipsInARow = 0
+    let skipsInARow = 0;
+    let noDisplayMessage = false
 
-    for (let i = 0; i < game.length; i++) {
+    if (save) {
+        gameBegin = Date.now()-save.timeSoFar
+        gameLog = save.log
+        score = save.scores
+    }
+
+    for (let i = save?save.position:0; i < game.length; i++) {
         let frame = game[i]
         let d = Date.now()
         let decision = await SOPFrame(frame,gameOwner,channel,`${i+1}/${game.length}`,score)
@@ -262,6 +302,12 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
             case "quit":
                 quit = true
             break;
+            case "save":
+                saves.set_record(interaction.user.id,{position:i,frames:game,meta:listMeta,scores:score,log:gameLog,timeSoFar:Date.now()-gameBegin},Date.now()+(1000*60*60*24))
+                
+                noDisplayMessage = true
+                quit = true
+            break;
             case "skip":
                 skipsInARow++
                 gameLog.push({
@@ -284,7 +330,7 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction):Pro
         }
     }
 
-    return {score:score,gameBegin:gameBegin,gameLog:gameLog}
+    return {score:score,gameBegin:gameBegin,gameLog:gameLog,noDisplayMessage:noDisplayMessage}
 }
 
 command.action = async (interaction) => {
@@ -301,6 +347,8 @@ command.action = async (interaction) => {
                 .setColor("Red")
         ]})
     }
+
+    let sav = saves.data[interaction.user.id]
 
     let repl = await interaction.editReply({
         embeds: [
@@ -322,7 +370,13 @@ command.action = async (interaction) => {
                                     description:`${e.type == "json" ? "Premade" : "Generated"} | ${e.shuffle ? "Shuffled" : "Not shuffled"} | ${e.file}`,
                                     value:`${e.type}:${e.file}`
                                 }
-                            })
+                            }),
+                            ...(sav ? [{
+                                label:`Continue list "${sav.meta.name}"`,
+                                description:`${sav.position}/${sav.frames.length} | expires ${new Date(saves.metadata[interaction.user.id].expire || 0).toUTCString()} UTC`,
+                                emoji:"💾",
+                                value:"save"
+                            }] : [])
                         )
                         .setCustomId("list")
                         .setPlaceholder("Select a list...")
@@ -360,14 +414,25 @@ command.action = async (interaction) => {
 
             let prom:Promise<string|Buffer>
 
+            // save implementation is a mess but all of this code is soooo
             if (type == "json") {
                 prom = fs.readFile(`${command.assetPath}json/${file}`)
+            } else if (type == "save") {
+                if (!sav) {
+                    interaction.editReply({
+                        embeds:[{color:0xff0000,description:"No savedata found"}]
+                    })
+                    return
+                } 
+                prom = new Promise((resolve,reject) => {
+                    resolve(JSON.stringify(sav.frames))
+                })
             } else {
                 prom = require(`${command.assetPath}generators/${file}`)(interaction)
             }
 
             prom.then((buf) => {
-                let mt:Meta = meta.find((e:Meta) => e.type == type && e.file == file)
+                let mt:Meta = type != "save" ? meta.find((e:Meta) => e.type == type && e.file == file) : {name:sav.meta.name}
                 let game = JSON.parse(buf.toString())
                 if (!mt) return
 
@@ -375,7 +440,8 @@ command.action = async (interaction) => {
                     shuffle(game)
                 }
 
-                SOPGame(game,interaction).then((sc) => {
+                SOPGame(game,interaction,mt,type == "save" ? sav : undefined).then((sc) => {
+                    if (sc.noDisplayMessage) return
                     let score = sc.score
                     let seconds = Math.floor((Date.now()-sc.gameBegin)/1000)
                     let dt = new Date()
