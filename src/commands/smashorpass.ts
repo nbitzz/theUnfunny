@@ -375,7 +375,7 @@ command.action = async (interaction) => {
                             }),
                             ...(sav ? [{
                                 label:`Continue list "${sav.meta.name}"`,
-                                description:`${sav.position+1}/${sav.frames.length} (${Math.floor((sav.position/sav.frames.length)*100)}) | ${Math.floor(seconds/60)}m ${seconds%60}s | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
+                                description:`${sav.position+1}/${sav.frames.length} (${Math.floor((sav.position/sav.frames.length)*100)}%) | ${Math.floor(seconds/60)}m ${seconds%60}s | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
                                 emoji:"💾",
                                 value:"save"
                             }] : [])
