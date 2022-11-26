@@ -9,15 +9,29 @@ let axios = require("axios")
  */
 
 module.exports = function(interaction) {
-    return new Promise((resolve,reject) => {
-        if (config.invidious) {
-            axios.get(config.invidious+"/api/v1/channels/UCDwzLWgGft47xQ30u-vjsrg/videos").then((data) => {
-                resolve(JSON.stringify(data.data.map((vid) => {
-                    return {name:vid.title,image:(vid.videoThumbnails[0] || {url:""}).url}
-                })))
+    return new Promise(async (resolve,reject) => {
+            axios.get("https://pipedapi.kavin.rocks/channel/UCDwzLWgGft47xQ30u-vjsrg").then(async (data) => {
+                let arrs = []
+
+                arrs.push(data.data.relatedStreams.map((vid) => {
+                    return {name:vid.title,image:vid.thumbnail}
+                }))
+
+                let lastNextPage = data.data.nextpage
+                
+                while (true) {
+                    let np = JSON.parse(lastNextPage)
+                    np.url = np.url.split("&")[0]
+                    let dat = await axios.get(`https://pipedapi.kavin.rocks/nextpage/channel/UCDwzLWgGft47xQ30u-vjsrg?nextpage=${encodeURI(JSON.stringify(np))}`)
+                    lastNextPage = dat.data.nextpage
+                    arrs.push(dat.data.relatedStreams.map((vid) => {
+                        return {name:vid.title,image:vid.thumbnail}
+                    }))
+                    if (dat.data.relatedStreams.length < 30) {
+                        break
+                    }
+                }
+                resolve(JSON.stringify([].concat(...arrs)))
             }).catch(reject)
-        } else {
-            reject("No config.invidious set")
-        }
     })
 }
