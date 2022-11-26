@@ -32,7 +32,7 @@ module.exports = function(interaction) {
                 embeds:[{description:`Generating list "${e.name}"`,color:resolveColor("Blurple")}]
             })
             
-            everything_arr.push(JSON.parse(await require(assetPath+"generators/"+e.file)(interaction)))
+            everything_arr.push(JSON.parse(await require(assetPath+"generators/"+e.file)(interaction).catch(() => {return []})))
         }
 
         resolve(JSON.stringify([].concat(...everything_arr)))

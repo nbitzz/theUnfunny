@@ -56,6 +56,13 @@
         "file":"animalcrossing.json"
     },
     {
+        "name":"Subnautica Fauna",
+        "emoji": "🐟",
+        "type": "json",
+        "shuffle": true,
+        "file":"subnautica.json"
+    },
+    {
         "name":"Server Members",
         "emoji":"💻",
         "type":"generator",
@@ -68,6 +75,13 @@
         "type":"generator",
         "shuffle":true,
         "file":"serverEmoji.js"
+    },
+    {
+        "name":"Nikocado Avocado Videos",
+        "emoji":"🥑",
+        "type":"generator",
+        "shuffle":true,
+        "file":"avocado.js"
     },
     {
         "name":"Everything",

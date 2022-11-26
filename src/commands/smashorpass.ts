@@ -349,6 +349,8 @@ command.action = async (interaction) => {
     }
 
     let sav = saves.data[interaction.user.id]
+    let seconds = sav ? Math.floor(sav.timeSoFar/1000) : 0
+    let expirMin = sav ? Math.floor((saves.metadata[interaction.user.id].expire-Date.now())/60000) : 0
 
     let repl = await interaction.editReply({
         embeds: [
@@ -373,7 +375,7 @@ command.action = async (interaction) => {
                             }),
                             ...(sav ? [{
                                 label:`Continue list "${sav.meta.name}"`,
-                                description:`${sav.position}/${sav.frames.length} | expires ${new Date(saves.metadata[interaction.user.id].expire || 0).toUTCString()} UTC`,
+                                description:`${sav.position}/${sav.frames.length} | ${Math.floor(seconds/60)}m ${seconds%60}s | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
                                 emoji:"💾",
                                 value:"save"
                             }] : [])
