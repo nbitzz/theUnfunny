@@ -80,34 +80,46 @@ command.action = async (interaction) => {
         if (answer == "none") {
             interaction.editReply({components:[],embeds:[new EmbedBuilder().setColor("Greyple").setDescription("fuk yoy answer the ques tion")]})
         } else {
-            let results_left = parseInt((await axios.get(`https://r34-json-api.herokuapp.com/tags?name=${encodeURI(left)}`)).data[0].posts,10)
-            let results_right = parseInt((await axios.get(`https://r34-json-api.herokuapp.com/tags?name=${encodeURI(right)}`)).data[0].posts,10)
-            
-            let user_answer = answer=="yes"
-            let truth = results_left>results_right
+            try {
+                let results_left = parseInt((await axios.get(`https://r34-json-api.herokuapp.com/tags?name=${encodeURI(left)}`)).data[0].posts,10)
+                let results_right = parseInt((await axios.get(`https://r34-json-api.herokuapp.com/tags?name=${encodeURI(right)}`)).data[0].posts,10)
+                
+                let user_answer = answer=="yes"
+                let truth = results_left>results_right
 
-            let trolling = new EmbedBuilder()
-                                .addFields(
-                                    {
-                                        name:"Results",
-                                        value:`You answered: **${answer}**\nResults for \`\`${left}\`\`: ${results_left}\nResults for \`\`${right}\`\`: ${results_right}`
-                                    }
-                                )
+                let trolling = new EmbedBuilder()
+                                    .addFields(
+                                        {
+                                            name:"Results",
+                                            value:`You answered: **${answer}**\nResults for \`\`${left}\`\`: ${results_left}\nResults for \`\`${right}\`\`: ${results_right}`
+                                        }
+                                    )
 
-            if (user_answer == truth) {
-                trolling
-                    .setColor("Green")
-                    .setDescription(`You're correct!`)
-            } else {
-                trolling
-                    .setColor("Red")
-                    .setDescription(`Congratulations! You answered wrong.`)
+                if (user_answer == truth) {
+                    trolling
+                        .setColor("Green")
+                        .setDescription(`You're correct!`)
+                } else {
+                    trolling
+                        .setColor("Red")
+                        .setDescription(`Congratulations! You answered wrong.`)
+                }
+
+                interaction.editReply({
+                    embeds:[trolling],
+                    components:[]
+                })
+            } catch(err) {
+                console.error(err)
+                interaction.editReply({
+                    embeds:[
+                        new EmbedBuilder()
+                            .setColor("Red")
+                            .setDescription("Oops, something broke.")
+                    ],
+                    components:[]
+                })
             }
-
-            interaction.editReply({
-                embeds:[trolling],
-                components:[]
-            })
         }
     })
 }
