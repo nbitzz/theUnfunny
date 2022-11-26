@@ -13,7 +13,7 @@ module.exports = function(interaction) {
         if (config.invidious) {
             axios.get(config.invidious+"/api/v1/channels/UCDwzLWgGft47xQ30u-vjsrg/videos").then((data) => {
                 resolve(JSON.stringify(data.data.map((vid) => {
-                    return {name:vid.title,image:vid.videoThumbnails[0] || ""}
+                    return {name:vid.title,image:(vid.videoThumbnails[0] || {url:""}).url}
                 })))
             }).catch(reject)
         } else {
