@@ -86,4 +86,4 @@ export class SlashCommandManager {
 
 // type guard
 
-export let isSlashCommand = (sc: any): sc is SlashCommand => {return sc.type=="SCM.SlashCommand"} 
+export let isSlashCommand = (sc: any): sc is SlashCommand => {return sc&&sc.type=="SCM.SlashCommand"} 

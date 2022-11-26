@@ -115,7 +115,7 @@ command.action = async (interaction) => {
                     embeds:[
                         new EmbedBuilder()
                             .setColor("Red")
-                            .setDescription("Oops, something broke.")
+                            .setDescription("Oops, something broke. The [R34 JSON API that I use](https://r34-json-api.herokuapp.com) may be down.")
                     ],
                     components:[]
                 })

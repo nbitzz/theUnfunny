@@ -22,6 +22,17 @@ let _config:{
 
 let commands = new SlashCommandManager(client)
 
+let updatePresence = async function() {
+    client.user?.setPresence({
+        activities:[
+            {
+                type:Discord.ActivityType.Watching,
+                name:`you & ${Array.from((await client.users.cache).values()).length-1} others in ${Array.from((await client.guilds.fetch()).values()).length} servers`
+            }
+        ]
+    })
+}
+
 client.on("messageCreate",() => {
     
 })
@@ -46,6 +57,8 @@ client.on("ready",() => {
             if (Array.isArray(apiReply)) {
                 console.log(`[theUnfunny] ${apiReply.length} commands registered.`)
             }
+
+            updatePresence()
         }).catch((e) => {console.error(e);process.exit()})
     }).catch((err) => {
         console.error("[theUnfunny] readdir failed")
@@ -55,49 +68,64 @@ client.on("ready",() => {
 
 })
 
-client.on("guildMemberAdd",(member) => {
-    if (member.id == client.user?.id) {
-        // Tried to make this look as neat as possible.
-        // maybe switch to if (bool) return?
-        if (  
-            member.guild.systemChannel &&
-            !member.guild.systemChannelFlags.has(
-                Discord.GuildSystemChannelFlags.SuppressJoinNotifications
-            ) &&
-            member.permissionsIn(member.guild.systemChannel).has(
-                Discord.PermissionFlagsBits.SendMessages
-            )
-        ) {
-            /* 
-                If system channel
-                   & supress join notifications are off
-                   & bot has permissions to speak in system channel
+client.on("guildDelete",() => {
+    updatePresence()
+})
 
-                allow the bot to introduce itself!
-            */
+client.on("guildCreate",(guild) => {
 
-            member.guild.systemChannel.send({
-                embeds: [
-                    new Discord.EmbedBuilder()
-                        .setTitle("Hi there.")
-                        .setDescription(
-                            "Since you allow join messages in the system channel," +
-                            " I'll assume that I can introduce myself.\n\n" +
-                            "Hi, I'm unfunny. I'm not bloated with" +
-                            " unnecessary extra administration features. I'm" +
-                            " just bloated with unnecessary features in general."
-                        )
-                        .setColor("Blurple")
-                        .setImage("attachment://icon.png")
-                ],
-                files: [
-                    {
-                        attachment: process.cwd()+'/assets/unfunny/banner.png',
-                        name: 'icon.png'
-                    }
-                ]
-            })
-        }
+    /*
+        pres. update
+    */
+
+    updatePresence()
+
+    /*
+        join message
+    */
+
+    if (  
+        guild.systemChannel &&
+        !guild.systemChannelFlags.has(
+            Discord.GuildSystemChannelFlags.SuppressJoinNotifications
+        ) &&
+        guild.members.me?.permissionsIn(guild.systemChannel).has(
+            Discord.PermissionFlagsBits.SendMessages
+        )
+    ) {
+        /* 
+            If system channel
+                & supress join notifications are off
+                & bot has permissions to speak in system channel
+
+            allow the bot to introduce itself!
+        */
+
+        guild.systemChannel.send({
+            embeds: [
+                new Discord.EmbedBuilder()
+                    .setTitle("Hi there.")
+                    .setDescription(
+                        "Since you allow join messages in the system channel," +
+                        " I'll assume that I can introduce myself.\n\n" +
+                        "Hi, I'm unfunny. I'm going to make your server hell," +
+                        " if you don't mind. I'm not going to make your moderation" +
+                        " workflow complex with extra unnecessary administration commands, however." +
+                        " I don't have those commands.\n\n" +
+                        "So anyway, I hope you ~~don't~~ enjoy your time with me. " +
+                        "And, if I break, go ahead and [fix it yourself.](https://github.com/nbitzz/theUnfunny) " +
+                        "I'm a Discord bot, what do you expect me to do?"
+                    )
+                    .setColor("Blurple")
+                    .setImage("attachment://icon.png")
+            ],
+            files: [
+                {
+                    attachment: process.cwd()+'/assets/unfunny/banner.png',
+                    name: 'icon.png'
+                }
+            ]
+        })
     }
 })
 
