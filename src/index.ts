@@ -27,7 +27,7 @@ let updatePresence = async function() {
         activities:[
             {
                 type:Discord.ActivityType.Watching,
-                name:`you & ${Array.from((await client.users.cache).values()).length-1} others in ${Array.from((await client.guilds.fetch()).values()).length} servers`
+                name:`you & ${Array.from((await client.guilds.fetch()).values()).length} servers`
             }
         ]
     })
