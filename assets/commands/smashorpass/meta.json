@@ -84,6 +84,13 @@
         "file":"avocado.js"
     },
     {
+        "name":"Unus Annus Videos",
+        "emoji":"☠",
+        "type":"generator",
+        "shuffle":true,
+        "file":"mori.js"
+    },
+    {
         "name":"Everything",
         "emoji":"🌎",
         "type":"generator",
