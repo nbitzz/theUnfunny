@@ -63,6 +63,13 @@
         "file":"subnautica.json"
     },
     {
+        "name":"Ultrakill Enemies (and V1 i guess)",
+        "emoji": "🤖",
+        "type": "json",
+        "shuffle": true,
+        "file":"utk.json"
+    },
+    {
         "name":"Server Members",
         "emoji":"💻",
         "type":"generator",
