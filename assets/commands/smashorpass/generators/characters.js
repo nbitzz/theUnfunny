@@ -4,6 +4,7 @@ let fs = require("fs/promises")
 let video_files = [
     "mori.js",
     "avocado.js",
+    "roblox.js",
 
     "everything.js",
     "characters.js"
@@ -32,7 +33,7 @@ module.exports = function(interaction) {
             everything_arr.push(require(assetPath+"json/"+e.file))
         })
 
-        let generated = meta.filter(e => e.type=="generator" && !video_files.find(a => a == e.name))
+        let generated = meta.filter(e => e.type=="generator" && !video_files.find(a => a == e.file))
         for (let i = 0; i < generated.length; i++) {
             let e = generated[i]
 
