@@ -105,6 +105,13 @@
         "file":"roblox.js"
     },
     {
+        "name":"Characters",
+        "emoji":"😉",
+        "type":"generator",
+        "shuffle":true,
+        "file":"characters.js"
+    },
+    {
         "name":"Everything",
         "emoji":"🌎",
         "type":"generator",

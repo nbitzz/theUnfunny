@@ -1,6 +1,14 @@
 let {ChatInputCommandInteraction, resolveColor} = require("discord.js")
 let fs = require("fs/promises")
 
+let video_files = [
+    "mori.js",
+    "avocado.js",
+
+    "everything.js",
+    "characters.js"
+]
+
 /**
  * 
  * @param {ChatInputCommandInteraction} interaction 
@@ -24,7 +32,7 @@ module.exports = function(interaction) {
             everything_arr.push(require(assetPath+"json/"+e.file))
         })
 
-        let generated = meta.filter(e => e.type=="generator" && e.file != "everything.js" && e.file != "characters.js")
+        let generated = meta.filter(e => e.type=="generator" && !video_files.find(a => a == e.name))
         for (let i = 0; i < generated.length; i++) {
             let e = generated[i]
 

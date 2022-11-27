@@ -22,17 +22,6 @@ let _config:{
 
 let commands = new SlashCommandManager(client)
 
-let updatePresence = async function() {
-    client.user?.setPresence({
-        activities:[
-            {
-                type:Discord.ActivityType.Watching,
-                name:`you & ${Array.from((await client.guilds.fetch()).values()).length} servers`
-            }
-        ]
-    })
-}
-
 client.on("messageCreate",() => {
     
 })
@@ -58,7 +47,14 @@ client.on("ready",() => {
                 console.log(`[theUnfunny] ${apiReply.length} commands registered.`)
             }
 
-            updatePresence()
+            client.user?.setPresence({
+                activities:[
+                    {
+                        type:Discord.ActivityType.Watching,
+                        name:`you`
+                    }
+                ]
+            })
         }).catch((e) => {console.error(e);process.exit()})
     }).catch((err) => {
         console.error("[theUnfunny] readdir failed")
@@ -68,17 +64,8 @@ client.on("ready",() => {
 
 })
 
-client.on("guildDelete",() => {
-    updatePresence()
-})
 
 client.on("guildCreate",(guild) => {
-
-    /*
-        pres. update
-    */
-
-    updatePresence()
 
     /*
         join message
@@ -115,7 +102,8 @@ client.on("guildCreate",(guild) => {
                         "So anyway, I hope you ~~don't~~ enjoy your time with me. " +
                         "And, if I break, go ahead and [fix it yourself.](https://github.com/nbitzz/theUnfunny) " +
                         "I'm a Discord bot, what do you expect me to do?" +
-                        "\n\n[contributors](https://github.com/nbitzz/theUnfunny/graphs/contributors)"
+                        "\n\n[contributors](https://github.com/nbitzz/theUnfunny/graphs/contributors)" + 
+                        " — [dependency hell](https://github.com/nbitzz/theUnfunny/network/dependencies)"
                     )
                     .setColor("Blurple")
                     .setImage("attachment://icon.png")
