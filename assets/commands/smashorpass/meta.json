@@ -98,6 +98,13 @@
         "file":"mori.js"
     },
     {
+        "name":"Roblox Games",
+        "emoji":"🟥",
+        "type":"generator",
+        "shuffle":true,
+        "file":"roblox.js"
+    },
+    {
         "name":"Everything",
         "emoji":"🌎",
         "type":"generator",
