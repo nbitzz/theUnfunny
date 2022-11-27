@@ -114,7 +114,8 @@ client.on("guildCreate",(guild) => {
                         " I don't have those commands.\n\n" +
                         "So anyway, I hope you ~~don't~~ enjoy your time with me. " +
                         "And, if I break, go ahead and [fix it yourself.](https://github.com/nbitzz/theUnfunny) " +
-                        "I'm a Discord bot, what do you expect me to do?"
+                        "I'm a Discord bot, what do you expect me to do?" +
+                        "\n\n[contributors](https://github.com/nbitzz/theUnfunny/graphs/contributors)"
                     )
                     .setColor("Blurple")
                     .setImage("attachment://icon.png")
