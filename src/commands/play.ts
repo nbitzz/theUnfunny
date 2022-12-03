@@ -85,6 +85,7 @@ let command = new SlashCommand(
                         new SlashCommandStringOption()
                             .setName("text")
                             .setDescription("Text to speak (max 200char)")
+                            .setMaxLength(200)
                             .setRequired(true)
                     )
                     .addNumberOption(
@@ -97,15 +98,21 @@ let command = new SlashCommand(
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("the_song")
-                .setDescription("Go to hell.")
-                .addNumberOption(
-                    new SlashCommandNumberOption()
-                        .setName("volume")
-                        .setDescription("Audio volume")
-                        .setMinValue(Number.MAX_SAFE_INTEGER)
-                        .setRequired(true)
-                )
+                .setName("dectalk")
+                .setDescription("Use DECTalk (moonbase alpha's tts) to say something (powered by calzoneman/aeiou)")
+                    .addStringOption(
+                        new SlashCommandStringOption()
+                            .setName("text")
+                            .setDescription("Text to speak")
+                            .setRequired(true)
+                    )
+                    .addNumberOption(
+                        new SlashCommandNumberOption()
+                            .setName("volume")
+                            .setDescription("Audio volume")
+                            .setMinValue(0)
+                            .setRequired(false)
+                    )
         )
 )
 
@@ -136,7 +143,7 @@ command.action = async (interaction) => {
     if (interaction.options.getSubcommand() == "file") file_url = interaction.options.getAttachment("file",true).proxyURL
     else if (interaction.options.getSubcommand() == "url") file_url = interaction.options.getString("url",true)
     else if (interaction.options.getSubcommand() == "sfx") file_url = builtinSFX[interaction.options.getString("name",true)]
-    else if (interaction.options.getSubcommand() == "the_song") file_url = "https://monofile.glitch.me/file/018471033196701958"
+    else if (interaction.options.getSubcommand() == "dectalk") file_url = `http://tts.cyzon.us/tts?text=${encodeURI(interaction.options.getString("text",true))}`
     else if (interaction.options.getSubcommand() == "tts") {
         let tx = interaction.options.getString("text",true)
         if (tx.length > 200) {

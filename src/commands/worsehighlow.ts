@@ -1,3 +1,5 @@
+// todo: stop using r34json api, use cheerio for scraping
+
 import axios from "axios";
 import { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";

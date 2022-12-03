@@ -1,0 +1,7 @@
+[
+    {
+        "name":"sbox",
+        "description":"Stats for the Developer Preview Torture Service @ asset.party",
+        "fetch":"https://asset.party/get/developer/preview"
+    }
+]

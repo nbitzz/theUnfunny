@@ -105,7 +105,14 @@
         "file":"roblox.js"
     },
     {
-        "name":"Characters",
+        "name":"s&box Dev Preview Torture Service Entries",
+        "emoji":"📦",
+        "type":"generator",
+        "shuffle":true,
+        "file":"s&box.js"
+    },
+    {
+        "name":"All Characters",
         "emoji":"😉",
         "type":"generator",
         "shuffle":true,
