@@ -1,3 +1,5 @@
+// scrape https://steamdb.info/sales/history
+
 let {ChatInputCommandInteraction} = require("discord.js")
 let {load,Cheerio} = require("cheerio")
 
