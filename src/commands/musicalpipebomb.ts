@@ -183,29 +183,6 @@ command.action = async (interaction) => {
                                     .setDescription(`Pipe bomb sent`)
                             ]
                         })
-
-                        // HORRIBLE way of doing this. Don't do this.
-                        // However it's basically my only option so...
-                        // Blame DJS devs. Should have wrote this bot 
-                        // using Eris.
-                        // This new complex v13/v14 voice API sucks ass
-                        // and helps with almost nothing.
-                        // You add audio players, audio resources, etc
-                        // and yet you can't be bothered to provide a
-                        // .currentTime property on audio resources?
-                        // If I ever rewrite this bot, I'm using Eris.
-                        // Fuck discord.js.
-                        // I'll redo with setTimeout later, if it works better.
-
-                        /*
-                        intvl = setInterval(() => {
-                            // 650ms delay cause inline volueme slow
-                            if (intervals[0] && Date.now()-playStart+650 >= intervals[0][0]) {
-                                resource.volume?.setVolume(intervals[0][1])
-                                intervals.splice(0,1)
-                            }
-                        },1)
-                        */
                         
                         player.on(AudioPlayerStatus.Idle,() => {
                             if (conn && conn.state.status != VoiceConnectionStatus.Destroyed) {
