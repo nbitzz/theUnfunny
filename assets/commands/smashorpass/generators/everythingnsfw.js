@@ -20,11 +20,11 @@ module.exports = function(interaction) {
             embeds:[{description:"Reading premade lists",color:resolveColor("Blurple")}]
         })
 
-        meta.filter(e => e.type=="json").forEach((e) => {
+        meta.filter(e => e.type=="json" && !e.nsfw).forEach((e) => {
             everything_arr.push(require(assetPath+"json/"+e.file))
         })
 
-        let generated = meta.filter(e => e.type=="generator" && e.file != "everything.js" && e.file !="everythingnsfw.js" && e.file != "everything.js" && e.file != "characters.js" && !e.nsfw)
+        let generated = meta.filter(e => e.type=="generator" && e.file != "everything.js" && e.file !="everythingnsfw.js" && e.file != "characters.js")
         for (let i = 0; i < generated.length; i++) {
             let e = generated[i]
 

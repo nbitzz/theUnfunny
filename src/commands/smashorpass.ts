@@ -1,11 +1,14 @@
 import fs from "fs/promises"
-import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder, VoiceChannel, NewsChannel } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { EZSave, getSave } from "../lib/ezsave"
 
 /*
     This code is pretty bad.
     I might rewrite it later.
+
+    2022-12-14: nsfw lists are kinda badly implemented.
+                maybe do a better implementation later?
 */
 
 // change if selfhosting
@@ -30,7 +33,9 @@ interface Meta {
     emoji:string,
     type:string,
     shuffle:boolean,
-    file:string
+    file:string,
+    nsfw?:boolean,
+    description?:string
 }
 
 interface Frame {
@@ -336,7 +341,11 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction,list
 command.action = async (interaction) => {
     if (!interaction.channel || !interaction.guild) return
     if (interaction.channel.isDMBased()) return
-    
+    if (interaction.channel.isThread()) {
+        interaction.editReply("do this in a channel not a thread please kthxbye")
+        return
+    }
+
     let me = await interaction.guild.members.fetchMe()
     if (!me.permissionsIn(interaction.channel).has(
         PermissionsBitField.Flags.SendMessages
@@ -351,6 +360,7 @@ command.action = async (interaction) => {
     let sav = saves.data[interaction.user.id]
     let seconds = sav ? Math.floor(sav.timeSoFar/1000) : 0
     let expirMin = sav ? Math.floor((saves.metadata[interaction.user.id].expire-Date.now())/60000) : 0
+    let chnl:TextChannel|VoiceChannel|NewsChannel = interaction.channel
 
     let repl = await interaction.editReply({
         embeds: [
@@ -365,20 +375,28 @@ command.action = async (interaction) => {
                 .addComponents(
                     new SelectMenuBuilder()
                         .setOptions(
-                            ...meta.map((e:Meta) => {
+                            ...meta.filter((v:Meta) => chnl.nsfw || !v.nsfw).map((e:Meta) => {
                                 return {
                                     label:e.name,
                                     emoji:e.emoji,
-                                    description:`${e.type == "json" ? "Premade" : "Generated"} | ${e.shuffle ? "Shuffled" : "Not shuffled"} | ${e.file}`,
-                                    value:`${e.type}:${e.file}`
+                                    description:`${e.description||""}${e.description?" | ":""}${(e.type == "json" ? "Premade" : "Generated")} | ${e.shuffle ? "Shuffled" : "Not shuffled"} | ${e.file}`,
+                                    value:`${e.type}:${e.file}`,
                                 }
                             }),
-                            ...(sav ? [{
-                                label:`Continue list "${sav.meta.name}"`,
-                                description:`${sav.position+1}/${sav.frames.length} (${Math.floor((sav.position/sav.frames.length)*100)}%) | ${Math.floor(seconds/60)}m ${seconds%60}s | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
-                                emoji:"💾",
-                                value:"save"
-                            }] : [])
+                            // god bless any poor soul who tries to understand this
+                            ...((sav) ? (
+                                sav.meta.nsfw && !chnl.nsfw ? [{
+                                    label:`Continue NSFW list "${sav.meta.name}"`,
+                                    description:`Move to an 18+ channel to continue | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
+                                    emoji:"⚠",
+                                    value:"save"
+                                }] : [{
+                                    label:`Continue list "${sav.meta.name}"`,
+                                    description:`${sav.position+1}/${sav.frames.length} (${Math.floor((sav.position/sav.frames.length)*100)}%) | ${Math.floor(seconds/60)}m ${seconds%60}s | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
+                                    emoji:"💾",
+                                    value:"save"
+                                }]
+                            ) : []),
                         )
                         .setCustomId("list")
                         .setPlaceholder("Select a list...")
@@ -425,7 +443,14 @@ command.action = async (interaction) => {
                         embeds:[{color:0xff0000,description:"No savedata found"}]
                     })
                     return
-                } 
+                }
+
+                if (sav.meta.nsfw && !chnl.nsfw) {
+                    interaction.editReply({
+                        embeds:[{color:0xff0000,description:"To continue, please run /smashorpass in a NSFW channel."}]
+                    })
+                    return
+                }
                 prom = new Promise((resolve,reject) => {
                     resolve(JSON.stringify(sav.frames))
                 })

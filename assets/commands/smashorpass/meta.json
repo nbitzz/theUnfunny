@@ -32,21 +32,24 @@
         "emoji": "🇺🇸",
         "type": "json",
         "shuffle": true,
-        "file":"murica.json"
+        "file":"murica.json",
+        "description":"List by Emanuel"
     },
     {
         "name":"Five Nights at Freddy's",
         "emoji": "🐻",
         "type": "json",
         "shuffle": true,
-        "file":"fnaf.json"
+        "file":"fnaf.json",
+        "description":"List by q3"
     },
     {
         "name":"Fictional Characters",
         "emoji": "📚",
         "type": "json",
         "shuffle": true,
-        "file":"fictional_characters.json"
+        "file":"fictional_characters.json",
+        "description":"List by Emanuel"
     },
     {
         "name":"Animal Crossing Villagers",
@@ -88,34 +91,57 @@
         "emoji":"🥑",
         "type":"generator",
         "shuffle":true,
-        "file":"avocado.js"
+        "file":"avocado.js",
+        "description":"Nikocado Avacado video thumbnails"
     },
     {
         "name":"Unus Annus Videos",
         "emoji":"☠",
         "type":"generator",
         "shuffle":true,
-        "file":"mori.js"
+        "file":"mori.js",
+        "description":"Unus Annus video thumbnails"
     },
     {
-        "name":"Roblox Games",
-        "emoji":"🟥",
+        "name":"Rule34 Latest 500",
+        "emoji":"😖",
         "type":"generator",
         "shuffle":true,
-        "file":"roblox.js"
+        "file":"r34_latest_500.js",
+        "nsfw":true
+    },
+    {
+        "name":"Rule34 Latest 500 (gay edition)",
+        "emoji":"🥛",
+        "type":"generator",
+        "shuffle":true,
+        "file":"r34_latest_500_onepieceisreal.js",
+        "description":"Filter: posts marked 'gay'",
+        "nsfw":true
     },
     {
         "name":"All Characters",
         "emoji":"😉",
         "type":"generator",
         "shuffle":true,
-        "file":"characters.js"
+        "file":"characters.js",
+        "description":"Every Smash or Pass list related to characters"
+    },
+    {
+        "name":"Everything (SFW)",
+        "emoji":"🌐",
+        "type":"generator",
+        "shuffle":true,
+        "file":"everything.js",
+        "description":"Every Smash or Pass list (excluding nsfw lists)"
     },
     {
         "name":"Everything",
         "emoji":"🌎",
         "type":"generator",
         "shuffle":true,
-        "file":"everything.js"
+        "file":"everythingnsfw.js",
+        "description":"Every Smash or Pass list",
+        "nsfw":true
     }
 ]
