@@ -25,29 +25,30 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 
 - [X] /boom
 - [X] /losefaith
-- [ ] /play
+- [X] /play
     - [X] url
     - [X] file
     - [X] sfx
     - [X] tts
     - [X] dectalk
-    - [ ] 15ai
+    - [X] ~~15ai~~ Give Up! (for context: 15ai has been down for a month straight)
 - [X] /stop
-- [ ] /worsehighlow
+- [X] /worsehighlow
     - [X] basic game
-    - [ ] move off of r34 json api and instead scrape with cheerio
+    - [X] move off of r34 json api and instead scrape with cheerio
 - [X] /smashorpass
 - [ ] /stat
     - [X] command
     - [X] ~~s&box (developer preview torture service stats)~~ likely no longer possible due to stricter cloudflare limitations on asset.party
-    - [ ] sale (next steam sale & time, steamdb.info)
-        - [ ] figure out how to bypass cloudflare
-        - [ ] check if sale is active, if so, display remaining time
-- [ ] /musicalpipebomb (@user)
-    - [ ] command
+    - [X] ~~sale (next steam sale & time, steamdb.info)~~ giving up time
+        - [X] ~~figure out how to bypass cloudflare~~
+        - [X] ~~check if sale is active, if so, display remaining time~~
+    - [ ] posts on rule34
+- [X] /musicalpipebomb (@user)
+    - [X] command
     - [ ] make songlist 
 - [ ] /copypasta (string) - grabs from reddit r/copypasta
-- [ ] League of Legends watcher
+- [ ] /about
 - [ ] Make codebase suck less ass
     - [ ] make /musicalpipebomb readable
     - [ ] same with /play (and use switch statements, you're not yanderedev split)

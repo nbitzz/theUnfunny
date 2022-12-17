@@ -32,7 +32,7 @@ command.action = async (interaction) => {
     let count = 0
 
     for (let i = 0; i < MAX_PAGES; i++) {
-        let res = await axios.get(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&tags=${encodeURI(character)}&pid=${i}`)
+        let res = await axios.get(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&tags=${encodeURIComponent(character)}&pid=${i}`)
         count += res.data.length
         if (res.data.length<1000) break
 

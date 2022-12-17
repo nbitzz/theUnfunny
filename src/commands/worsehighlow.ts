@@ -1,8 +1,10 @@
 // todo: stop using r34json api, use cheerio for scraping
+// 2022-12-16 complete
 
 import axios from "axios";
 import { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
+import { load } from "cheerio";
 
 // i don't know why but this code turned out
 // horrible
@@ -22,6 +24,27 @@ let command = new SlashCommand(
 command.allowInDMs = true
 
 let terms = require(command.assetPath+"terms.json")
+
+let fetchPostCountForTag = (tag:string):Promise<number> => {
+    return new Promise(async (resolve,reject) => {
+        let data = await axios.get(
+            `https://rule34.xxx/index.php?page=tags&s=list&tags=${encodeURIComponent(tag)}`
+        ).catch(reject)
+
+        if (!data) return
+        
+        let $ = load(data.data)
+        let result = 0
+
+        $('table[class=\"highlightable\"] tr').map((x,el) => {
+            if ($(el.children[1]).text() == tag) {
+                result = parseInt($(el.children[0]).text(),10)
+            }
+        })
+        
+        resolve(result)
+    })
+}
 
 command.action = async (interaction) => {
     let picks:string[] = terms.map((e:string)=>e)
@@ -73,6 +96,7 @@ command.action = async (interaction) => {
                 {embeds:[{description:"This isn't your prompt!",color:0xff0000}]}
             )
         } else {
+            int.deferUpdate()
             answer = int.values[0]
             coll.stop()
         }
@@ -83,8 +107,8 @@ command.action = async (interaction) => {
             interaction.editReply({components:[],embeds:[new EmbedBuilder().setColor("Greyple").setDescription("fuk yoy answer the ques tion")]})
         } else {
             try {
-                let results_left = parseInt((await axios.get(`https://r34-json-api.herokuapp.com/tags?name=${encodeURI(left)}`)).data[0].posts,10)
-                let results_right = parseInt((await axios.get(`https://r34-json-api.herokuapp.com/tags?name=${encodeURI(right)}`)).data[0].posts,10)
+                let results_left = await fetchPostCountForTag(left)
+                let results_right = await fetchPostCountForTag(right)
                 
                 let user_answer = answer=="yes"
                 let truth = results_left>results_right
@@ -117,7 +141,7 @@ command.action = async (interaction) => {
                     embeds:[
                         new EmbedBuilder()
                             .setColor("Red")
-                            .setDescription("Oops, something broke. The [R34 JSON API that I use](https://r34-json-api.herokuapp.com) may be down.")
+                            .setDescription("Oops, something broke.")
                     ],
                     components:[]
                 })
