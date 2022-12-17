@@ -135,13 +135,14 @@ command.action = async (interaction) => {
                     embeds:[trolling],
                     components:[]
                 })
-            } catch(err) {
+            } catch(err:unknown) {
                 console.error(err)
+
                 interaction.editReply({
                     embeds:[
                         new EmbedBuilder()
                             .setColor("Red")
-                            .setDescription("Oops, something broke.")
+                            .setDescription(`Oops, something broke. Try that again, maybe?`)
                     ],
                     components:[]
                 })

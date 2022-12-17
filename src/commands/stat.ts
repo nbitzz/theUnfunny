@@ -26,7 +26,7 @@ let command = new SlashCommand(
 command.allowInDMs = true
 
 command.action = (interaction) => {
-    return new Promise(async (resolve,reject) => {
+    return new Promise<void>(async (resolve,reject) => {
         let cmd = interaction.options.getSubcommand(true)
         let m = statMeta.find(e => e.name == cmd)
 
@@ -90,6 +90,7 @@ command.action = (interaction) => {
                     coll.on("end",() => {
                         fields = [];
                         statMessage.edit({components:[]})
+                        resolve()
                     })
                 })
             }).catch((err) => {

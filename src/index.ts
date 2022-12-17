@@ -22,10 +22,6 @@ let _config:{
 
 let commands = new SlashCommandManager(client)
 
-client.on("messageCreate",() => {
-    
-})
-
 client.on("ready",() => {
     if (!client.user) return 
     
