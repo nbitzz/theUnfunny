@@ -64,7 +64,7 @@ command.action = (interaction) => {
                                                 return {
                                                     label:v.name,
                                                     value:x.toString(),
-                                                    description:`${v.value.length} chararacters`
+                                                    description:`${v.value.length} characters`
                                                 }
                                             })
                                         )
