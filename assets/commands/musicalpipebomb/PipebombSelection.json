@@ -5,5 +5,13 @@
         "volumeTimestamps":{
             "0:09.339":100000
         }
+    },
+    {
+        "url":"https://cdn.discordapp.com/attachments/979145673607876660/1053483543176679445/Heaven_Pierce_Her_-_ULTRAKILL-_INFINITE_HYPERDEATH_-_02_Into_the_Fire.flac",
+        "beginVolume":0.5,
+        "volumeTimestamps":{
+            "0:59.00":100000,
+            "1:03.50":10
+        }
     }
 ]

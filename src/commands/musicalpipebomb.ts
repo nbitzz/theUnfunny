@@ -22,6 +22,7 @@ interface Pipebomb {
 }
 
 let pipebombs:Pipebomb[] = require(`${process.cwd()}/assets/commands/musicalpipebomb/PipebombSelection.json`)
+let channelNames:string[] = require(`${process.cwd()}/assets/commands/musicalpipebomb/Messages.json`)
 
 // init slash command
 
@@ -109,7 +110,7 @@ command.action = async (interaction) => {
             let ttargetVC = interaction.options.getSubcommand() == "business" ?
                 interaction.options.getChannel("address",true)
                 : await interaction.guild.channels.create<ChannelType.GuildVoice>({
-                    name:"(1) New Messages!",
+                    name:channelNames[Math.floor(Math.random()*channelNames.length)],
                     type:ChannelType.GuildVoice,
                 })
 
