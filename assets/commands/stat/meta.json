@@ -1,7 +1,7 @@
 [
     {
-        "name":"sbox",
-        "description":"Stats for the Developer Preview Torture Service @ asset.party",
-        "fetch":"https://asset.party/get/developer/preview"
+        "name":"r34",
+        "description":"Rule34 post counter",
+        "fetch":"https://rule34.xxx/"
     }
 ]

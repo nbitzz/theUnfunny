@@ -1,6 +1,6 @@
 import axios from "axios";
-import { APIEmbedField } from "discord-api-types/v10"
-import { EmbedBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { APIEmbedField, ComponentType } from "discord-api-types/v10"
+import { ActionRowBuilder, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 
 // init slash command
@@ -45,14 +45,51 @@ command.action = (interaction) => {
             await axios.get(m.fetch,{headers:{
                 "User-Agent":m.ua ?? "Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0",
             }}).then((data) => {
-                scraper(interaction,data.data).then((fields:APIEmbedField[]) => {
-                    interaction.editReply({
+                scraper(interaction,data.data).then(async (fields:APIEmbedField[]) => {
+                    let statMessage = await interaction.editReply({
                         embeds:[
                             new EmbedBuilder()
                                 .setColor("Blurple")
                                 .setDescription("Results")
                                 .setFields(...fields)
+                        ],
+                        components:[
+                            new ActionRowBuilder<SelectMenuBuilder>()
+                                .addComponents(
+                                    new SelectMenuBuilder()
+                                        .setCustomId("copy")
+                                        .setPlaceholder("Get raw value...")
+                                        .addOptions(
+                                            ...fields.map((v,x) => {
+                                                return {
+                                                    label:v.name,
+                                                    value:x.toString(),
+                                                    description:`${v.value.length} chararacters`
+                                                }
+                                            })
+                                        )
+                                )
                         ]
+                    })
+
+                    let coll = statMessage.createMessageComponentCollector(
+                        {
+                            componentType:ComponentType.StringSelect,
+                            idle:60000
+                        }
+                    )
+
+                    coll.on("collect",(int) => {
+                        if (!int.values[0]) return
+                        int.reply({
+                            ephemeral:true,
+                            content:fields[parseInt(int.values[0],10)].value
+                        })
+                    })
+                    
+                    coll.on("end",() => {
+                        fields = [];
+                        statMessage.edit({components:[]})
                     })
                 })
             }).catch((err) => {

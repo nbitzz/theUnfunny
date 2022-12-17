@@ -37,14 +37,14 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [X] basic game
     - [X] move off of r34 json api and instead scrape with cheerio
 - [X] /smashorpass
-- [ ] /stat
+- [X] /stat
     - [X] command
     - [X] ~~s&box (developer preview torture service stats)~~ likely no longer possible due to stricter cloudflare limitations on asset.party
     - [X] ~~sale (next steam sale & time, steamdb.info)~~ giving up time
         - [X] ~~figure out how to bypass cloudflare~~
         - [X] ~~check if sale is active, if so, display remaining time~~
-    - [ ] posts on rule34
-- [X] /musicalpipebomb (@user)
+    - [X] posts on rule34
+- [ ] /musicalpipebomb (@user)
     - [X] command
     - [ ] make songlist 
 - [ ] /copypasta (string) - grabs from reddit r/copypasta
