@@ -8,17 +8,14 @@
 
     Anyway, here's what I'd imagine a Barista script would look like:
 
-    @:import "requests"
-    @:merge @,requests
+    @:import "requests",@
 
     @:set "url","https://cdn.discordapp.com/attachments/..."
     @:set "names",$(Json:parse $(@:get url))
 
     fun daily:
-        @:set "choice",$( Math:randint 0, calc(names.length + 1) )
+        @:set "choice",$( Math:randint 0, #(names.length + 1) )
         server:setName $( names:get choice )
-
-    @:export daily,"everyday"
     
 */
 
@@ -43,8 +40,8 @@ enum ValueType {
     String,     // "string content", 'string content'
     Boolean,    // true, false
     Number,     // /[0-9]/    | parsed with parseInt()
-    //Object,     // {any}    | raw text will be processed with JSON.parse
-    //Array,      // [any]    | raw text will be processed with JSON.parse
+    //Object,   // {any}      | raw text will be processed with JSON.parse
+    //Array,    // [any]      | raw text will be processed with JSON.parse
     Statement,  // $(any)     | value will be a CallToken
     Logic,      // ?(any)     | logic processor
                 //            | Value and Value or not Value
@@ -137,7 +134,8 @@ export namespace ValueTokens {
             LESSTHAN,
             GREATERTHAN,
             GREATERTHANOREQUALTO,
-            LESSTHANOREQUALTO
+            LESSTHANOREQUALTO,
+            INVALID
         }
 
         export const SymbolMap:Map<string,LogicOperator> = new Map()
@@ -220,12 +218,13 @@ export namespace ValueTokens {
         export let Tokenizers:Map<ValueType, (unprocessedToken:string[])=>ValueToken> = new Map()
 
         Tokenizers
-            .set(ValueType.Null,():Null => {return {type:TokenType.Value,valueType:ValueType.Null,value:null}})
-            .set(ValueType.Boolean,(bool):BooleanValue => {return {type:TokenType.Value,valueType:ValueType.Boolean,value:bool[0]=="true"}})
-            .set(ValueType.Not,(bool):Logic.NotValue => {return {type:TokenType.Value,valueType:ValueType.Not,value:getToken(bool[0])}})
-            .set(ValueType.Number,(num):NumberValue => {return {type:TokenType.Value,valueType:ValueType.Number,value:parseFloat(num[0])}})
-            .set(ValueType.String,(str):StringValue => {return {type:TokenType.Value,valueType:ValueType.String,value:str[0]}})
-            .set(ValueType.Math,(values):Math.Math => {
+            .set(ValueType.Null,   ()    :Null           => {return {type:TokenType.Value,valueType:ValueType.Null,value:null}}                )
+            .set(ValueType.Boolean,(bool):BooleanValue   => {return {type:TokenType.Value,valueType:ValueType.Boolean,value:bool[0]=="true"}}  )
+            .set(ValueType.Not,    (bool):Logic.NotValue => {return {type:TokenType.Value,valueType:ValueType.Not,value:getToken(bool[0])}}    )
+            .set(ValueType.Number, (num) :NumberValue    => {return {type:TokenType.Value,valueType:ValueType.Number,value:parseFloat(num[0])}})
+            .set(ValueType.String, (str) :StringValue    => {return {type:TokenType.Value,valueType:ValueType.String,value:str[0]}}            )
+
+            .set(ValueType.Math,   (values):Math.Math    => {
                 return {
                     type:      TokenType.Value,
                     valueType: ValueType.Math,
@@ -242,7 +241,7 @@ export namespace ValueTokens {
                     valueType: ValueType.Logic,
                     value:     {
                         left:  getToken(values[0]),
-                        op:    Logic.SymbolMap.get(values[1]) || Logic.LogicOperator.EQUALS,
+                        op:    Logic.SymbolMap.get(values[1]) || Logic.LogicOperator.INVALID, // invalid should always equate to false
                         right: getToken(values[2])
                     }
                 }
@@ -347,7 +346,9 @@ export namespace Tokens {
         })
 
         export namespace Typeguards {
-            export let isCall = (a:Token): a is CallToken => a.type == TokenType.Call
+            export let isCall  = (a:BaseToken): a is CallToken  => a.type == TokenType.Call
+            export let isValue = (a:BaseToken): a is ValueToken => a.type == TokenType.Value
+            export let isBlock = (a:BaseToken): a is BlockToken => a.type == TokenType.Block
         }
 }
 
