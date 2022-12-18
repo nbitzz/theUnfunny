@@ -18,7 +18,7 @@ export namespace Groups {
             this.name = name;
             this.color = color;
 
-            this.prefix = `\x1b[1;38;2${this.color.replace(/\,/g,";")}m${name}\x1b[0m/`
+            this.prefix = `\x1b[1;38;2;${this.color.replace(/\,/g,";")}m${name}\x1b[0m/`
 
             Groups.set(this.name,this)
         }

@@ -4,6 +4,9 @@
 import { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { fetchPostCountForTag } from "../lib/rule34"
+import { Logger } from "../lib/logger"
+
+let csle = new Logger("worsehighlow","commands")
 
 // i don't know why but this code turned out
 // horrible
@@ -114,6 +117,7 @@ command.action = async (interaction) => {
                     components:[]
                 })
             } catch(err:unknown) {
+                csle.error("Failed to fetch high/low count:")
                 console.error(err)
 
                 interaction.editReply({

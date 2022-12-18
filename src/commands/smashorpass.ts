@@ -2,6 +2,9 @@ import fs from "fs/promises"
 import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder, VoiceChannel, NewsChannel } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { EZSave, getSave } from "../lib/ezsave"
+import { Logger } from "../lib/logger"
+
+let csle = new Logger("smashorpass","commands")
 
 /*
     This code is pretty bad.
@@ -167,6 +170,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                         embeds: [{description:"You have either quit the game or a moderator has forcefully closed the session.",color:0xFF0000}],
                         components:[]
                     }).catch((err) => {
+                        csle.error("Failed to edit message.")
                         console.error(err)
                     })
                     resolve("quit")
@@ -193,6 +197,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                             ],
                             components:[]
                         }).catch((err) => {
+                            csle.error("Failed to edit message.")
                             console.error(err)
                         })
                         resolve("smash")                        
@@ -208,6 +213,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                             ],
                             components:[]
                         }).catch((err) => {
+                            csle.error("Failed to edit message.")
                             console.error(err)
                         })
                         resolve("pass")                        
@@ -219,6 +225,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                             embeds: [{description:"💾 Game saved. Your save will expire in 24 hours.",color:0xFF0000}],
                             components:[]
                         }).catch((err) => {
+                            csle.error("Failed to edit message.")
                             console.error(err)
                         })
                         resolve("save")                    
@@ -240,6 +247,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                 ],
                 components:[]
             }).catch((err) => {
+                csle.error("Failed to edit message.")
                 console.error(err)
             })
 
@@ -458,8 +466,10 @@ command.action = async (interaction) => {
                 prom = require(`${command.assetPath}generators/${file}`)(interaction)
             }
 
+            let mt:Meta = type != "save" ? meta.find((e:Meta) => e.type == type && e.file == file) : {name:sav.meta.name}
+            
             prom.then((buf) => {
-                let mt:Meta = type != "save" ? meta.find((e:Meta) => e.type == type && e.file == file) : {name:sav.meta.name}
+                
                 let game = JSON.parse(buf.toString())
                 if (!mt) return
 
@@ -501,6 +511,7 @@ command.action = async (interaction) => {
                 })
             }).catch((err) => {
                 interaction.editReply({embeds: [{description:"File read/list generation failed",color:0xFF0000}]})
+                csle.error(`List generation failed for ${mt.file} ("${mt.name}")`)
                 console.error(err)
             })
         }

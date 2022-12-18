@@ -22,7 +22,7 @@ let command = new SlashCommand(
         .addBooleanOption(
             new SlashCommandBooleanOption()
                 .setName("fast")
-                .setDescription("Whether or not to scrape from tags page (default: true)")
+                .setDescription("Whether or not to scrape from tags page (default: true, will be disabled when using more than 1 tag)")
                 .setRequired(false)
         )
 )
@@ -47,7 +47,7 @@ command.action = async (interaction) => {
     // todo: change this to use fs, maybe
     let defaultList = require(command.assetPath+"Defaults.json")
     let character:string = interaction.options.getString("tags",false) || defaultList[Math.floor(Math.random()*defaultList.length)]
-    let fast:boolean = interaction.options.getBoolean("fast",false) ?? true
+    let fast:boolean = (character.split(" ").length>1) ? (interaction.options.getBoolean("fast",false) ?? true) : false
 
     let count = await (fast ? fetchPostCountForTag : fetchPostCountForTagViaApi)(character)
     

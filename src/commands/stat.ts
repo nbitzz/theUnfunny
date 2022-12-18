@@ -1,7 +1,12 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { APIEmbedField, ComponentType } from "discord-api-types/v10"
 import { ActionRowBuilder, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
+import { Logger, Groups } from "../lib/logger"
+
+let csle = new Logger("stat","commands")
+let statLogs = new Groups.LoggerGroup("stat","200,200,0")
+let scraperLoggers:Map<string,Logger> = new Map();
 
 // init slash command
 
@@ -41,11 +46,12 @@ command.action = (interaction) => {
 
             // get scraper
             let scraper = require(`${command.assetPath}scrapers/${cmd}.js`)
+            let scraperLogger = scraperLoggers.get(cmd) || new Logger(cmd,statLogs)
 
             await axios.get(m.fetch,{headers:{
                 "User-Agent":m.ua ?? "Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0",
             }}).then((data) => {
-                scraper(interaction,data.data).then(async (fields:APIEmbedField[]) => {
+                scraper(interaction,data.data,scraperLogger).then(async (fields:APIEmbedField[]) => {
                     let statMessage = await interaction.editReply({
                         embeds:[
                             new EmbedBuilder()
@@ -94,7 +100,7 @@ command.action = (interaction) => {
                     })
                 })
             }).catch((err) => {
-                console.error(err)
+                scraperLogger.error(err instanceof AxiosError ? `Failed to fetch data from ${err.config?.url}: ${err.code}` : "Failed to generate stat information")
                 reject("error")
             })
         }

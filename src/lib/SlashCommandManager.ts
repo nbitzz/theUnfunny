@@ -1,5 +1,5 @@
 import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction } from "discord.js";
-import { Logger, Groups } from "../lib/logger"
+import { Logger, Groups } from "./logger"
 
 let csle = new Logger("SlashCommandManager")
 
@@ -80,7 +80,7 @@ export class SlashCommandManager {
                                 {description:"Oops, something broke. Maybe try that again?",color:0xff0000}
                             ]
                         })
-                        csle.error(`An error occured in ${command?.builder.name}.`)
+                        csle.error(`An error occured while running /${command?.builder.name}:`)
                         console.error(err)
                     })
                 }

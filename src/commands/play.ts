@@ -5,6 +5,9 @@ import { SlashCommand } from "../lib/SlashCommandManager";
 import { Readable } from "stream"
 import getLinks from "../lib/links";
 import { getAudioUrl } from "google-tts-api"
+import { Logger } from "../lib/logger"
+
+let csle = new Logger("play","commands")
 
 // get list of sfx
 
