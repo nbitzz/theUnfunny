@@ -49,6 +49,9 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [ ] make songlist 
 - [ ] /copypasta (string) - grabs from reddit r/copypasta
 - [ ] /about
+- [ ] /barista
+    - [ ] simple lang for automation
+    - [ ] auto executing tasks
 - [ ] Make codebase suck less ass
     - [ ] make /musicalpipebomb readable
     - [ ] same with /play (and use switch statements, you're not yanderedev split)

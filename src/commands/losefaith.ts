@@ -1,6 +1,7 @@
 import axios from "axios";
-import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
+import { fetchPostCountForTag } from "../lib/rule34"
 
 // you can change these if you're selfhosting i guess
 
@@ -18,15 +19,15 @@ let command = new SlashCommand(
                 .setDescription("R34 tag set to check")
                 .setRequired(false)
         )
+        .addBooleanOption(
+            new SlashCommandBooleanOption()
+                .setName("fast")
+                .setDescription("Whether or not to scrape from tags page (default: true)")
+                .setRequired(false)
+        )
 )
 
-command.allowInDMs = true
-
-command.action = async (interaction) => {
-    // todo: change this to use fs, maybe
-    let defaultList = require(command.assetPath+"Defaults.json")
-    let character:string = interaction.options.getString("tags",false) || defaultList[Math.floor(Math.random()*defaultList.length)]
-
+let fetchPostCountForTagViaApi = async function(character:string) {
     // contact rule34 api
     
     let count = 0
@@ -35,18 +36,20 @@ command.action = async (interaction) => {
         let res = await axios.get(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&tags=${encodeURIComponent(character)}&pid=${i}`)
         count += res.data.length
         if (res.data.length<1000) break
-
-        if (i == 0) {
-            await interaction.editReply({
-                embeds: [
-                    new EmbedBuilder()
-                        .setTitle("Uhoh.")
-                        .setColor("Red")
-                        .setDescription(`There seems to be a... few thousand results.\n\nGive me a second, I'm still working on it...`)
-                ]
-            })
-        }
     }
+
+    return count
+}
+
+command.allowInDMs = true
+
+command.action = async (interaction) => {
+    // todo: change this to use fs, maybe
+    let defaultList = require(command.assetPath+"Defaults.json")
+    let character:string = interaction.options.getString("tags",false) || defaultList[Math.floor(Math.random()*defaultList.length)]
+    let fast:boolean = interaction.options.getBoolean("fast",false) ?? true
+
+    let count = await (fast ? fetchPostCountForTag : fetchPostCountForTagViaApi)(character)
     
     interaction.editReply({
         embeds: [

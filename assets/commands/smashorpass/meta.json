@@ -28,6 +28,14 @@
         "file":"pokemon_gen4to8.json"
     },
     {
+        "name":"Pokemon Gen9",
+        "emoji": "5️⃣",
+        "type": "json",
+        "shuffle": false,
+        "file":"pokemon_gen9.json",
+        "description":"Please kill me"
+    },
+    {
         "name":"US Presidents",
         "emoji": "🇺🇸",
         "type": "json",

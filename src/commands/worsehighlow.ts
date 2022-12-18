@@ -1,10 +1,9 @@
 // todo: stop using r34json api, use cheerio for scraping
 // 2022-12-16 complete
 
-import axios from "axios";
 import { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
-import { load } from "cheerio";
+import { fetchPostCountForTag } from "../lib/rule34"
 
 // i don't know why but this code turned out
 // horrible
@@ -24,27 +23,6 @@ let command = new SlashCommand(
 command.allowInDMs = true
 
 let terms = require(command.assetPath+"terms.json")
-
-let fetchPostCountForTag = (tag:string):Promise<number> => {
-    return new Promise(async (resolve,reject) => {
-        let data = await axios.get(
-            `https://rule34.xxx/index.php?page=tags&s=list&tags=${encodeURIComponent(tag)}`
-        ).catch(reject)
-
-        if (!data) return
-        
-        let $ = load(data.data)
-        let result = 0
-
-        $('table[class=\"highlightable\"] tr').map((x,el) => {
-            if ($(el.children[1]).text() == tag) {
-                result = parseInt($(el.children[0]).text(),10)
-            }
-        })
-        
-        resolve(result)
-    })
-}
 
 command.action = async (interaction) => {
     let picks:string[] = terms.map((e:string)=>e)
