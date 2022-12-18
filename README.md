@@ -15,9 +15,11 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 
 ## config.json
 
-```json
+```js
 {
-    "token":"kill.yourself-NOW!!"
+    "token":"kill.yourself-NOW!!",
+    // optional
+    "command_and_control_center":"guildid"
 }
 ```
 
@@ -52,6 +54,8 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 - [ ] /barista
     - [ ] simple lang for automation
     - [ ] auto executing tasks
+- [ ] command and control center
+    - [ ] generates eval command in server
 - [ ] Make codebase suck less ass
     - [ ] make /musicalpipebomb readable
     - [ ] same with /play (and use switch statements, you're not yanderedev split)

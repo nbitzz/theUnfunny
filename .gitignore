@@ -2,3 +2,4 @@ node_modules
 out
 config.json
 .data
+bot_logs

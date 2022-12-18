@@ -1,6 +1,9 @@
 import fs from "fs/promises"
 import Discord, { APIApplicationCommand, Client, IntentsBitField } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
+import { Logger } from "./lib/logger"
+
+let csle = new Logger("theUnfunny")
 
 let client = new Client({
     intents: [
@@ -25,8 +28,8 @@ let commands = new SlashCommandManager(client)
 client.on("ready",() => {
     if (!client.user) return 
     
-    console.log(`[theUnfunny] Hi, I'm ${client.user.tag}.`)
-    console.log(`[theUnfunny] Collecting commands...`)
+    csle.info(`Hi, I'm ${client.user.tag}.`)
+    csle.log (`Collecting commands....`)
 
     fs.readdir(process.cwd()+"/out/commands").then((fn) => {
         fn.forEach((name) => {
@@ -37,10 +40,10 @@ client.on("ready",() => {
             }
         })
 
-        console.log(`[theUnfunny] Registering commands...`)
+        csle.log(`Registering commands...`)
         commands.register().then((apiReply) => {
             if (Array.isArray(apiReply)) {
-                console.log(`[theUnfunny] ${apiReply.length} commands registered.`)
+                csle.success(`${apiReply.length} commands registered.`)
             }
 
             client.user?.setPresence({
@@ -51,9 +54,9 @@ client.on("ready",() => {
                     }
                 ]
             })
-        }).catch((e) => {console.error(e);process.exit()})
+        }).catch((e) => {csle.error("Failed to register commands.");console.error(e);process.exit()})
     }).catch((err) => {
-        console.error("[theUnfunny] readdir failed")
+        csle.error("Failed to read commands directory.")
         console.error(err)
         process.exit()
     })
@@ -125,6 +128,7 @@ client.on("interactionCreate",(int) => {
 // error handling? i guess??
 
 client.on("error",(err) => {
+    csle.error("An error occured.")
     console.error(err)
 })
 
@@ -134,7 +138,7 @@ fs.readFile(process.cwd()+"/config.json").then((buf) => {
     _config = JSON.parse(buf.toString())
     client.login(_config.token)
 }).catch((err) => {
-    console.error("[theUnfunny] Failed to read config.json.")
+    csle.error("Failed to read config.json.")
     console.error(err)
     process.exit(1)
 })

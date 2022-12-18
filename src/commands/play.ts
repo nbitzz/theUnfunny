@@ -140,9 +140,9 @@ command.action = async (interaction) => {
 
     // would be a good idea to make this a switch statement instead.
 
-    if (interaction.options.getSubcommand() == "file") file_url = interaction.options.getAttachment("file",true).proxyURL
-    else if (interaction.options.getSubcommand() == "url") file_url = interaction.options.getString("url",true)
-    else if (interaction.options.getSubcommand() == "sfx") file_url = builtinSFX[interaction.options.getString("name",true)]
+    if (interaction.options.getSubcommand() == "file"        ) file_url = interaction.options.getAttachment("file",true).proxyURL
+    else if (interaction.options.getSubcommand() == "url"    ) file_url = interaction.options.getString("url",true)
+    else if (interaction.options.getSubcommand() == "sfx"    ) file_url = builtinSFX[interaction.options.getString("name",true)]
     else if (interaction.options.getSubcommand() == "dectalk") file_url = `http://tts.cyzon.us/tts?text=${encodeURI(interaction.options.getString("text",true))}`
     else if (interaction.options.getSubcommand() == "tts") {
         let tx = interaction.options.getString("text",true)

@@ -1,7 +1,19 @@
 import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction } from "discord.js";
+import { Logger, Groups } from "../lib/logger"
+
+let csle = new Logger("SlashCommandManager")
+
+new Groups.LoggerGroup(
+    "commands",
+    "255,150,150"
+)
+
+type anySCB = SlashCommandBuilder
+              |Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
+              |Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">
 
 export class SlashCommand {
-    readonly builder: SlashCommandBuilder|Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">
+    readonly builder: anySCB
     readonly assetPath: string
     readonly type:string = "SCM.SlashCommand"
     action?: (interaction:ChatInputCommandInteraction) => Promise<any>
@@ -9,7 +21,7 @@ export class SlashCommand {
     ephmeralReply?:boolean
     allowInDMs?:boolean
 
-    constructor(command:SlashCommandBuilder|Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">) {
+    constructor(command:anySCB) {
         this.builder = command
         this.assetPath = `${process.cwd()}/assets/commands/${command.name}/`
     }
@@ -29,7 +41,7 @@ export class SlashCommandManager {
      */
     register() {
         return new Promise(async (resolve,reject) => {
-            console.log("[SlashCommandManager] Registering commands...")
+            csle.log("Registering commands...")
             
             if (this.client.user) {
                 this.commands.forEach((e) => {
@@ -41,10 +53,10 @@ export class SlashCommandManager {
                     { body: this.commands.map(e => e.builder.toJSON()) }
                 )
 
-                console.log(`[SlashCommandManager] Slash commands registered.`)
+                csle.success("Slash commands registered.")
                 resolve(result)
             } else {
-                console.error("[SlashCommandManager] Not logged in")
+                csle.error("Not logged in")
                 reject("Not logged in")
             }
         })
@@ -68,6 +80,7 @@ export class SlashCommandManager {
                                 {description:"Oops, something broke. Maybe try that again?",color:0xff0000}
                             ]
                         })
+                        csle.error(`An error occured in ${command?.builder.name}.`)
                         console.error(err)
                     })
                 }

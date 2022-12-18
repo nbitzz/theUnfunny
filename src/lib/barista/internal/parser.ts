@@ -185,7 +185,7 @@ export namespace ValueTokens {
             .set( "^", MathOperator.POW )
 
         export interface Math extends ValueToken {
-            valueType:ValueType.Math
+            valueType: ValueType.Math
             value: {
                 op:    MathOperator,
                 left:  ValueToken,
