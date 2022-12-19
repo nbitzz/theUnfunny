@@ -8,16 +8,18 @@
 
     Anyway, here's what I'd imagine a Barista script would look like:
 
-    @:import "requests",@
+    @:import("requests",@)
 
-    @:set "url","https://cdn.discordapp.com/attachments/..."
-    @:set "names",$(Json:parse $(@:get url))
+    @:set("url","https://cdn.discordapp.com/attachments/...")
+    @:set("names",$(Json:parse $(@:get url)))
 
     fun daily:
-        @:set "choice",$( Math:randint 0, #(names.length + 1) )
-        server:setName $( names:get choice )
+        @:set("choice",$( Math:randint(0, #(names.length + 1)) ))
+        server:setName($( names:get(choice) ))
     
 */
+
+import { Logger } from "../../logger"
 
 enum TokenType {
     Block,      // BlockTokens define blocks of "code".
@@ -308,7 +310,7 @@ export namespace ValueTokens {
 // Tokens
 
 export namespace Tokens {
-    export let callTokenRegex = /(.+):(.+?) (.+)/
+    export let callTokenRegex = /(.+):(.+?)\((.*)\)/
 
     export interface BlockToken extends Token {
         type: TokenType.Block

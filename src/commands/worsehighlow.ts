@@ -95,12 +95,14 @@ command.action = async (interaction) => {
                 let truth = results_left>results_right
 
                 let trolling = new EmbedBuilder()
-                                    .addFields(
-                                        {
-                                            name:"Results",
-                                            value:`You answered: **${answer}**\nResults for \`\`${left}\`\`: ${results_left}\nResults for \`\`${right}\`\`: ${results_right}`
-                                        }
-                                    )
+                
+                trolling
+                    .addFields(
+                        {
+                            name:"Results",
+                            value:`You answered: **${answer}**\nResults for \`\`${left}\`\`: ${results_left}\nResults for \`\`${right}\`\`: ${results_right}`
+                        }
+                    )
 
                 if (user_answer == truth) {
                     trolling

@@ -33,28 +33,37 @@ export namespace Groups {
 
 }
 
-
-
 export interface LogType {
+    name:string,
     logColor:string
 }
 
+export interface LoggerPlugin {
+    log: (logger:Logger,type:LogType,log:string) => void
+}
+
 export const LogTypes:{[key:string]:LogType} = {
-    info    : { logColor: "94"       },
-    log     : { logColor: "38;5;246" },
-    error   : { logColor: "1;91"     },
-    warning : { logColor: "1;93"     },
-    success : { logColor: "1;92"     }
+    info    : { name: "info",    logColor: "94"       },
+    log     : { name: "log",     logColor: "38;5;246" },
+    error   : { name: "error",   logColor: "1;91"     },
+    warning : { name: "warning", logColor: "1;93"     },
+    success : { name: "success", logColor: "1;92"     }
 };
 
+let dfplugins:LoggerPlugin[]
 
+export function use(plug:LoggerPlugin) {
+    dfplugins.push(plug)
+}
 
 export class Logger {
-    readonly name : string
-    readonly group?: Groups.LoggerGroup
+    readonly name   : string
+    readonly group? : Groups.LoggerGroup
+    usePlugins      : boolean    = false
 
     constructor(name:string, group?:Groups.LoggerGroupResolvable) {
         this.name = name;
+
         if (group) {
             let resolved = Groups.resolve(group)
             if (resolved) this.group = resolved;
@@ -62,10 +71,16 @@ export class Logger {
     }
 
     _log(message:string,type:LogType) {
+        if (this.usePlugins) dfplugins.forEach((v) => 
+            v.log(this,type,message)
+        )
+
         console.log(
             `\x1b[${type.logColor}m•\x1b[0m [${this.group ? this.group.prefix : ""}${this.name}] ${message}`
         )
     }
+
+    /* logger.log, etc */
 
     log     = (message:string) => this._log( message, LogTypes.log     )
     info    = (message:string) => this._log( message, LogTypes.info    )
