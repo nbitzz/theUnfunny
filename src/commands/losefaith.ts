@@ -47,7 +47,7 @@ command.action = async (interaction) => {
     // todo: change this to use fs, maybe
     let defaultList = require(command.assetPath+"Defaults.json")
     let character:string = interaction.options.getString("tags",false) || defaultList[Math.floor(Math.random()*defaultList.length)]
-    let fast:boolean = (character.split(" ").length>1) ? (interaction.options.getBoolean("fast",false) ?? true) : false
+    let fast:boolean = (character.split(" ").length<=1) ? (interaction.options.getBoolean("fast",false) ?? true) : false
 
     let count = await (fast ? fetchPostCountForTag : fetchPostCountForTagViaApi)(character)
     
