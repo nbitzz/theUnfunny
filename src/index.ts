@@ -32,6 +32,27 @@ let _config:{
 
 let commands = new SlashCommandManager(client)
 
+let activityTypeMap:{[key:string]:Discord.ActivityType} = {
+    Playing: Discord.ActivityType.Playing,
+    Watching: Discord.ActivityType.Watching,
+    Listening: Discord.ActivityType.Listening
+}
+
+let statuses:Discord.ActivitiesOptions[] = [
+    {
+        type:Discord.ActivityType.Watching,
+        name:"you"
+    }
+]
+
+let switchStatus = () => {
+    client.user?.setPresence({
+        activities:[
+            statuses[Math.floor(Math.random()*statuses.length)]
+        ]
+    })
+}
+
 client.on("ready",() => {
     if (!client.user) return 
     
@@ -53,14 +74,23 @@ client.on("ready",() => {
                 csle.success(`${apiReply.length} commands registered.`)
             }
 
-            client.user?.setPresence({
-                activities:[
-                    {
-                        type:Discord.ActivityType.Watching,
-                        name:`you`
+            csle.log("Reading status prompts...")
+            fs.readFile(`${process.cwd()}/assets/unfunny/status.json`).then((buf) => {
+                statuses = JSON.parse(buf.toString()).map((e:{activity:string,name:string}) => {
+                    return {
+                        name:e.name,
+                        type:activityTypeMap[e.activity]
                     }
-                ]
-            })
+                })
+
+                csle.success("Read & parsed status file successfully.")
+
+                setInterval(switchStatus,5*60*1000)
+
+            }).catch((err) => {
+                csle.error("Failed to read/parse status file.")
+                console.error(err)
+            }).finally(switchStatus)
         }).catch((e) => {csle.error("Failed to register commands.");console.error(e);process.exit()})
     }).catch((err) => {
         csle.error("Failed to read commands directory.")
@@ -116,7 +146,7 @@ client.on("guildCreate",(guild) => {
             ],
             files: [
                 {
-                    attachment: process.cwd()+'/assets/unfunny/banner.png',
+                    attachment: process.cwd()+'/assets/unfunny/brand/banner.png',
                     name: 'icon.png'
                 }
             ]

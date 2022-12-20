@@ -1,6 +1,7 @@
 import fs from "fs/promises"
 import { existsSync, mkdirSync } from "fs"
 import { Logger } from "./logger"
+import { resolve } from "path"
 
 let csle = new Logger("EZSave","Library")
 
@@ -16,6 +17,8 @@ export class EZSave<datatype> {
     expire:Map<string,NodeJS.Timeout> = new Map()
 
     constructor(filepath:string) {
+        csle.info(`Loading ${resolve(filepath)}`)
+        
         this.filepath = filepath
         this._read()
     }
@@ -25,6 +28,8 @@ export class EZSave<datatype> {
             let dt = JSON.parse(data.toString())
             this.data = dt.data
             this.metadata = dt.meta
+
+            csle.success(`Read ${resolve(this.filepath)}`)
         }).catch((err) => {
             csle.error(`Failed to read file: ${this.filepath}`)
             console.error(err)
@@ -67,7 +72,7 @@ export class EZSave<datatype> {
         else delete this.metadata[record_name]
         this.refresh_expiration(record_name)
         this._write().catch((err) => {
-            csle.error(`set_record failed: ${record_name} on ${this.filepath}`)
+            csle.error(`set_record failed: ${record_name} on ${resolve(this.filepath)}`)
             console.error(err)
         })
     }
@@ -80,7 +85,7 @@ export class EZSave<datatype> {
             clearTimeout(dt)
         }
         this._write().catch((err) => {
-            csle.error(`delete_record failed: ${record_name} on ${this.filepath}`)
+            csle.error(`delete_record failed: ${record_name} on ${resolve(this.filepath)}`)
             console.error(err)
         })
     }
