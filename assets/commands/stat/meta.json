@@ -8,5 +8,10 @@
         "name":"bot",
         "description":"Bot stats",
         "fetch":"https://example.com/"
+    },
+    {
+        "name":"update",
+        "description":"Recent commits to nbitzz/theUnfunny",
+        "fetch":"https://api.github.com/repos/nbitzz/theUnfunny/commits"
     }
 ]
