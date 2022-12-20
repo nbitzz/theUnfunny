@@ -1,9 +1,16 @@
+// i get that you shouldn't be doing thiss
+// but i'm tired so like ehh
+
+import { Logger, Groups } from "./lib/logger"
+new Groups.LoggerGroup("Library","0,255,150")
+
 import fs from "fs/promises"
 import Discord, { APIApplicationCommand, Client, IntentsBitField } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
-import { Logger } from "./lib/logger"
+
 
 let csle = new Logger("theUnfunny")
+
 
 let client = new Client({
     intents: [

@@ -1,7 +1,7 @@
 import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction } from "discord.js";
 import { Logger, Groups } from "./logger"
 
-let csle = new Logger("SlashCommandManager")
+let csle = new Logger("SlashCommandManager","Library")
 
 new Groups.LoggerGroup(
     "commands",

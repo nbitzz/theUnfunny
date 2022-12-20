@@ -1,5 +1,8 @@
 import fs from "fs/promises"
 import { existsSync, mkdirSync } from "fs"
+import { Logger } from "./logger"
+
+let csle = new Logger("EZSave","Library")
 
 export interface Metadata {
     expire:number
@@ -22,7 +25,10 @@ export class EZSave<datatype> {
             let dt = JSON.parse(data.toString())
             this.data = dt.data
             this.metadata = dt.meta
-        }).catch((err) => {}).finally(() => {
+        }).catch((err) => {
+            csle.error(`Failed to read file: ${this.filepath}`)
+            console.error(err)
+        }).finally(() => {
             this.expire.forEach((v,x) => {
                 clearTimeout(v)
                 this.expire.delete(x)
@@ -60,17 +66,23 @@ export class EZSave<datatype> {
         if (expire) this.metadata[record_name] = {expire:expire}
         else delete this.metadata[record_name]
         this.refresh_expiration(record_name)
-        this._write()
+        this._write().catch((err) => {
+            csle.error(`set_record failed: ${record_name} on ${this.filepath}`)
+            console.error(err)
+        })
     }
 
     delete_record(record_name:string) {
-        delete this.data[record_name]
-        delete this.metadata[record_name]
+        delete   this.data[record_name]
+        delete   this.metadata[record_name]
         let dt = this.expire.get(record_name)
         if (dt) {
             clearTimeout(dt)
         }
-        this._write()
+        this._write().catch((err) => {
+            csle.error(`delete_record failed: ${record_name} on ${this.filepath}`)
+            console.error(err)
+        })
     }
 
 }

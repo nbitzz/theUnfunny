@@ -1,11 +1,17 @@
 import axios from "axios"
 import { load } from "cheerio"
+import { Logger } from "./logger"
+
+let csle = new Logger("Rule34","Library")
 
 export let fetchPostCountForTag = (tag:string):Promise<number> => {
     return new Promise(async (resolve,reject) => {
         let data = await axios.get(
             `https://rule34.xxx/index.php?page=tags&s=list&tags=${encodeURIComponent(tag)}`
-        ).catch(reject)
+        ).catch((err) => {
+            csle.error("An error occured while fetching the tags page.")
+            reject(err)
+        })
 
         if (!data) return
         
