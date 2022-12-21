@@ -7,7 +7,7 @@ new Groups.LoggerGroup("Library","0,255,150")
 import fs from "fs/promises"
 import Discord, { APIApplicationCommand, Client, IntentsBitField } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
-
+import { CommandAndControl } from "./lib/CommandAndControl"
 
 let csle = new Logger("theUnfunny")
 
@@ -30,6 +30,7 @@ let _config:{
     token:string
 }
 
+let control:CommandAndControl
 let commands = new SlashCommandManager(client)
 
 let activityTypeMap:{[key:string]:Discord.ActivityType} = {
@@ -53,10 +54,16 @@ let switchStatus = () => {
     })
 }
 
-client.on("ready",() => {
+client.on("ready",async () => {
     if (!client.user) return 
     
     csle.info(`Hi, I'm ${client.user.tag}.`)
+    /*
+    csle.log (`Initializing Command and Control center...`)
+    control = new CommandAndControl(client)
+
+    await control.ready()
+    */
     csle.log (`Collecting commands....`)
 
     fs.readdir(process.cwd()+"/out/commands").then((fn) => {

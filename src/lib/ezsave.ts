@@ -2,6 +2,7 @@ import fs from "fs/promises"
 import { existsSync, mkdirSync } from "fs"
 import { Logger } from "./logger"
 import { resolve } from "path"
+import { BaseEvent, EventSignal } from "./Events"
 
 let csle = new Logger("EZSave","Library")
 
@@ -13,6 +14,9 @@ export class EZSave<datatype> {
     readonly filepath:string
     data:{[key:string]:datatype} = {}
     metadata:{[key:string]:Metadata} = {}
+    isReady:boolean = false
+    private _readSuccessfulEvent:BaseEvent = new BaseEvent()
+    readSuccessfulEvent:EventSignal = this._readSuccessfulEvent.Event
 
     expire:Map<string,NodeJS.Timeout> = new Map()
 
@@ -41,6 +45,9 @@ export class EZSave<datatype> {
             for (let [key] of Object.entries(this.metadata)) {
                 this.refresh_expiration(key)
             }
+
+            this.isReady = true
+            this._readSuccessfulEvent.Fire()
         })
     }
     
@@ -72,7 +79,7 @@ export class EZSave<datatype> {
         else delete this.metadata[record_name]
         this.refresh_expiration(record_name)
         this._write().catch((err) => {
-            csle.error(`set_record failed: ${record_name} on ${resolve(this.filepath)}`)
+            csle.error(`set_record write failed: ${record_name} on ${resolve(this.filepath)}`)
             console.error(err)
         })
     }
@@ -85,8 +92,15 @@ export class EZSave<datatype> {
             clearTimeout(dt)
         }
         this._write().catch((err) => {
-            csle.error(`delete_record failed: ${record_name} on ${resolve(this.filepath)}`)
+            csle.error(`delete_record write failed: ${record_name} on ${resolve(this.filepath)}`)
             console.error(err)
+        })
+    }
+
+    ready() {
+        return new Promise<void>((resolve,reject) => {
+            if (this.isReady) resolve();
+            else this.readSuccessfulEvent.once(() => resolve())
         })
     }
 
