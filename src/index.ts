@@ -5,7 +5,7 @@ import { Logger, Groups, use } from "./lib/logger"
 new Groups.LoggerGroup("Library","0,255,150")
 
 import fs from "fs/promises"
-import Discord, { APIApplicationCommand, Client, IntentsBitField } from "discord.js"
+import Discord, { APIApplicationCommand, Client, EmbedBuilder, IntentsBitField } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 
@@ -50,7 +50,8 @@ let switchStatus = () => {
     client.user?.setPresence({
         activities:[
             statuses[Math.floor(Math.random()*statuses.length)]
-        ]
+        ],
+        status:Discord.PresenceUpdateStatus.Online
     })
 }
 
@@ -92,7 +93,14 @@ client.on("ready",async () => {
 
     use({
         log: (logger,type,content) => {
-            bot_logs_channel.send("log")
+            bot_logs_channel.send({
+                embeds:[
+                    new EmbedBuilder()
+                        .setTitle(`${logger.group ? logger.group.name + "/" : ""}${logger.name}`)
+                        .setDescription(content)
+                        .setAuthor({name:type.name})
+                ]
+            })
         }
     })
     

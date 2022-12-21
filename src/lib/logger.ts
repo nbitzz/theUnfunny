@@ -59,7 +59,7 @@ export function use(plug:LoggerPlugin) {
 export class Logger {
     readonly name   : string
     readonly group? : Groups.LoggerGroup
-    usePlugins      : boolean    = false
+    usePlugins      : boolean     = true
 
     constructor(name:string, group?:Groups.LoggerGroupResolvable) {
         this.name = name;
