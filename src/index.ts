@@ -31,7 +31,7 @@ let _config:{
 }
 
 let control:CommandAndControl
-let commands = new SlashCommandManager(client)
+let commands:SlashCommandManager
 
 let activityTypeMap:{[key:string]:Discord.ActivityType} = {
     Playing: Discord.ActivityType.Playing,
@@ -70,10 +70,10 @@ client.on("ready",async () => {
                 type:Discord.ActivityType.Playing,
                 name:"I need an owner~ uwu (Setup not completed. Please check your terminal for further instruction.)"
             }],
-            status:Discord.PresenceUpdateStatus.DoNotDisturb
+            status:Discord.PresenceUpdateStatus.Idle
         })
         
-        csle.error(`Your Command & Control center has not been set up.`)
+        csle.warn(`Your Command & Control center has not been set up.`)
         csle.info ("Please wait for setup to begin.")
         // setup code here
         await control.setup()
@@ -88,8 +88,17 @@ client.on("ready",async () => {
     })
 
     csle.success(`Command & Control center is set up!`)
+    commands = new SlashCommandManager(client,control)
     
     let bot_logs_channel = await control.getChannel("bot-logs")
+
+    let colorTable:{[key:string]:string} = {
+        info   : "79b8ff",
+        log    : "949494",
+        error  : "f97583",
+        success: "85e89d",
+        warning: "ffea7f"
+    }
 
     use({
         log: (logger,type,content) => {
@@ -99,6 +108,7 @@ client.on("ready",async () => {
                         .setTitle(`${logger.group ? logger.group.name + "/" : ""}${logger.name}`)
                         .setDescription(content)
                         .setAuthor({name:type.name})
+                        .setColor(Number("0x"+colorTable[type.name]))
                 ]
             })
         }
@@ -120,24 +130,29 @@ client.on("ready",async () => {
             if (Array.isArray(apiReply)) {
                 csle.success(`${apiReply.length} commands registered.`)
             }
+            commands.register_control_center().then((apiR) => {
+                if (Array.isArray(apiR)) {
+                    csle.success(`${apiR.length} control center command(s) registered.`)
+                }
 
-            csle.log("Reading status prompts...")
-            fs.readFile(`${process.cwd()}/assets/unfunny/status.json`).then((buf) => {
-                statuses = JSON.parse(buf.toString()).map((e:{activity:string,name:string}) => {
-                    return {
-                        name:e.name,
-                        type:activityTypeMap[e.activity]
-                    }
-                })
+                csle.log("Reading status prompts...")
+                fs.readFile(`${process.cwd()}/assets/unfunny/status.json`).then((buf) => {
+                    statuses = JSON.parse(buf.toString()).map((e:{activity:string,name:string}) => {
+                        return {
+                            name:e.name,
+                            type:activityTypeMap[e.activity]
+                        }
+                    })
 
-                csle.success("Read & parsed status file successfully.")
+                    csle.success("Read & parsed status file successfully.")
 
-                setInterval(switchStatus,5*60*1000)
+                    setInterval(switchStatus,5*60*1000)
 
-            }).catch((err) => {
-                csle.error("Failed to read/parse status file.")
-                console.error(err)
-            }).finally(switchStatus)
+                }).catch((err) => {
+                    csle.error("Failed to read/parse status file.")
+                    console.error(err)
+                }).finally(switchStatus)
+            })
         }).catch((e) => {csle.error("Failed to register commands.");console.error(e);process.exit()})
     }).catch((err) => {
         csle.error("Failed to read commands directory.")

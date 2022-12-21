@@ -61,7 +61,8 @@ export class CommandAndControl {
 
                 csle.info("No guild found. Generating new server...")
                 this.guild = await this.client.guilds.create({
-                    name:"theUnfunny Command & Control Center"
+                    name:"theUnfunny Command & Control Center",
+                    icon:"https://github.com/nbitzz/theUnfunny/raw/main/assets/unfunny/brand/icon.png"
                 })
                 csle.log("Clearing all channels")
                 let chnls = await this.guild.channels.fetch()
@@ -70,7 +71,7 @@ export class CommandAndControl {
                 }
                 csle.log("Generating system channel")
                 let sysChannel = await this.guild.channels.create({
-                    name:"system"
+                    name:"chat"
                 })
                 await this.guild.setSystemChannel(sysChannel)
                 this.save.data.data.guild = this.guild.id

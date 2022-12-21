@@ -72,7 +72,7 @@ export class Logger {
 
     _log(message:string,type:LogType) {
         if (this.usePlugins) dfplugins.forEach((v) => 
-            v.log(this,type,message)
+            v.log(this,type,message.toString())
         )
 
         console.log(
@@ -85,6 +85,6 @@ export class Logger {
     log     = (message:string) => this._log( message, LogTypes.log     )
     info    = (message:string) => this._log( message, LogTypes.info    )
     error   = (message:string) => this._log( message, LogTypes.error   )
-    warn    = (message:string) => this._log( message, LogTypes.warn    )
+    warn    = (message:string) => this._log( message, LogTypes.warning )
     success = (message:string) => this._log( message, LogTypes.success )
 }
