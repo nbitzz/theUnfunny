@@ -13,24 +13,25 @@ type anySCB = SlashCommandBuilder
               |Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">
 
 export class SlashCommand {
-    readonly builder: anySCB
-    readonly assetPath: string
-    readonly type:string = "SCM.SlashCommand"
-    action?: (interaction:ChatInputCommandInteraction) => Promise<any>
+    readonly builder   : anySCB
+    readonly assetPath : string
+    readonly type      : string = "SCM.SlashCommand"
+    action?            : (interaction:ChatInputCommandInteraction) => Promise<any>
 
-    ephmeralReply?:boolean
-    allowInDMs?:boolean
+    ephmeralReply?     :boolean
+    allowInDMs?        :boolean
+    controlCenterOnly? :boolean
 
     constructor(command:anySCB) {
-        this.builder = command
+        this.builder   = command
         this.assetPath = `${process.cwd()}/assets/commands/${command.name}/`
     }
 }
 
 export class SlashCommandManager {
-    private commands:SlashCommand[] = []
+    private commands       : SlashCommand[] = []
     private readonly client: Client
-    readonly type:string = "SCM.SlashCommandManager"
+    readonly type          : string = "SCM.SlashCommandManager"
 
     constructor(client: Client) {
         this.client = client

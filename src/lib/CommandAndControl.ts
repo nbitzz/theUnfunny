@@ -44,5 +44,14 @@ export class CommandAndControl {
         })
     }
 
-    
+    /**
+     * @description Gets a channel. If a channel linked to this name isn't found, a new channel will be created.
+     */
+
+    getChannel(channelName:string) {
+        return new Promise(async (resolve,reject) => {
+            await this.ready()
+            
+        })
+    }
 }
