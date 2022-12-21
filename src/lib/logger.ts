@@ -50,7 +50,7 @@ export const LogTypes:{[key:string]:LogType} = {
     success : { name: "success", logColor: "1;92"     }
 };
 
-let dfplugins:LoggerPlugin[]
+let dfplugins:LoggerPlugin[] = []
 
 export function use(plug:LoggerPlugin) {
     dfplugins.push(plug)

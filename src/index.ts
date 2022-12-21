@@ -1,7 +1,7 @@
 // i get that you shouldn't be doing thiss
 // but i'm tired so like ehh
 
-import { Logger, Groups } from "./lib/logger"
+import { Logger, Groups, use } from "./lib/logger"
 new Groups.LoggerGroup("Library","0,255,150")
 
 import fs from "fs/promises"
@@ -58,13 +58,45 @@ client.on("ready",async () => {
     if (!client.user) return 
     
     csle.info(`Hi, I'm ${client.user.tag}.`)
-    /*
     csle.log (`Initializing Command and Control center...`)
+    
     control = new CommandAndControl(client)
-
     await control.ready()
-    */
-    csle.log (`Collecting commands....`)
+
+    if (!control.isSetup) {
+        client.user.setPresence({
+            activities:[{
+                type:Discord.ActivityType.Playing,
+                name:"I need an owner~ uwu (Setup not completed. Please check your terminal for further instruction.)"
+            }],
+            status:Discord.PresenceUpdateStatus.DoNotDisturb
+        })
+        
+        csle.error(`Your Command & Control center has not been set up.`)
+        csle.info ("Please wait for setup to begin.")
+        // setup code here
+        await control.setup()
+    }
+
+    await client.user.setPresence({
+        activities:[{
+            type:Discord.ActivityType.Playing,
+            name:"Starting theUnfunny..."
+        }],
+        status:Discord.PresenceUpdateStatus.Idle
+    })
+
+    csle.success(`Command & Control center is set up!`)
+    
+    let bot_logs_channel = await control.getChannel("bot-logs")
+
+    use({
+        log: (logger,type,content) => {
+            bot_logs_channel.send("log")
+        }
+    })
+    
+    csle.log(`Collecting commands....`)
 
     fs.readdir(process.cwd()+"/out/commands").then((fn) => {
         fn.forEach((name) => {
