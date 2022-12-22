@@ -25,19 +25,32 @@ export let CommandAndControlDefaults:CommandAndControlSettings = {
 
 export namespace Generators {
     export let operator_menu = async function(control:CommandAndControl) {
-        (await (await control.getChannel("operator-menu")).setTopic("operator menu"))
-            .send({
-                components: [
-                    new ActionRowBuilder<StringSelectMenuBuilder>()
-                        .addComponents(
-                            new StringSelectMenuBuilder()
-                                .addOptions(
-                                    ...operatorMenuDisplay
-                                )
-                                .setCustomId("controlSelMenu")
-                        )
-                ]
-            })
+        let botOwner = control.owner
+        if (!botOwner) return
+        
+        let menu_channel = (await control.getChannel("operator-menu"))
+
+        await menu_channel.setTopic("Configure your theUnfunny instance")
+
+        await menu_channel.permissionOverwrites.create(menu_channel.guild.roles.everyone,{
+            SendMessages:   false,
+            ViewChannel : false
+        })
+        
+        await menu_channel.send({
+            components: [
+                new ActionRowBuilder<StringSelectMenuBuilder>()
+                    .addComponents(
+                        new StringSelectMenuBuilder()
+                            .addOptions(
+                                ...operatorMenuDisplay
+                            )
+                            .setCustomId("controlSelMenu")
+                    )
+            ]
+        })
+
+        menu_channel.setPosition(0)
     }
 }
 
@@ -90,9 +103,6 @@ export class CommandAndControl {
                     if (v) await v.delete()
                 }
 
-                csle.log("Generating operator menu");
-                await Generators.operator_menu(this)
-
                 csle.log("Generating chat channel")
                 let sysChannel = await this.guild.channels.create({
                     name:"chat"
@@ -108,13 +118,24 @@ export class CommandAndControl {
             csle.info(`To continue, please join this server: ${ginvite}`)
             csle.info(`This link will expire in 15 minutes.`)
 
-            let gma = (member:GuildMember) => {
+            let gma = async (member:GuildMember) => {
                 if (this.guild && member.guild.id == this.guild.id) {
                     this.owner = member.user
                     this.save.data.data.owner = member.user.id
                     this.save._write()
                     csle.success(`${member.user.tag} is now registered as this instance's owner.`)
                     
+                    csle.log("Generating operator menu");
+                    await Generators.operator_menu(this)
+
+                    ;(await this.getChannel("operator-menu")).permissionOverwrites.create(this.owner,{
+                        SendMessages:   false,
+                        ReadMessageHistory: true,
+                        ViewChannel : true
+                    }).then(() => {
+                        csle.success(`Gave owner access to the operator menu.`)
+                    })
+
                     this.client.removeListener("guildMemberAdd",gma)
                     resolve()
                 }
