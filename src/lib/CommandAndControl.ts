@@ -1,6 +1,6 @@
 // this code is really bad lmao
 
-import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction, User, Guild, GuildTextBasedChannel, GuildMember, TextChannel, ActionRowBuilder, ButtonBuilder, StringSelectMenuBuilder, EmbedBuilder, ButtonStyle } from "discord.js";
+import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction, User, Guild, GuildTextBasedChannel, GuildMember, TextChannel, ActionRowBuilder, ButtonBuilder, StringSelectMenuBuilder, EmbedBuilder, ButtonStyle, PermissionsBitField } from "discord.js";
 import { EZSave, getSave } from "./ezsave";
 import { Logger } from "./logger"
 import { BaseEvent, EventSignal } from "./Events"
@@ -107,6 +107,25 @@ export class CommandAndControl {
                 let sysChannel = await this.guild.channels.create({
                     name:"chat"
                 })
+
+                // kill me
+                // there has to be a better way to do this
+
+                this.guild.roles.everyone.setPermissions([
+                    PermissionsBitField.Flags.ReadMessageHistory,
+                    PermissionsBitField.Flags.ViewChannel,
+                    PermissionsBitField.Flags.SendMessages,
+                    PermissionsBitField.Flags.UseExternalEmojis,
+                    PermissionsBitField.Flags.UseExternalStickers,
+                    PermissionsBitField.Flags.AddReactions,
+                    PermissionsBitField.Flags.EmbedLinks,
+                    PermissionsBitField.Flags.AttachFiles,
+                    PermissionsBitField.Flags.ChangeNickname,
+                    PermissionsBitField.Flags.CreatePublicThreads,
+                    PermissionsBitField.Flags.CreatePrivateThreads,
+                    PermissionsBitField.Flags.SendMessagesInThreads,
+                    PermissionsBitField.Flags.UseApplicationCommands
+                ])
 
                 await this.guild.setSystemChannel(sysChannel)
                 this.save.data.data.guild = this.guild.id
