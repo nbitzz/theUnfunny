@@ -1,9 +1,10 @@
 // this code is really bad lmao
 
-import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction, User, Guild, GuildTextBasedChannel, GuildMember } from "discord.js";
+import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction, User, Guild, GuildTextBasedChannel, GuildMember, TextChannel, ActionRowBuilder, ButtonBuilder, StringSelectMenuBuilder, EmbedBuilder, ButtonStyle } from "discord.js";
 import { EZSave, getSave } from "./ezsave";
 import { Logger } from "./logger"
 import { BaseEvent, EventSignal } from "./Events"
+import { operatorMenuDisplay } from "./control/operatorMenu";
 
 let csle = new Logger("CommandAndControl","Library")
 
@@ -20,6 +21,24 @@ export interface CommandAndControlData {
 
 export let CommandAndControlDefaults:CommandAndControlSettings = {
     UGC_STATUSES: false
+}
+
+export namespace Generators {
+    export let operator_menu = async function(control:CommandAndControl) {
+        (await (await control.getChannel("operator-menu")).setTopic("operator menu"))
+            .send({
+                components: [
+                    new ActionRowBuilder<StringSelectMenuBuilder>()
+                        .addComponents(
+                            new StringSelectMenuBuilder()
+                                .addOptions(
+                                    ...operatorMenuDisplay
+                                )
+                                .setCustomId("controlSelMenu")
+                        )
+                ]
+            })
+    }
 }
 
 export class CommandAndControl {
@@ -64,15 +83,21 @@ export class CommandAndControl {
                     name:"theUnfunny Command & Control Center",
                     icon:"https://github.com/nbitzz/theUnfunny/raw/main/assets/unfunny/brand/icon.png"
                 })
+
                 csle.log("Clearing all channels")
                 let chnls = await this.guild.channels.fetch()
                 for (let v of chnls.values()) {
                     if (v) await v.delete()
                 }
-                csle.log("Generating system channel")
+
+                csle.log("Generating operator menu");
+                await Generators.operator_menu(this)
+
+                csle.log("Generating chat channel")
                 let sysChannel = await this.guild.channels.create({
                     name:"chat"
                 })
+
                 await this.guild.setSystemChannel(sysChannel)
                 this.save.data.data.guild = this.guild.id
                 this.save._write()
@@ -163,9 +188,13 @@ export class CommandAndControl {
      * @description Gets a channel. If a channel linked to this name isn't found, a new channel will be created.
      */
 
-    getChannel(channelName:string):Promise<GuildTextBasedChannel> {
+    getChannel(channelName:string):Promise<TextChannel> {
         return new Promise(async (resolve,reject) => {
             await this.ready()
+
+            if (!this.save.data.data.channels) {
+                this.save.data.data.channels = {}
+            }
             
             if (this.guild) {
                 let guild = this.guild
@@ -179,10 +208,6 @@ export class CommandAndControl {
                 }
                 if (channel instanceof Error || !channel) {
                     channel = await guild.channels.create({name:channelName})
-                
-                    if (!this.save.data.data.channels) {
-                        this.save.data.data.channels = {}
-                    }
                     this.save.data.data.channels[channelName] = channel.id
                     this.save._write().catch((err) => {
                         csle.error("error writing save: getChannel")

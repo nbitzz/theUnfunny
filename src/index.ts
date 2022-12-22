@@ -5,9 +5,10 @@ import { Logger, Groups, use } from "./lib/logger"
 new Groups.LoggerGroup("Library","0,255,150")
 
 import fs from "fs/promises"
-import Discord, { APIApplicationCommand, Client, EmbedBuilder, IntentsBitField } from "discord.js"
+import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder, IntentsBitField, StringSelectMenuBuilder } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
+import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
 
 let csle = new Logger("theUnfunny")
 
@@ -221,6 +222,31 @@ client.on("guildCreate",(guild) => {
 client.on("interactionCreate",(int) => {
     if (int.isChatInputCommand()) {
         commands.call(int)
+              // todo: replace with isStringSelectMenu
+              // when my vscode lets me lmao
+    } else if (int.isStringSelectMenu()) {
+        switch(int.customId) {
+            case "controlSelMenu":
+                if (operatorMenuOptions[int.values[0]]) {
+                    operatorMenuOptions[int.values[0]](int,control).then(() => {
+                        // there's probably a better way to do this
+                        // but I haven't found it
+                        int.message.edit({
+                            components: [
+                                new ActionRowBuilder<StringSelectMenuBuilder>()
+                                    .addComponents(
+                                        new StringSelectMenuBuilder()
+                                            .addOptions(
+                                                ...operatorMenuDisplay
+                                            )
+                                            .setCustomId("controlSelMenu")
+                                    )
+                            ]
+                        })
+                    })
+                }
+            break
+        }
     }
 })
 
