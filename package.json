@@ -27,6 +27,6 @@
     "typescript": "^4.9.3"
   },
   "engines": {
-    "node": ">=v16"
+    "node": ">=v18"
   }
 }

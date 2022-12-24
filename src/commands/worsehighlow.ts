@@ -1,7 +1,7 @@
 // todo: stop using r34json api, use cheerio for scraping
 // 2022-12-16 complete
 
-import { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } from "discord.js";
+import { ActionRowBuilder, ComponentType, EmbedBuilder, StringSelectMenuBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { fetchPostCountForTag } from "../lib/rule34"
 import { Logger } from "../lib/logger"
@@ -41,9 +41,9 @@ command.action = async (interaction) => {
                 .setThumbnail(skipTimerGifURL)
         ],
         components: [
-            new ActionRowBuilder<SelectMenuBuilder>()
+            new ActionRowBuilder<StringSelectMenuBuilder>()
                 .addComponents(
-                    new SelectMenuBuilder()
+                    new StringSelectMenuBuilder()
                         .addOptions(
                             {
                                 value:"yes",

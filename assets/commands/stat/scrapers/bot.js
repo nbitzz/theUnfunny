@@ -18,7 +18,7 @@ module.exports = function(interaction,data) {
         resolve([
             {
                 name: "Uptime",
-                value: `Unix millis: \`\`${Math.floor(process.uptime()*1000)}\`\`\nHours & mins: ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
+                value: `\`\`${Math.floor(process.uptime()*1000)}\`\`\nHours & mins: ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
                 inline: true
             },
             {

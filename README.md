@@ -56,6 +56,9 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [ ] auto executing tasks
 - [ ] command and control center
     - [ ] generates eval command in server
+- [ ] theUnfunny Network
+    - [ ] servers that opt-in will be allowed to use certain network-only features
+    - [ ] network will allow info from servers to be shared between eachother (ex. an All Server Emojis smash or pass list)
 - [ ] Make codebase suck less ass
     - [ ] make /musicalpipebomb readable
     - [ ] same with /play (and use switch statements, you're not yanderedev split)

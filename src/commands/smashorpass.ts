@@ -1,5 +1,5 @@
 import fs from "fs/promises"
-import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, SelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder, VoiceChannel, NewsChannel } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder, VoiceChannel, NewsChannel } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { EZSave, getSave } from "../lib/ezsave"
 import { Logger } from "../lib/logger"
@@ -379,9 +379,9 @@ command.action = async (interaction) => {
                 .setThumbnail(skipTimerGifURL)
         ],
         components: [
-            new ActionRowBuilder<SelectMenuBuilder>()
+            new ActionRowBuilder<StringSelectMenuBuilder>()
                 .addComponents(
-                    new SelectMenuBuilder()
+                    new StringSelectMenuBuilder()
                         .setOptions(
                             ...meta.filter((v:Meta) => chnl.nsfw || !v.nsfw).map((e:Meta) => {
                                 return {

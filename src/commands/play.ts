@@ -1,5 +1,5 @@
 import axios from "axios";
-import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption, SlashCommandAttachmentOption, SlashCommandSubcommandBuilder, APIApplicationCommandAutocompleteGuildInteraction, APIApplicationCommandOptionChoice, SlashCommandNumberOption, ActionRowBuilder, SelectMenuBuilder, ComponentType } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption, SlashCommandAttachmentOption, SlashCommandSubcommandBuilder, APIApplicationCommandAutocompleteGuildInteraction, APIApplicationCommandOptionChoice, SlashCommandNumberOption, ActionRowBuilder, SelectMenuBuilder, ComponentType, ApplicationCommandOptionChoiceData, StringSelectMenuBuilder } from "discord.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnectionStatus } from "@discordjs/voice";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { Readable } from "stream"
@@ -12,7 +12,7 @@ let csle = new Logger("play","commands")
 // get list of sfx
 
 let builtinSFX:{[key:string]:string} = require(`${process.cwd()}/assets/commands/play/Soundlist.json`)
-let sfxMap:APIApplicationCommandOptionChoice<string>[] = []
+let sfxMap:ApplicationCommandOptionChoiceData<string>[] = []
 let _config = require("../../config.json") // todo: maybe change this
 
 for (let [key,value] of Object.entries(builtinSFX)) {
@@ -207,9 +207,9 @@ command.action = async (interaction) => {
                     .setTitle("Select an audio track")
             ],
             components:[
-                new ActionRowBuilder<SelectMenuBuilder>()
+                new ActionRowBuilder<StringSelectMenuBuilder>()
                     .setComponents(
-                        new SelectMenuBuilder()
+                        new StringSelectMenuBuilder()
                             .setOptions(
                                 ...audioTracks.map((track:{[key:string]:any},index:number) => {
                                     return {

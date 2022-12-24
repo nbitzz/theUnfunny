@@ -1,5 +1,6 @@
 import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction } from "discord.js";
 import { Logger, Groups } from "./logger"
+import { CommandAndControl } from "./CommandAndControl"
 
 let csle = new Logger("SlashCommandManager","Library")
 
@@ -13,27 +14,30 @@ type anySCB = SlashCommandBuilder
               |Omit<SlashCommandBuilder, "addBooleanOption" | "addUserOption" | "addChannelOption" | "addRoleOption" | "addAttachmentOption" | "addMentionableOption" | "addStringOption" | "addIntegerOption" | "addNumberOption">
 
 export class SlashCommand {
-    readonly builder: anySCB
-    readonly assetPath: string
-    readonly type:string = "SCM.SlashCommand"
-    action?: (interaction:ChatInputCommandInteraction) => Promise<any>
+    readonly builder   : anySCB
+    readonly assetPath : string
+    readonly type      : string = "SCM.SlashCommand"
+    action?            : (interaction:ChatInputCommandInteraction, control:CommandAndControl) => Promise<any>
 
-    ephmeralReply?:boolean
-    allowInDMs?:boolean
+    ephmeralReply?     :boolean
+    allowInDMs?        :boolean
+    controlCenterOnly? :boolean
 
     constructor(command:anySCB) {
-        this.builder = command
+        this.builder   = command
         this.assetPath = `${process.cwd()}/assets/commands/${command.name}/`
     }
 }
 
 export class SlashCommandManager {
-    private commands:SlashCommand[] = []
-    private readonly client: Client
-    readonly type:string = "SCM.SlashCommandManager"
+    private commands          : SlashCommand[] = []
+    private readonly client   : Client
+    private readonly control  : CommandAndControl
+    readonly type             : string = "SCM.SlashCommandManager"
 
-    constructor(client: Client) {
+    constructor(client: Client, control: CommandAndControl) {
         this.client = client
+        this.control = control
     }
 
     /**
@@ -50,7 +54,7 @@ export class SlashCommandManager {
 
                 let result = await this.client.rest.put(
                     Routes.applicationCommands(this.client.user.id),
-                    { body: this.commands.map(e => e.builder.toJSON()) }
+                    { body: this.commands.filter(e => !e.controlCenterOnly).map(e => e.builder.toJSON()) }
                 )
 
                 csle.success("Slash commands registered.")
@@ -58,6 +62,32 @@ export class SlashCommandManager {
             } else {
                 csle.error("Not logged in")
                 reject("Not logged in")
+            }
+        })
+    }
+
+    /**
+     * @description Register command & control center-only slash commands
+     */
+     register_control_center() {
+        return new Promise(async (resolve,reject) => {
+            csle.log("Registering command and control center-only commands...")
+            
+            if (this.client.user && this.control.guild) {
+                this.commands.forEach((e) => {
+                    e.builder.setDMPermission(e.allowInDMs)
+                })
+
+                let result = await this.client.rest.put(
+                    Routes.applicationGuildCommands(this.client.user.id,this.control.guild.id),
+                    { body: this.commands.filter(e => e.controlCenterOnly).map(e => e.builder.toJSON()) }
+                )
+
+                csle.success("Slash commands registered.")
+                resolve(result)
+            } else {
+                csle.error("Not logged in / no guild found")
+                reject("Not logged in / no guild found")
             }
         })
     }
@@ -73,7 +103,7 @@ export class SlashCommandManager {
                 ephemeral:command.ephmeralReply
             }).then(() => {
                 if (command && command.action) {
-                    command.action(int).catch((err) => {
+                    command.action(int,this.control).catch((err) => {
                         // error handling
                         int.editReply({
                             embeds:[

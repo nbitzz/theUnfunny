@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
-import { APIEmbedField, ComponentType } from "discord-api-types/v10"
-import { ActionRowBuilder, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { APIEmbedField } from "discord-api-types/v10"
+import { ActionRowBuilder, ComponentType, EmbedBuilder, StringSelectMenuBuilder, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { Logger, Groups } from "../lib/logger"
 
@@ -60,9 +60,9 @@ command.action = (interaction) => {
                                 .setFields(...fields)
                         ],
                         components:[
-                            new ActionRowBuilder<SelectMenuBuilder>()
+                            new ActionRowBuilder<StringSelectMenuBuilder>()
                                 .addComponents(
-                                    new SelectMenuBuilder()
+                                    new StringSelectMenuBuilder()
                                         .setCustomId("copy")
                                         .setPlaceholder("Get raw value...")
                                         .addOptions(
@@ -80,7 +80,7 @@ command.action = (interaction) => {
 
                     let coll = statMessage.createMessageComponentCollector(
                         {
-                            componentType:ComponentType.StringSelect,
+                            componentType: ComponentType.StringSelect,
                             idle:60000
                         }
                     )

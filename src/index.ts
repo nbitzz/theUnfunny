@@ -1,13 +1,14 @@
 // i get that you shouldn't be doing thiss
 // but i'm tired so like ehh
 
-import { Logger, Groups } from "./lib/logger"
+import { Logger, Groups, use } from "./lib/logger"
 new Groups.LoggerGroup("Library","0,255,150")
 
 import fs from "fs/promises"
-import Discord, { APIApplicationCommand, Client, IntentsBitField } from "discord.js"
+import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder, IntentsBitField, StringSelectMenuBuilder } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
+import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
 
 let csle = new Logger("theUnfunny")
 
@@ -31,7 +32,7 @@ let _config:{
 }
 
 let control:CommandAndControl
-let commands = new SlashCommandManager(client)
+let commands:SlashCommandManager
 
 let activityTypeMap:{[key:string]:Discord.ActivityType} = {
     Playing: Discord.ActivityType.Playing,
@@ -50,7 +51,8 @@ let switchStatus = () => {
     client.user?.setPresence({
         activities:[
             statuses[Math.floor(Math.random()*statuses.length)]
-        ]
+        ],
+        status:Discord.PresenceUpdateStatus.Online
     })
 }
 
@@ -58,13 +60,62 @@ client.on("ready",async () => {
     if (!client.user) return 
     
     csle.info(`Hi, I'm ${client.user.tag}.`)
-    /*
     csle.log (`Initializing Command and Control center...`)
+    
     control = new CommandAndControl(client)
-
     await control.ready()
-    */
-    csle.log (`Collecting commands....`)
+
+    if (!control.isSetup) {
+        client.user.setPresence({
+            activities:[{
+                type:Discord.ActivityType.Playing,
+                name:"I need an owner~ uwu (Setup not completed. Please check your terminal for further instruction.)"
+            }],
+            status:Discord.PresenceUpdateStatus.Idle
+        })
+        
+        csle.warn(`Your Command & Control center has not been set up.`)
+        csle.info ("Please wait for setup to begin.")
+        // setup code here
+        await control.setup()
+    }
+
+    await client.user.setPresence({
+        activities:[{
+            type:Discord.ActivityType.Playing,
+            name:"Starting theUnfunny..."
+        }],
+        status:Discord.PresenceUpdateStatus.Idle
+    })
+
+    csle.success(`Command & Control center is set up!`)
+    commands = new SlashCommandManager(client,control)
+    
+    let bot_logs_channel = await control.getChannel("bot-logs")
+
+    let colorTable:{[key:string]:string} = {
+        info   : "79b8ff",
+        log    : "949494",
+        error  : "f97583",
+        success: "85e89d",
+        warning: "ffea7f"
+    }
+
+    use({
+        log: (logger,type,content) => {
+            bot_logs_channel.send({
+                embeds:[
+                    new EmbedBuilder()
+                        .setTitle(`${logger.group ? logger.group.name + "/" : ""}${logger.name}`)
+                        .setDescription(content)
+                        .setAuthor({name:type.name})
+                        .setColor(Number("0x"+colorTable[type.name]))
+                ]
+            })
+        }
+    })
+    
+    csle.log(`Collecting commands....`)
 
     fs.readdir(process.cwd()+"/out/commands").then((fn) => {
         fn.forEach((name) => {
@@ -80,24 +131,29 @@ client.on("ready",async () => {
             if (Array.isArray(apiReply)) {
                 csle.success(`${apiReply.length} commands registered.`)
             }
+            commands.register_control_center().then((apiR) => {
+                if (Array.isArray(apiR)) {
+                    csle.success(`${apiR.length} control center command(s) registered.`)
+                }
 
-            csle.log("Reading status prompts...")
-            fs.readFile(`${process.cwd()}/assets/unfunny/status.json`).then((buf) => {
-                statuses = JSON.parse(buf.toString()).map((e:{activity:string,name:string}) => {
-                    return {
-                        name:e.name,
-                        type:activityTypeMap[e.activity]
-                    }
-                })
+                csle.log("Reading status prompts...")
+                fs.readFile(`${process.cwd()}/assets/unfunny/status.json`).then((buf) => {
+                    statuses = JSON.parse(buf.toString()).map((e:{activity:string,name:string}) => {
+                        return {
+                            name:e.name,
+                            type:activityTypeMap[e.activity]
+                        }
+                    })
 
-                csle.success("Read & parsed status file successfully.")
+                    csle.success("Read & parsed status file successfully.")
 
-                setInterval(switchStatus,5*60*1000)
+                    setInterval(switchStatus,5*60*1000)
 
-            }).catch((err) => {
-                csle.error("Failed to read/parse status file.")
-                console.error(err)
-            }).finally(switchStatus)
+                }).catch((err) => {
+                    csle.error("Failed to read/parse status file.")
+                    console.error(err)
+                }).finally(switchStatus)
+            })
         }).catch((e) => {csle.error("Failed to register commands.");console.error(e);process.exit()})
     }).catch((err) => {
         csle.error("Failed to read commands directory.")
@@ -166,6 +222,31 @@ client.on("guildCreate",(guild) => {
 client.on("interactionCreate",(int) => {
     if (int.isChatInputCommand()) {
         commands.call(int)
+              // todo: replace with isStringSelectMenu
+              // when my vscode lets me lmao
+    } else if (int.isStringSelectMenu()) {
+        switch(int.customId) {
+            case "controlSelMenu":
+                if (operatorMenuOptions[int.values[0]]) {
+                    operatorMenuOptions[int.values[0]](int,control).then(() => {
+                        // there's probably a better way to do this
+                        // but I haven't found it
+                        int.message.edit({
+                            components: [
+                                new ActionRowBuilder<StringSelectMenuBuilder>()
+                                    .addComponents(
+                                        new StringSelectMenuBuilder()
+                                            .addOptions(
+                                                ...operatorMenuDisplay
+                                            )
+                                            .setCustomId("controlSelMenu")
+                                    )
+                            ]
+                        })
+                    })
+                }
+            break
+        }
     }
 })
 
