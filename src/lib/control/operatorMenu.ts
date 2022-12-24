@@ -1,14 +1,17 @@
-// this is bad lmao oh well
+/*
+    Okay, yeah, this code is horrible, 
+    but what are you gonna do about it?
+*/
+
 import { CommandAndControl } from "../CommandAndControl";
-import { SelectMenuInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, UserSelectMenuBuilder, APISelectMenuOption } from "discord.js";
-import e from "express";
+import { StringSelectMenuInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, UserSelectMenuBuilder, APISelectMenuOption, ModalBuilder, TextInputBuilder, TextInputStyle, PermissionFlagsBits, resolveColor } from "discord.js";
 
 export let operatorMenuDisplay:APISelectMenuOption[] = [
     {
-        label:       "Features",
-        value:       "features",
-        description: "Configure your theUnfunny instance",
-        emoji:       {name:"⚙"}
+        label:       "Make an announcement",
+        value:       "announce",
+        description: "I'd like to make an announcement, Shadow the Hedgehog is a bitch ass motherfucker",
+        emoji:       {name:"🔊"}
     },
     {
         label:       "Invite others",
@@ -25,12 +28,12 @@ export let operatorMenuDisplay:APISelectMenuOption[] = [
     {
         label:       "Disown this bot",
         value:       "disown",
-        description: "Reset the command & control center",
+        description: "Reset control center (other data will be kept)",
         emoji:       {name:"❌"}
     }
 ]
 
-export let operatorMenuOptions:{[key:string]:(int:SelectMenuInteraction,control:CommandAndControl) => Promise<any>} = {
+export let operatorMenuOptions:{[key:string]:(int:StringSelectMenuInteraction,control:CommandAndControl) => Promise<any>} = {
     invite: async (interaction,control) => {
         await interaction.reply({content:"Please wait...",ephemeral:true})
         await interaction.editReply({
@@ -158,5 +161,113 @@ export let operatorMenuOptions:{[key:string]:(int:SelectMenuInteraction,control:
                 ],components:[]})
             }
         })
+    },
+    announce: async (interaction,control) => {
+        if (!control.owner) return
+        let owner = control.owner
+         
+
+        interaction.showModal(
+            new ModalBuilder()
+                .setTitle("Announcement")
+                .setCustomId("annmodal")
+                .addComponents(
+                    new ActionRowBuilder<TextInputBuilder>()
+                        .addComponents(
+                            new TextInputBuilder()
+                               .setLabel("Title")
+                                .setStyle(TextInputStyle.Short)
+                                .setMaxLength(100)
+                                .setRequired(true)
+                                .setPlaceholder("I've come to make an announcement")
+                                .setCustomId("title")
+                        ),
+                    new ActionRowBuilder<TextInputBuilder>()
+                        .addComponents(
+                            new TextInputBuilder()
+                                .setLabel("Content")
+                                .setStyle(TextInputStyle.Paragraph)
+                                .setMaxLength(2000)
+                                .setRequired(true)
+                                .setPlaceholder("Shadow the Hedgehog is a bitch ass motherfucker")
+                                .setCustomId("content")
+                        )
+                )
+        )
+
+        interaction.awaitModalSubmit({
+            time:5*60*60*1000
+        }).then(async (submission) => {
+            let announcementTitle = submission.fields.getField("title",ComponentType.TextInput).value
+            let announcementContent = submission.fields.getField("content",ComponentType.TextInput).value
+
+            let AnnouncementEmbed = new EmbedBuilder()
+                                        .setTitle(announcementTitle)
+                                        .setDescription(announcementContent)
+                                        .setColor("Blurple")
+                                        .setFooter({text:"This is a global announcement from the owner of this theUnfunny instance. It is being sent to this channel as it is the system channel."})
+                                        .setAuthor({name:interaction.user.tag,iconURL:interaction.user.avatarURL() || undefined})
+
+            let repl = await submission.reply({
+                ephemeral:true,
+                embeds: [
+                    {description:"Here's what your announcement will look like:",color:resolveColor("Green")},
+                    AnnouncementEmbed,
+                    {description:"Would you like to send it?",color:resolveColor("Green")}
+                ],
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setLabel("Send announcement")
+                                .setStyle(ButtonStyle.Success)
+                                .setCustomId("yes"),
+                            new ButtonBuilder()
+                                .setLabel("Do not send")
+                                .setStyle(ButtonStyle.Danger)
+                                .setCustomId("no")
+                        )
+                ]
+            })
+
+            let coll = repl.createMessageComponentCollector({
+                componentType: ComponentType.Button,
+                time:30000
+            })
+
+            let answered = false
+            
+            coll.on("collect", async (int) => {
+                answered = int.customId == "yes";
+                coll.stop();
+                
+                if (!answered) {int.deferUpdate(); return}
+
+                int.update({
+                    components:[],
+                    embeds:[],
+                    content:"Your message is now being sent to servers. Please wait."
+                })
+                let guilds = await interaction.client.guilds.fetch()
+
+                guilds.forEach((v) => {
+                    v.fetch().then((guild) => {
+                        if (guild.systemChannel && guild.members.me) {
+                            let perms = guild.members.me.permissionsIn(guild.systemChannel)
+
+                            if (perms.has(PermissionFlagsBits.SendMessages) && perms.has(PermissionFlagsBits.ViewChannel)) {
+                                guild.systemChannel.send({
+                                    embeds: [AnnouncementEmbed]
+                                }).catch((err) => {console.error(err)})
+                            }
+                        }
+                    })
+                })
+            })
+
+            coll.on("end",() => {if (!answered) submission.editReply({components:[],embeds:[],content:"Prompt cancelled."}) })
+        })
+        
+        
     }
 }

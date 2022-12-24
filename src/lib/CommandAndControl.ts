@@ -9,7 +9,7 @@ import { operatorMenuDisplay } from "./control/operatorMenu";
 let csle = new Logger("CommandAndControl","Library")
 
 export interface CommandAndControlSettings {
-    UGC_STATUSES?: boolean
+    UGCStatuses?: boolean
 }
 
 export interface CommandAndControlData {
@@ -20,7 +20,7 @@ export interface CommandAndControlData {
 }
 
 export let CommandAndControlDefaults:CommandAndControlSettings = {
-    UGC_STATUSES: false
+    UGCStatuses:false
 }
 
 export namespace Generators {
@@ -111,7 +111,8 @@ export class CommandAndControl {
                 // kill me
                 // there has to be a better way to do this
 
-                this.guild.roles.everyone.setPermissions([
+                csle.log("Setting user permissions")
+                await this.guild.roles.everyone.setPermissions([
                     PermissionsBitField.Flags.ReadMessageHistory,
                     PermissionsBitField.Flags.ViewChannel,
                     PermissionsBitField.Flags.SendMessages,
