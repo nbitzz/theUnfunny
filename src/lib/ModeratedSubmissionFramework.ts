@@ -4,38 +4,43 @@
 
 import { Logger, Groups } from "./logger";
 import { CommandAndControl } from "./CommandAndControl";
-import { TextChannel } from "discord.js";
+import { EmbedBuilder, TextChannel } from "discord.js";
 import { BaseEvent, EventSignal } from "./Events";
-
-export enum SubmissionType {
-    Text,
-    Image
-}
+import { EZSave } from "./ezsave";
 
 export const SubmissionSystemGroup = new Groups.LoggerGroup("ModeratedSubmissionSystem","69,69,69")
+export const csle                  = new Logger("ModeratedSubmissionFramework","Library")
+
+export interface Submission {
+    authorId: string,
+    value   : string
+}
 
 export class ModeratedSubmissionSystem {
     name        : string
+    safeName    : string
 
     control     : CommandAndControl
     logger      : Logger
     channel?    : TextChannel
+    save        : EZSave<Submission[]>
 
     _readyEvent : BaseEvent   = new BaseEvent()
     readyEvent  : EventSignal = this._readyEvent.Event
 
-    type        : SubmissionType
+    constructor(name:string,control:CommandAndControl) {
+        this.name     = name
+        this.safeName = this.name.replace(/\s/g,"-").toLowerCase()
+        this.save     = new EZSave<Submission[]>(`${process.cwd}/.data/mds-${this.safeName}.json`)
 
-    constructor(name:string,control:CommandAndControl,type:SubmissionType) {
-        this.name    = name
-        this.type    = type
-
-        this.control = control
-        this.logger  = new Logger(name,SubmissionSystemGroup)
+        this.control  = control
+        this.logger   = new Logger(name,SubmissionSystemGroup)
+        
+        this.fetchChannel().then(() => this._readyEvent.Fire())
     }
 
     async fetchChannel() {
-        this.channel = await this.control.getChannel(this.name.replace(/\s/g,"-")) 
+        this.channel = await this.control.getChannel(this.safeName) 
         return this.channel
     }
 
@@ -48,14 +53,5 @@ export class ModeratedSubmissionSystem {
                 })
             }
         })
-    }
-
-    async submit(data:string) {
-        await this.ready()
-        if (!this.channel) return
-        
-        let channel = this.channel
-        
-        
     }
 }

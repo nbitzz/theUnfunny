@@ -227,7 +227,7 @@ client.on("interactionCreate",(int) => {
     } else if (int.isStringSelectMenu()) {
         switch(int.customId) {
             case "controlSelMenu":
-                if (operatorMenuOptions[int.values[0]]) {
+                if (operatorMenuOptions[int.values[0]] && int.user.id == control.owner?.id) {
                     operatorMenuOptions[int.values[0]](int,control).then(() => {
                         // there's probably a better way to do this
                         // but I haven't found it
