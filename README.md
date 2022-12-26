@@ -54,6 +54,8 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 - [ ] /barista
     - [ ] simple lang for automation
     - [ ] auto executing tasks
+- [ ] /sugarfree
+    - [ ] scrape amazon reviews for haribo sugar free gummy bears
 - [ ] command and control center
     - [ ] generates eval command in server
 - [ ] theUnfunny Network
