@@ -76,7 +76,10 @@ command.action = async (interaction) => {
 
     if (fast) {
         if (!history) history = []
+        /*let last = history[history.length-1]
+        if (!last || count != last.count)*/
         history.push({count:count,time:Date.now()})
+        //else if (count == last.count) history[history.length-1].time = Date.now()
         save.set_record(character.toLowerCase(),history)
     }
 }

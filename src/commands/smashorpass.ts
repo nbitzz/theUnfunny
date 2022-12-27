@@ -496,7 +496,7 @@ command.action = async (interaction) => {
                                 )
                         ],
                         files:[
-                            new AttachmentBuilder(Buffer.from(`Smash or Pass - "${mt.name}"\nPlayed by ${interaction.user.tag} on ${dt.getUTCMonth()+1}/${dt.getUTCDate()}/${dt.getUTCFullYear()} (MM/DD/YY, UTC)\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\nTotal Smashes | ${score.smash}\nTotal Passes  | ${score.pass}\nTotal         | ${sc.gameLog.length}\nTime          | ${Math.floor(seconds/60)}m ${seconds%60}s\n${"-".repeat(40)}\n`+(sc.gameLog.map((e) => {
+                            new AttachmentBuilder(Buffer.from(`Smash or Pass - "${mt.name}"\nPlayed by ${interaction.user.tag} on ${dt.getUTCFullYear()}-${dt.getUTCMonth()+1}-${dt.getUTCDate()} (ISO8601, UTC)\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\nTotal Smashes | ${score.smash}\nTotal Passes  | ${score.pass}\nTotal         | ${sc.gameLog.length}\nTime          | ${Math.floor(seconds/60)}m ${seconds%60}s\n${"-".repeat(40)}\n`+(sc.gameLog.map((e) => {
                                 let spTab = {
                                     [Result.Skipped]:"Skipped",
                                     [Result.Smash]:  "Smash! ",
