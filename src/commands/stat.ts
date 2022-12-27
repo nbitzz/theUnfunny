@@ -95,7 +95,7 @@ command.action = (interaction) => {
                     
                     coll.on("end",() => {
                         fields = [];
-                        statMessage.edit({components:[]})
+                        interaction.editReply({components:[]})
                         resolve()
                     })
                 })
