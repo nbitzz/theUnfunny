@@ -46,9 +46,9 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
         - [X] ~~figure out how to bypass cloudflare~~
         - [X] ~~check if sale is active, if so, display remaining time~~
     - [X] posts on rule34
-- [ ] /musicalpipebomb (@user)
+- [X] /musicalpipebomb (@user)
     - [X] command
-    - [ ] make songlist 
+    - [X] make songlist 
 - [ ] /copypasta (string) - grabs from reddit r/copypasta
 - [ ] /about
 - [ ] /barista
@@ -56,8 +56,8 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [ ] auto executing tasks
 - [ ] /sugarfree
     - [ ] scrape amazon reviews for haribo sugar free gummy bears
-- [ ] command and control center
-    - [ ] generates eval command in server
+- [X] command and control center
+    - [X] generates eval command in server
 - [ ] theUnfunny Network
     - [ ] servers that opt-in will be allowed to use certain network-only features
     - [ ] network will allow info from servers to be shared between eachother (ex. an All Server Emojis smash or pass list)
