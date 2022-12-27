@@ -273,6 +273,7 @@ client.on("error",(err) => {
 
 fs.readFile(process.cwd()+"/config.json").then((buf) => {
     _config = JSON.parse(buf.toString())
+    csle.info("Logging in...")
     client.login(_config.token)
 }).catch((err) => {
     csle.error("Failed to read config.json.")

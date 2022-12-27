@@ -57,7 +57,7 @@ command.action = async (interaction) => {
     let fast        : boolean  = (character.split(" ").length<=1) ? (interaction.options.getBoolean("fast",false) ?? true) : false
 
     let count   = await (fast ? fetchPostCountForTag : fetchPostCountForTagViaApi)(character)
-    let history = fast ? save.data[character] : null
+    let history = fast ? save.data[character.toLowerCase()] : null
 
     let last_checked_txt = fast ? `Last checked ${history ? new Date((history[history.length-1] || {time:0}).time).toUTCString() : "never"} with ${history ? (history[history.length-1] || {}).count : "?"} posts` : null
 
@@ -77,7 +77,7 @@ command.action = async (interaction) => {
     if (fast) {
         if (!history) history = []
         history.push({count:count,time:Date.now()})
-        save.set_record(character,history)
+        save.set_record(character.toLowerCase(),history)
     }
 }
 

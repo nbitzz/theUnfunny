@@ -33,9 +33,9 @@ command.action = async (interaction) => {
         embeds: [
             new EmbedBuilder()
                 .setColor("Blurple")
-                .setTitle(tag)
+                .setTitle(tag.toLowerCase())
                 .setDescription(
-                    (save.data[tag] || []).map(v => 
+                    (save.data[tag.toLowerCase()] || []).map(v => 
                                // bad way of doing this but i don't care anymore
                         `\`\`${new Date(v.time).toISOString().split(".")[0].replace("T"," ")} UTC\`\` — **${v.count}**`    
                     ).join("\n") || "There's no history for this tag. Use /losefaith to generate some history."
