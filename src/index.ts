@@ -9,6 +9,7 @@ import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder,
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
+import { Systems } from "./lib/ModeratedSubmissionFramework"
 
 let csle = new Logger("theUnfunny")
 
@@ -246,6 +247,17 @@ client.on("interactionCreate",(int) => {
                     })
                 }
             break
+        }
+    } else if (int.isButton()) {
+        // actually, like, kill me please
+
+        if (int.customId.startsWith("sub:") && int.channel && int.guildId == control.guild?.id) {
+            let spl = int.customId.split(":")
+            let chn = Systems.get(int.channel.id)
+            if (chn) {
+                if (spl[1] == "approve") chn.acceptSubmission(spl[2]) 
+                else if (spl[1] == "delete") chn.deleteSubmission(spl[2])
+            }
         }
     }
 })

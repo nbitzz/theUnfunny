@@ -214,7 +214,7 @@ export let operatorMenuOptions:{[key:string]:(int:StringSelectMenuInteraction,co
             let AnnouncementEmbed = new EmbedBuilder()
                                         .setTitle(announcementTitle)
                                         .setDescription(announcementContent)
-                                        .setImage(announcementImage) // lazy
+                                        .setImage(announcementImage || null) // lazy
                                         .setColor("Blurple")
                                         .setFooter({text:"This is a global announcement from the owner of this theUnfunny instance. It is being sent to this channel as it is the system channel."})
                                         .setAuthor({name:interaction.user.tag,iconURL:interaction.user.avatarURL() || undefined})

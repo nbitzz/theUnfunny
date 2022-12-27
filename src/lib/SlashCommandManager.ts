@@ -17,7 +17,7 @@ export class SlashCommand {
     readonly builder   : anySCB
     readonly assetPath : string
     readonly type      : string = "SCM.SlashCommand"
-    action?            : (interaction:ChatInputCommandInteraction, control:CommandAndControl) => Promise<any>
+    action?            : (interaction:ChatInputCommandInteraction, control:CommandAndControl, share:Map<string,any>) => Promise<any>
 
     ephmeralReply?     :boolean
     allowInDMs?        :boolean
@@ -34,6 +34,8 @@ export class SlashCommandManager {
     private readonly client   : Client
     private readonly control  : CommandAndControl
     readonly type             : string = "SCM.SlashCommandManager"
+
+    share = new Map<string,any>()
 
     constructor(client: Client, control: CommandAndControl) {
         this.client = client
@@ -103,7 +105,7 @@ export class SlashCommandManager {
                 ephemeral:command.ephmeralReply
             }).then(() => {
                 if (command && command.action) {
-                    command.action(int,this.control).catch((err) => {
+                    command.action(int,this.control,this.share).catch((err) => {
                         // error handling
                         int.editReply({
                             embeds:[
