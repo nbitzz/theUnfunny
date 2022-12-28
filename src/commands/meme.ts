@@ -142,6 +142,7 @@ command.action = async (interaction, control, share) => {
                                 .addComponents(
                                     new ButtonBuilder()
                                         .setDisabled(true)
+                                        .setStyle(ButtonStyle.Link)
                                         .setLabel(`#${id+1}`)
                                         .setURL(`${_config.monofile}/download/${file_id}`)
                                 )
