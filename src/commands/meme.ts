@@ -113,7 +113,7 @@ command.action = async (interaction, control, share) => {
                         + ` instance being used by this bot's owner.\n\n`
                         + `Your memes must be smaller than 75mb, and will be reviewed by the moderation team`
                         + ` that has been employed by this bot's owner. Your tag will be included in the submission,`
-                        + ` however it will not be visible to non-moderators.`
+                        + ` and will be visible to others.`
                     )
                     .setColor("Blurple")
             ]})
@@ -135,6 +135,8 @@ command.action = async (interaction, control, share) => {
                 if (subs[id]) {
                     let file_id = subs[id].data.split("/")[1]
 
+                    let userTag = await interaction.client.users.fetch(subs[id].author).then((user) => user.tag).catch(() => "❔")
+
                     interaction.editReply({
                         content:`${_config.monofile}/file/${file_id}`,
                         components:[
@@ -142,10 +144,16 @@ command.action = async (interaction, control, share) => {
                                 .addComponents(
                                     new ButtonBuilder()
                                         .setStyle(ButtonStyle.Link)
-                                        .setLabel(`Meme #${id+1}`)
+                                        .setLabel(`#${id+1}`)
+                                        .setEmoji("💾")
                                         .setURL(`${_config.monofile}/download/${file_id}`),
                                     new ButtonBuilder()
-                                        .setLabel(`SubmissionID ${subs[id].id} (mod use only)`)
+                                        .setStyle(ButtonStyle.Success)
+                                        .setDisabled(false)
+                                        .setCustomId("___")
+                                        .setLabel(`submitted by ${userTag}`),
+                                    new ButtonBuilder()
+                                        .setLabel("Trace")
                                         .setStyle(ButtonStyle.Link)
                                         .setURL(`https://discord.com/channels/${submissions.channel?.guild.id}/${submissions.channel?.id}/${subs[id].message}`)
                                 )

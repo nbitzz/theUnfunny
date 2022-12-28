@@ -249,6 +249,9 @@ client.on("interactionCreate",async (int) => {
             break
         }
     } else if (int.isButton()) {
+
+        if (int.customId=="___") {int.deferUpdate();return} // dummy button
+
         // actually, like, kill me please
 
         if (int.customId.startsWith("sub:") && int.channel && int.guildId == control.guild?.id) {
