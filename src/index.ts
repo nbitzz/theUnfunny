@@ -220,7 +220,7 @@ client.on("guildCreate",(guild) => {
 
 // handle slash commands
 
-client.on("interactionCreate",(int) => {
+client.on("interactionCreate",async (int) => {
     if (int.isChatInputCommand()) {
         commands.call(int)
               // todo: replace with isStringSelectMenu
@@ -255,6 +255,7 @@ client.on("interactionCreate",(int) => {
             let spl = int.customId.split(":")
             let chn = Systems.get(int.channel.id)
             if (chn) {
+                await int.deferUpdate()
                 if (spl[1] == "approve") chn.acceptSubmission(spl[2]) 
                 else if (spl[1] == "delete") chn.deleteSubmission(spl[2])
             }

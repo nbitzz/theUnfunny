@@ -18,8 +18,8 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 ```js
 {
     "token":"kill.yourself-NOW!!",
-    // optional
-    "command_and_control_center":"guildid"
+    // required to use /meme, requires monofile 1.1.2+
+    "monofile":"https://monofile.glitch.me" // must NOT include trailing slash
 }
 ```
 
