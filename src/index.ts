@@ -9,7 +9,7 @@ import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder,
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
-import { Systems } from "./lib/ModeratedSubmissionFramework"
+import { ModeratedSubmissionSystem, Systems } from "./lib/ModeratedSubmissionFramework"
 
 let csle = new Logger("theUnfunny")
 
@@ -115,6 +115,16 @@ client.on("ready",async () => {
             })
         }
     })
+
+    // create ModeratedSubmissionSystems
+
+    csle.log("Creating ModeratedSubmissionSystems...")
+    
+    let Things_SOP = new ModeratedSubmissionSystem<{name:string,image:string}>("Things",control,(emb,data) => emb.setDescription(data.name).setImage(data.image))
+
+    commands.share.set("Things",Things_SOP)
+
+    // collect commands
     
     csle.log(`Collecting commands....`)
 
@@ -156,6 +166,7 @@ client.on("ready",async () => {
                 }).finally(switchStatus)
             })
         }).catch((e) => {csle.error("Failed to register commands.");console.error(e);process.exit()})
+    
     }).catch((err) => {
         csle.error("Failed to read commands directory.")
         console.error(err)

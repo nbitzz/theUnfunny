@@ -43,7 +43,8 @@ interface Meta {
 
 interface Frame {
     name:string,
-    image:string
+    image:string,
+    description?:string
 }
 
 interface Scores {
@@ -122,6 +123,7 @@ async function SOPFrame(frame:Frame,gameOwner:GuildMember,channel:GuildTextBased
                 .setTitle(frame.name)
                 .setAuthor({name:"Smash or Pass?"})
                 .setFooter({text:footer})
+                .setDescription(frame.description || null)
         ],
         components: [
             new ActionRowBuilder<ButtonBuilder>()
@@ -346,7 +348,7 @@ async function SOPGame(game:Frame[],interaction:ChatInputCommandInteraction,list
     return {score:score,gameBegin:gameBegin,gameLog:gameLog,noDisplayMessage:noDisplayMessage}
 }
 
-command.action = async (interaction) => {
+command.action = async (interaction,control,share) => {
     if (!interaction.channel || !interaction.guild) return
     if (interaction.channel.isDMBased()) return
     if (interaction.channel.isThread()) {
@@ -463,7 +465,7 @@ command.action = async (interaction) => {
                     resolve(JSON.stringify(sav.frames))
                 })
             } else {
-                prom = require(`${command.assetPath}generators/${file}`)(interaction)
+                prom = require(`${command.assetPath}generators/${file}`)(interaction,control,share)
             }
 
             let mt:Meta = type != "save" ? meta.find((e:Meta) => e.type == type && e.file == file) : {name:sav.meta.name}
