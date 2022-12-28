@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { ModeratedSubmissionSystem } from "../lib/ModeratedSubmissionFramework";
 import axios from "axios";
@@ -135,7 +135,18 @@ command.action = async (interaction, control, share) => {
                 if (subs[id]) {
                     let file_id = subs[id].data.split("/")[1]
 
-                    interaction.editReply(`**#${id+1}** ${_config.monofile}/file/${file_id}`)
+                    interaction.editReply({
+                        content:`${_config.monofile}/file/${file_id}`,
+                        components:[
+                            new ActionRowBuilder<ButtonBuilder>()
+                                .addComponents(
+                                    new ButtonBuilder()
+                                        .setDisabled(true)
+                                        .setLabel(`#${id+1}`)
+                                        .setURL(`${_config.monofile}/download/${file_id}`)
+                                )
+                        ]
+                    })
                 } else {
                     interaction.editReply({embeds:[
                         new EmbedBuilder()
