@@ -9,6 +9,7 @@ import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder,
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
+import { Systems } from "./lib/ModeratedSubmissionFramework"
 
 let csle = new Logger("theUnfunny")
 
@@ -219,7 +220,7 @@ client.on("guildCreate",(guild) => {
 
 // handle slash commands
 
-client.on("interactionCreate",(int) => {
+client.on("interactionCreate",async (int) => {
     if (int.isChatInputCommand()) {
         commands.call(int)
               // todo: replace with isStringSelectMenu
@@ -227,7 +228,7 @@ client.on("interactionCreate",(int) => {
     } else if (int.isStringSelectMenu()) {
         switch(int.customId) {
             case "controlSelMenu":
-                if (operatorMenuOptions[int.values[0]]) {
+                if (operatorMenuOptions[int.values[0]] && int.user.id == control.owner?.id) {
                     operatorMenuOptions[int.values[0]](int,control).then(() => {
                         // there's probably a better way to do this
                         // but I haven't found it
@@ -247,6 +248,18 @@ client.on("interactionCreate",(int) => {
                 }
             break
         }
+    } else if (int.isButton()) {
+        // actually, like, kill me please
+
+        if (int.customId.startsWith("sub:") && int.channel && int.guildId == control.guild?.id) {
+            let spl = int.customId.split(":")
+            let chn = Systems.get(int.channel.id)
+            if (chn) {
+                await int.deferUpdate()
+                if (spl[1] == "approve") chn.acceptSubmission(spl[2]) 
+                else if (spl[1] == "delete") chn.deleteSubmission(spl[2])
+            }
+        }
     }
 })
 
@@ -261,6 +274,7 @@ client.on("error",(err) => {
 
 fs.readFile(process.cwd()+"/config.json").then((buf) => {
     _config = JSON.parse(buf.toString())
+    csle.info("Logging in...")
     client.login(_config.token)
 }).catch((err) => {
     csle.error("Failed to read config.json.")

@@ -191,6 +191,15 @@ export let operatorMenuOptions:{[key:string]:(int:StringSelectMenuInteraction,co
                                 .setRequired(true)
                                 .setPlaceholder("Shadow the Hedgehog is a bitch ass motherfucker")
                                 .setCustomId("content")
+                        ),
+                    new ActionRowBuilder<TextInputBuilder>()
+                        .addComponents(
+                            new TextInputBuilder()
+                                .setLabel("Image URL")
+                                .setStyle(TextInputStyle.Short)
+                                .setRequired(false)
+                                .setPlaceholder("https://google.co.ck")
+                                .setCustomId("imageURL")
                         )
                 )
         )
@@ -198,12 +207,14 @@ export let operatorMenuOptions:{[key:string]:(int:StringSelectMenuInteraction,co
         interaction.awaitModalSubmit({
             time:5*60*60*1000
         }).then(async (submission) => {
-            let announcementTitle = submission.fields.getField("title",ComponentType.TextInput).value
+            let announcementTitle   = submission.fields.getField("title",ComponentType.TextInput).value
             let announcementContent = submission.fields.getField("content",ComponentType.TextInput).value
+            let announcementImage   = submission.fields.getField("imageURL",ComponentType.TextInput).value
 
             let AnnouncementEmbed = new EmbedBuilder()
                                         .setTitle(announcementTitle)
                                         .setDescription(announcementContent)
+                                        .setImage(announcementImage || null) // lazy
                                         .setColor("Blurple")
                                         .setFooter({text:"This is a global announcement from the owner of this theUnfunny instance. It is being sent to this channel as it is the system channel."})
                                         .setAuthor({name:interaction.user.tag,iconURL:interaction.user.avatarURL() || undefined})
