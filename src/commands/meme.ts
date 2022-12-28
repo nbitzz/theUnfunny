@@ -25,7 +25,7 @@ let command = new SlashCommand(
                 .addNumberOption(
                     new SlashCommandNumberOption()
                         .setMinValue(1)
-                        .setName("id")
+                        .setName("number")
                         .setRequired(false)
                         .setDescription("Submission index")
                 )
@@ -130,7 +130,7 @@ command.action = async (interaction, control, share) => {
                         .setColor("Red")
                 ]})
             } else {
-                let id = (interaction.options.getNumber("id") || Math.floor(Math.random()*subs.length)+1)-1
+                let id = (interaction.options.getNumber("number") || Math.floor(Math.random()*subs.length)+1)-1
 
                 if (subs[id]) {
                     let file_id = subs[id].data.split("/")[1]
@@ -142,8 +142,12 @@ command.action = async (interaction, control, share) => {
                                 .addComponents(
                                     new ButtonBuilder()
                                         .setStyle(ButtonStyle.Link)
-                                        .setLabel(`#${id+1}`)
-                                        .setURL(`${_config.monofile}/download/${file_id}`)
+                                        .setLabel(`Meme #${id+1}`)
+                                        .setURL(`${_config.monofile}/download/${file_id}`),
+                                    new ButtonBuilder()
+                                        .setLabel(`SubmissionID ${subs[id].id} (mod use only)`)
+                                        .setStyle(ButtonStyle.Link)
+                                        .setURL(`https://discord.com/channels/${submissions.channel?.guild.id}/${submissions.channel?.id}/${subs[id].message}`)
                                 )
                         ]
                     })
