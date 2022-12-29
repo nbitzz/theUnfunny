@@ -63,7 +63,7 @@ command.action = async (interaction) => {
                 )
         ],
         files: [
-            new AttachmentBuilder(Buffer.from(`Tag history for ${tag.toLowerCase()}\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\n${tagHist.slice(-10).map(v => 
+            new AttachmentBuilder(Buffer.from(`Tag history for ${tag.toLowerCase()}\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\n${tagHist.map(v => 
                    // bad way of doing this but i don't care anymore
                 `${new Date(v.time).toISOString().split(".")[0].replace("T"," ")} UTC — ${v.count}`    
             ).join("\n") || "There's no history for this tag."}`))

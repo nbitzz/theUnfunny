@@ -59,8 +59,9 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 - [ ] command and control center
     - [X] generates eval command in server
     - [X] crowdsourced /meme command
-    - [ ] crowdsourced smash or pass list
+    - [X] crowdsourced smash or pass list
     - [ ] crowdsourced bot statuses
+    - [ ] crowdsourced bot avatars
     - [ ] crowdsourced testimonials
 - [ ] theUnfunny Network
     - [ ] servers that opt-in will be allowed to use certain network-only features

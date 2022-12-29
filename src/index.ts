@@ -34,24 +34,32 @@ let _config:{
 
 let control:CommandAndControl
 let commands:SlashCommandManager
-
-let activityTypeMap:{[key:string]:Discord.ActivityType} = {
+let sts:ModeratedSubmissionSystem<{activity:string,name:string}>
+                                  // ts wont let me use omit here
+let activityTypeMap:{[key:string]:Discord.ActivityType.Playing|Discord.ActivityType.Watching|Discord.ActivityType.Listening} = {
     Playing: Discord.ActivityType.Playing,
     Watching: Discord.ActivityType.Watching,
     Listening: Discord.ActivityType.Listening
 }
 
-let statuses:Discord.ActivitiesOptions[] = [
+let statuses:{activity:string,name:string}[] = [
     {
-        type:Discord.ActivityType.Watching,
+        activity:"Watching",
         name:"you"
     }
 ]
 
+// bad way of doing this, blah blah blah
+
 let switchStatus = () => {
+    let _sts = statuses.concat(sts.getSubmissions().map(e => e.data))
+    let picked = _sts[Math.floor(Math.random()*_sts.length)]
     client.user?.setPresence({
         activities:[
-            statuses[Math.floor(Math.random()*statuses.length)]
+            {
+                type:activityTypeMap[picked.activity],
+                name:picked.name
+            }
         ],
         status:Discord.PresenceUpdateStatus.Online
     })
@@ -121,8 +129,10 @@ client.on("ready",async () => {
     csle.log("Creating ModeratedSubmissionSystems...")
     
     let Things_SOP = new ModeratedSubmissionSystem<{name:string,image:string}>("Things",control,(emb,data) => emb.setDescription(data.name).setImage(data.image))
+    sts = new ModeratedSubmissionSystem<{name:string,activity:string}>("Statuses",control,(emb,data) => emb.setDescription(`${data.activity == "Listening" ? "Listening to" : data.activity} ${data.name}`))
 
     commands.share.set("Things",Things_SOP)
+    commands.share.set("Statuses",sts)
 
     // collect commands
     
@@ -149,12 +159,12 @@ client.on("ready",async () => {
 
                 csle.log("Reading status prompts...")
                 fs.readFile(`${process.cwd()}/assets/unfunny/status.json`).then((buf) => {
-                    statuses = JSON.parse(buf.toString()).map((e:{activity:string,name:string}) => {
+                    statuses = JSON.parse(buf.toString())/*.map((e:{activity:string,name:string}) => {
                         return {
                             name:e.name,
                             type:activityTypeMap[e.activity]
                         }
-                    })
+                    })*/
 
                     csle.success("Read & parsed status file successfully.")
 
