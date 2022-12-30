@@ -214,17 +214,10 @@ client.on("guildCreate",(guild) => {
                 new Discord.EmbedBuilder()
                     .setTitle("Hi there.")
                     .setDescription(
-                        "Since you allow join messages in the system channel," +
-                        " I'll assume that I can introduce myself.\n\n" +
-                        "Hi, I'm unfunny. I'm going to make your server hell," +
-                        " if you don't mind. I'm not going to make your moderation" +
-                        " workflow complex with extra unnecessary administration commands, however." +
-                        " I don't have those commands.\n\n" +
-                        "So anyway, I hope you ~~don't~~ enjoy your time with me. " +
-                        "And, if I break, go ahead and [fix it yourself.](https://github.com/nbitzz/theUnfunny) " +
-                        "I'm a Discord bot, what do you expect me to do?" +
+                        "Hi there, I'm theUnfunny. I'm a bot." +
                         "\n\n[contributors](https://github.com/nbitzz/theUnfunny/graphs/contributors)" + 
-                        " — [dependency hell](https://github.com/nbitzz/theUnfunny/network/dependencies)"
+                        " — [dependencies](https://github.com/nbitzz/theUnfunny/network/dependencies)" +
+                        " — [source](https://github.com/nbitzz/theUnfunny)"
                     )
                     .setColor("Blurple")
                     .setImage("attachment://icon.png")

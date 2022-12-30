@@ -60,7 +60,7 @@ let command = new SlashCommand(
 
 async function submitThing(interaction:ChatInputCommandInteraction,name:string,url:string) {
     await interaction.editReply("Requesting file clone...")
-    axios.post(`${_config.monofile}/clone`,url,{headers:{"Content-Type":"text/plain"}}).then(async (data) => {
+    axios.post(`${_config.monofile}/clone`,JSON.stringify({url:url}),{headers:{"Content-Type":"text/plain"}}).then(async (data) => {
         await interaction.editReply("Reviewing file...")
 
         let d = await axios.get(`${_config.monofile}/file/${data.data}`,{responseType:"arraybuffer"})
