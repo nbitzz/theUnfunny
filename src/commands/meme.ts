@@ -56,6 +56,7 @@ let command = new SlashCommand(
 
 async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
     await interaction.editReply("Requesting file clone...")                 // discord developers are genius, need to do this to fix gif playback
+                                                                            // could probably check content-type but would rather not have to reupload etc                               
     axios.post(`${_config.monofile}/clone`,JSON.stringify({url:url,uploadId:url.endsWith(".gif") ? Math.random().toString().slice(2)+".gif" : undefined}),{headers:{"Content-Type":"text/plain"}}).then(async (data) => {
         await interaction.editReply("Reviewing file...")
 
