@@ -68,7 +68,7 @@ async function submitThing(interaction:ChatInputCommandInteraction,name:string,u
         if (
             !(d.headers["content-type"] 
             && d.headers["content-type"].startsWith("image/"))
-            ) await interaction.editReply("Invalid file type.")
+            ) {await interaction.editReply("Invalid file type.");return}
 
         if (d.data.byteLength >= 30*1024*1024) await interaction.editReply("File too large.")
 

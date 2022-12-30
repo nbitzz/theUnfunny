@@ -65,7 +65,7 @@ async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
             !(d.headers["content-type"] 
             && (d.headers["content-type"].startsWith("video/") 
             || d.headers["content-type"].startsWith("image/")))
-            ) await interaction.editReply("Invalid file type.")
+            ) {await interaction.editReply("Invalid file type.");return}
 
         if (d.data.byteLength >= 75*1024*1024) await interaction.editReply("File too large.")
 
