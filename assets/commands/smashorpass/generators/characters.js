@@ -17,7 +17,7 @@ let video_files = [
  * @returns 
  */
 
-module.exports = function(interaction) {
+module.exports = function(interaction,a,b) {
     return new Promise(async (resolve,reject) => {
         let assetPath = process.cwd()+"/assets/commands/smashorpass/"
         
@@ -42,7 +42,7 @@ module.exports = function(interaction) {
                 embeds:[{description:`Generating list "${e.name}"`,color:resolveColor("Blurple")}]
             })
             
-            everything_arr.push(JSON.parse(await require(assetPath+"generators/"+e.file)(interaction).catch(() => {interaction.followUp(`Warning: list "${e.name}" failed generation. It is recommended that you restart.`);return "[]"})))
+            everything_arr.push(JSON.parse(await require(assetPath+"generators/"+e.file)(interaction,a,b).catch(() => {interaction.followUp(`Warning: list "${e.name}" failed generation. It is recommended that you restart.`);return "[]"})))
         }
 
         resolve(JSON.stringify([].concat(...everything_arr)))

@@ -105,6 +105,8 @@ command.action = async (interaction, control, share) => {
 
     switch(interaction.options.getSubcommand()) {
         case "info":
+            let sbs = submissions.getSubmissions()
+            let userSbs = sbs.filter(e => e.author == interaction.user.id)
             interaction.editReply({embeds:[
                 new EmbedBuilder()
                     .setTitle("/meme")
@@ -115,6 +117,10 @@ command.action = async (interaction, control, share) => {
                         + `Your memes must be smaller than 75mb, and will be reviewed by the moderation team`
                         + ` that has been employed by this bot's owner. Your tag will be included in the submission,`
                         + ` and will be visible to others.`
+                    )
+                    .setFields(
+                        {name:"In Database",value:`${sbs.length} accepted\n${submissions.data.submissions.filter(e => !e.moderated).length} pending`, inline:true},
+                        {name:"Your Submissions",value:`${userSbs.length} accepted (${Math.round(userSbs.length/sbs.length*100)}%)\n${submissions.data.submissions.filter(e => e.author == interaction.user.id && !e.moderated).length} pending`,inline:true}
                     )
                     .setColor("Blurple")
             ]})
