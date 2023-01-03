@@ -38,7 +38,10 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 - [X] /worsehighlow
     - [X] basic game
     - [X] move off of r34 json api and instead scrape with cheerio
-- [X] /smashorpass
+- [ ] /smashorpass
+    - [X] actual command
+    - [ ] custom lists
+    - [ ] crowdsourced smash or pass list selector
 - [X] /stat
     - [X] command
     - [X] ~~s&box (developer preview torture service stats)~~ likely no longer possible due to stricter cloudflare limitations on asset.party
