@@ -53,12 +53,8 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [X] command
     - [X] make songlist 
 - [ ] /copypasta (string) - grabs from reddit r/copypasta
-- [ ] /about
-- [ ] /barista
-    - [ ] simple lang for automation
-    - [ ] auto executing tasks
 - [ ] /sugarfree
-    - [ ] scrape amazon reviews for haribo sugar free gummy bears
+    - scrape amazon reviews for haribo sugar free gummy bears
 - [ ] command and control center
     - [X] generates eval command in server
     - [X] crowdsourced /meme command
@@ -72,3 +68,9 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
 - [ ] Make codebase suck less ass
     - [ ] make /musicalpipebomb readable
     - [ ] same with /play (and use switch statements, you're not yanderedev split)
+
+## 1.1 todo
+
+- [ ] /barista
+    - [ ] simple lang for automation
+    - [ ] auto executing tasks

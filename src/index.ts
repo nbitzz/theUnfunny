@@ -215,6 +215,8 @@ client.on("guildCreate",(guild) => {
                     .setTitle("Hi there.")
                     .setDescription(
                         "Hi there, I'm theUnfunny. I'm a bot." +
+                        "\nI'd personally recommend allowing my commands to be run outside of your commands" +
+                        "\n channel - it's just more fun if you do that - although it's your server, do what you want." +
                         "\n\n[contributors](https://github.com/nbitzz/theUnfunny/graphs/contributors)" + 
                         " — [dependencies](https://github.com/nbitzz/theUnfunny/network/dependencies)" +
                         " — [source](https://github.com/nbitzz/theUnfunny)"

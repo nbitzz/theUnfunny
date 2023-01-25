@@ -67,6 +67,12 @@ export class EZSave<datatype> {
         }
 
         if (this.metadata[record_name]) {
+            if (Date.now() >= this.metadata[record_name].expire) {
+                this.delete_record(record_name)
+
+                return
+            }
+
             this.expire.set(record_name,setTimeout(() => {
                 this.delete_record(record_name)
             },this.metadata[record_name].expire-Date.now()))
