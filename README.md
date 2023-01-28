@@ -42,6 +42,7 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [X] actual command
     - [ ] custom lists
     - [ ] crowdsourced smash or pass list selector
+- [X] /wish
 - [X] /stat
     - [X] command
     - [X] ~~s&box (developer preview torture service stats)~~ likely no longer possible due to stricter cloudflare limitations on asset.party
@@ -53,8 +54,6 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [X] command
     - [X] make songlist 
 - [ ] /copypasta (string) - grabs from reddit r/copypasta
-- [ ] /sugarfree
-    - scrape amazon reviews for haribo sugar free gummy bears
 - [ ] command and control center
     - [X] generates eval command in server
     - [X] crowdsourced /meme command
