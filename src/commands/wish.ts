@@ -39,7 +39,7 @@ command.action = async (interaction) => {
             .find("div[class]")
             .attr("class")
             ?.startsWith("FeedBrandCollectionTitle")
-            ? v : null
+            ? null : v
     })
 
     if (results.length == 0) {
