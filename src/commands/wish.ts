@@ -38,7 +38,7 @@ command.action = async (interaction) => {
         return $(v)
             .find("div[class]")
             .attr("class")
-            ?.startsWith("FeedBrandCollectionTitle")
+            ?.match("Collection")
             ? null : v
     })
 
