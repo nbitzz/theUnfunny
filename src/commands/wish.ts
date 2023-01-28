@@ -34,7 +34,13 @@ command.action = async (interaction) => {
 
     // get results
 
-    let results = $("div[width=210px]")
+    let results = $("div[width=210px]").map((x,v) => {
+        return $(v)
+            .find("div[class]")
+            .attr("class")
+            ?.startsWith("FeedBrandCollectionTitle")
+            ? v : null
+    })
 
     if (results.length == 0) {
         await interaction.editReply({
@@ -60,7 +66,7 @@ command.action = async (interaction) => {
                 new EmbedBuilder()
                     .setColor("Green")
                     .setAuthor({name:"Your wish has been granted"})
-                    .setDescription(`Tagged ${tags}\n[View product](https://wish.com${url})`)
+                    .setDescription(`Tagged "${tags}"\n[View product](https://wish.com${url})`)
                     .setImage(image || null)
             ]
         })
