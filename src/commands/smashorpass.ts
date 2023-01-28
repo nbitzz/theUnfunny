@@ -498,7 +498,7 @@ command.action = async (interaction,control,share) => {
                                 )
                         ],
                         files:[
-                            new AttachmentBuilder(Buffer.from(`Smash or Pass - "${mt.name}"\nPlayed by ${interaction.user.tag} on ${new dt.toISOString().split(".")[0].replace("T"," ")} (ISO8601, UTC)\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\nTotal Smashes | ${score.smash}\nTotal Passes  | ${score.pass}\nTotal         | ${sc.gameLog.length}\nTime          | ${Math.floor(seconds/60)}m ${seconds%60}s\n${"-".repeat(40)}\n`+(sc.gameLog.map((e) => {
+                            new AttachmentBuilder(Buffer.from(`Smash or Pass - "${mt.name}"\nPlayed by ${interaction.user.tag} on ${dt.toISOString().split(".")[0].replace("T"," ")} (ISO8601, UTC)\nhttps://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\nTotal Smashes | ${score.smash}\nTotal Passes  | ${score.pass}\nTotal         | ${sc.gameLog.length}\nTime          | ${Math.floor(seconds/60)}m ${seconds%60}s\n${"-".repeat(40)}\n`+(sc.gameLog.map((e) => {
                                 let spTab = {
                                     [Result.Skipped]:"Skipped",
                                     [Result.Smash]:  "Smash! ",
