@@ -61,6 +61,8 @@ If you want to use the `play` command, install `linkifyjs`, `google-tts-api`, `c
     - [X] crowdsourced bot statuses
     - [ ] crowdsourced testimonials
     - [ ] crowdsourced bot avatars
+    - [ ] MSF: submission editing
+    - [ ] MSF: recycle bin of sorts for deletions..?
 - [ ] theUnfunny Network
     - [ ] servers that opt-in will be allowed to use certain network-only features
     - [ ] network will allow info from servers to be shared between eachother (ex. an All Server Emojis smash or pass list)
