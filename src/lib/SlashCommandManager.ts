@@ -19,9 +19,9 @@ export class SlashCommand {
     readonly type      : string = "SCM.SlashCommand"
     action?            : (interaction:ChatInputCommandInteraction, control:CommandAndControl, share:Map<string,any>) => Promise<any>
 
-    ephmeralReply?     :boolean
-    allowInDMs?        :boolean
-    controlCenterOnly? :boolean
+    ephmeralReply?     : boolean
+    allowInDMs?        : boolean
+    controlCenterOnly? : boolean
 
     constructor(command:anySCB) {
         this.builder   = command

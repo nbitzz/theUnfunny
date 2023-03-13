@@ -1,8 +1,8 @@
 import axios from "axios";
-import { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
+import { AttachmentBuilder, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { fetchPostCountForTag } from "../lib/rule34"
-import { EZSave, getSave } from "../lib/ezsave";
+import { EZSave, getSave } from "../lib/ezsave"
 
 // you can change these if you're selfhosting i guess
 
@@ -20,27 +20,47 @@ let command = new SlashCommand(
                 .setName("tags")
                 .setDescription("R34 tag set to check")
                 .setRequired(false)
-        )
-        .addBooleanOption(
-            new SlashCommandBooleanOption()
-                .setName("fast")
-                .setDescription("Whether or not to scrape from tags page (default: true, will be disabled when using more than 1 tag)")
-                .setRequired(false)
+                .setMaxLength(250)
         )
 )
 
-let fetchPostCountForTagViaApi = async function(character:string) {
-    // contact rule34 api
+let defaultList : string[] = require(command.assetPath+"Defaults.json")
+
+// probvably didn't need to note all of these props down but whatever i don't car
+
+interface R34ApiResponse {
+    preview_url: string,
+    sample_url:string,
+    file_url:string,
+    directory:number,
+    hash:string,
+    height:number,
+    id:number,
+    image:string,
+    change:number,
+    owner:string,
+    parent_id:number,
+    rating:"safe" | "questionable" | "explicit",
+    sample:number,
+    sample_height:number,
+    sample_width:number,
+    score:number,
+    tags:string,
+    width:string
+}
+
+let getApiPosts = async function(character:string):Promise<R34ApiResponse[]> {
     
-    let count = 0
+    let posts:R34ApiResponse[] = []
 
     for (let i = 0; i < MAX_PAGES; i++) {
         let res = await axios.get(`https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=1000&tags=${encodeURIComponent(character)}&pid=${i}`)
-        count += res.data.length
+        posts.push(...res.data)
         if (res.data.length<1000) break
     }
 
-    return count
+    return posts
+
 }
 
 interface HistoryFrame {
@@ -51,37 +71,162 @@ interface HistoryFrame {
 command.allowInDMs = true
 
 command.action = async (interaction) => {
-    // todo: change this to use fs, maybe
-    let defaultList : string[] = require(command.assetPath+"Defaults.json")
-    let character   : string   = interaction.options.getString("tags",false) || defaultList[Math.floor(Math.random()*defaultList.length)]
-    let fast        : boolean  = (character.split(" ").length<=1) ? (interaction.options.getBoolean("fast",false) ?? true) : false
+    let character : string = 
+        (interaction.options.getString("tags",false) 
+        || defaultList[
+            Math.floor(
+                Math.random()*defaultList.length
+            )
+        ]).trim()
+    
+    let tags = character.toLowerCase().split(" ").filter(e => !!e)
 
-    let count   = await (fast ? fetchPostCountForTag : fetchPostCountForTagViaApi)(character)
-    let history = fast ? save.data[character.toLowerCase()] : null
+    let embed = new EmbedBuilder()
+        .setTitle("/losefaith")
+        .setColor("Blurple")
 
-    let last_checked_txt = fast ? `Last checked ${history ? new Date((history[history.length-1] || {time:0}).time).toUTCString() : "never"} with ${history ? (history[history.length-1] || {}).count : "?"} posts` : null
+    let stTotal = 0
+    
+    let history:HistoryFrame[] = []
 
+    if (tags.length == 1) {
+        stTotal = await fetchPostCountForTag(tags[0])
+        history = save.data[tags[0]] || []
+    }
+
+    embed.setDescription(
+        tags.length == 1                 // if stTotal - 1 != 0, add an s
+        ? `There are **${stTotal}** result${stTotal-1 ? "s" : ""} for \`${tags.join(" ").replace(/\`/g,"")}\` on rule34.xxx.\n`
+        + (history&&history.length>0 
+            ? `Last checked <t:${Math.round(history[history.length-1].time/1000)}:R> with **${history&&history[history.length-1].count}** result(s).` 
+            : "")
+        : `Give me a sec...`
+    )
+
+
+    // if only 1 tag, make sure total is under max. else just get all
+    let getStatistics = (tags.length == 1 && stTotal <= MAX_PAGES*1000) || tags.length > 1 
+
+    // if 1 tag, push it into history
+
+    if (tags.length == 1) {
+        history.push({count:stTotal,time:Date.now()})
+        save.set_record(tags[0],history)
+    }
+
+    if (getStatistics) {
+        embed
+            .setColor("Green")
+            .setFooter({ text: "Hang on while we fetch more information; this may take a bit" })
+    }
+
+    await interaction.editReply({embeds: [embed]})
+
+    if (!getStatistics) return
+
+    let apiPosts = await getApiPosts(tags.join(" "))
+
+    /* 
+
+        Calculations
+
+    */
+
+    /* Tag popularity */
+
+    let popularity:{[key:string]:number} = {}
+
+    for (let v of apiPosts) {
+        for (let tag of v.tags.split(" ")) {
+            if (tag != tags[0]) popularity[tag] = (popularity[tag]||0) + 1
+        }
+    }
+
+    // Sort it
+
+    let sortedPopularity = Object.entries(popularity).sort((a,b) => b[1]-a[1])
+
+    /*
+    
+        Was testing this out on niko_(oneshot) and...
+
+        God will not forgive your sins. 
+        God will not forgive your sins. 
+        God will not forgive your sins. 
+        God will not forgive your sins. 
+        God will not forgive your sins. 
+
+    */
+
+    /*
+        Update with statistics...
+    */
+
+    if (tags.length > 1) {
+        stTotal = apiPosts.length
+        embed.setDescription(
+            `There are **${stTotal}** result${stTotal-1 ? "s" : ""} for \`${tags.join(" ").replace(/\`/g,"")}\` on rule34.xxx.\n`
+            + `Capped at \`\`${MAX_PAGES*1000}\`\` for issues regarding performance.`
+        )
+    }
+
+    let createBar = (val:number,max:number,size:number=10) => {
+        let per = Math.round((val/max)*size)
+        return "█".repeat(per)+"░".repeat(size-per)
+    }
+
+    // We don't need descriptors of the character.
+    // This filters them out.
+    // I know we don't need to match for most of these, but it's fine.
+    // this code is kind of a piece of shit but I Do not care.
+
+    let blocked_kwds = [
+        // covers basic properties of a character
+        "mammal", "humanoid", "anthro", "feline",
+        // meta tags
+        "video_games", "digital_media_(artwork)", "absurd_res", "hi_res",
+        // descriptors
+        "eyes", "hair"
+    ]
+
+    let blocked = new RegExp(blocked_kwds.join("|"))
+    
+    // this is extremely inefficient but i really don't care
+    let descriptorFiltered = sortedPopularity.filter((e) =>
+        !(e[0].match(blocked)||[])[0] 
+        && !tags.join(" ").includes(e[0])
+    )
+
+    embed.setDescription(
+        (embed.data.description||"")
+        + "\n\n**Popular associated tags**\n"
+        + descriptorFiltered.slice(0,14).map(e => {
+            let percentage = Math.floor((e[1]/stTotal)*100)
+            return `\`\`${createBar(e[1],stTotal)} ${e[1]} (${percentage}%)\`\` ${e[0].replace(/\*/g,"\\*")}`
+        }).join("\n")
+    )
+    .setColor("Blurple")
+    .setFooter(null)
+
+    // Send it back
+    
     interaction.editReply({
-        embeds: [
-            new EmbedBuilder()
-                .setTitle("/losefaith")
-                .setColor("Blurple")
-                .setDescription(`There ${count==1?"is":"are"} **${count}** result${count==1?"":"s"} for \`\`${character.toLowerCase()}\`\` on rule34.xxx.`)
-                .setFooter({
-                    text:
-                        last_checked_txt||`Note: counts are capped at ${1000*MAX_PAGES} to reduce load`
-                })
+        embeds: [embed],
+        files: [
+            new AttachmentBuilder(
+                Buffer.from(
+                    `Popular associated tags for ${tags.join(" ")}\n`
+                    + `https://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\n`
+                    + sortedPopularity.map(e => {
+                        let percentage = Math.floor((e[1]/stTotal)*100)
+                        return `${createBar(e[1],stTotal,16)} ${e[1]} (${percentage}%) ${e[0]}`
+                    }).join("\n")
+                )
+            )
+            .setName(`associated.txt`)
         ]
     })
-
-    if (fast) {
-        if (!history) history = []
-        /*let last = history[history.length-1]
-        if (!last || count != last.count)*/
-        history.push({count:count,time:Date.now()})
-        //else if (count == last.count) history[history.length-1].time = Date.now()
-        save.set_record(character.toLowerCase(),history)
-    }
+    
 }
 
 module.exports = command
