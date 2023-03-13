@@ -199,6 +199,7 @@ command.action = async (interaction) => {
 
     embed.setDescription(
         (embed.data.description||"")
+        + `\nTotal user score: ${apiPosts.map(e=>e.score).reduce((prev,cur) => prev+cur)}`
         + "\n\n**Popular associated tags**\n"
         + descriptorFiltered.slice(0,14).map(e => {
             let percentage = Math.floor((e[1]/stTotal)*100)
