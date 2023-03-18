@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { ModeratedSubmissionSystem } from "../lib/ModeratedSubmissionFramework";
 import axios from "axios";
@@ -144,27 +144,67 @@ command.action = async (interaction, control, share) => {
 
                     let userTag = await interaction.client.users.fetch(subs[id].author).then((user) => user.tag).catch(() => "❔")
 
+                    /*
+                        Do you think God stays in heaven 
+                        because he too lives in fear of 
+                        what he's created?
+                    */
+
+                    let getComp = () => {
+                        return new ActionRowBuilder<ButtonBuilder>()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setStyle(ButtonStyle.Link)
+                                    .setLabel(`#${id+1}`)
+                                    .setEmoji("💾")
+                                    .setURL(`${_config.monofile}/download/${file_id}`),
+                                new ButtonBuilder()
+                                    .setStyle(ButtonStyle.Primary)
+                                    .setDisabled(false)
+                                    .setCustomId("___")
+                                    .setLabel(`submitted by ${userTag}`),
+                                new ButtonBuilder()
+                                    .setStyle((subs[id].favorites||[]).find(e => e == interaction.user.id) ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                    .setDisabled(false)
+                                    .setCustomId(`mfav`)
+                                    .setEmoji("⭐")
+                                    .setLabel((subs[id].favorites||[]).length.toString()),
+                                new ButtonBuilder()
+                                    .setLabel("Trace")
+                                    .setStyle(ButtonStyle.Link)
+                                    .setURL(`https://discord.com/channels/${submissions.channel?.guild.id}/${submissions.channel?.id}/${subs[id].message}`)
+                            )
+                    }
+
                     interaction.editReply({
                         content:`${_config.monofile}/file/${file_id}`,
                         components:[
-                            new ActionRowBuilder<ButtonBuilder>()
-                                .addComponents(
-                                    new ButtonBuilder()
-                                        .setStyle(ButtonStyle.Link)
-                                        .setLabel(`#${id+1}`)
-                                        .setEmoji("💾")
-                                        .setURL(`${_config.monofile}/download/${file_id}`),
-                                    new ButtonBuilder()
-                                        .setStyle(ButtonStyle.Success)
-                                        .setDisabled(false)
-                                        .setCustomId("___")
-                                        .setLabel(`submitted by ${userTag}`),
-                                    new ButtonBuilder()
-                                        .setLabel("Trace")
-                                        .setStyle(ButtonStyle.Link)
-                                        .setURL(`https://discord.com/channels/${submissions.channel?.guild.id}/${submissions.channel?.id}/${subs[id].message}`)
-                                )
+                            getComp()
                         ]
+                    }).then((ms) => {
+
+                        let coll = ms.createMessageComponentCollector({
+                            componentType: ComponentType.Button,
+                            filter: (int) => int.customId == "mfav",
+                            idle:60000
+                        })
+
+                        coll.on("collect", async (int) => {
+                            int.deferUpdate();
+                            if (int.user.id != interaction.user.id) {
+                                int.reply("This isn't your prompt!")
+                                return
+                            }
+
+                            await submissions.favorite(subs[id].id,interaction.user.id)
+
+                            interaction.editReply({
+                                components: [
+                                    getComp()
+                                ]
+                            })
+                        })
+                        
                     })
                 } else {
                     interaction.editReply({embeds:[

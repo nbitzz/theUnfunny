@@ -4,7 +4,7 @@
     2022-12-26: maybe i should just give up
 */
 
-import { Logger, Groups } from "./logger";
+import { Logger, Groups, use } from "./logger";
 import { CommandAndControl } from "./CommandAndControl";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, TextChannel, User } from "discord.js";
 import { BaseEvent, EventSignal } from "./Events";
@@ -17,15 +17,17 @@ export let   MSSData               = new EZSave<SubmissionSystem<any>>(`${proces
 export let   Systems:Map<string,ModeratedSubmissionSystem<any>> = new Map()
 
 export interface Submission<datatype> {
-    author    : string
-    moderated : boolean
-    message   : string
-    id        : string
-    data      : datatype
+    author     : string
+    moderated  : boolean
+    message    : string
+    id         : string
+    data       : datatype,
+    favorites? : string[]
 } 
 
 export interface SubmissionSystem<datatype> {
-    submissions : Submission<datatype>[]
+    submissions  : Submission<datatype>[],
+    favorites    : {[key:string]:string[]}
 }
 
 export class ModeratedSubmissionSystem<datatype> {
@@ -37,7 +39,7 @@ export class ModeratedSubmissionSystem<datatype> {
     channel?    : TextChannel
     embedPrc    : (emb:EmbedBuilder,data:datatype) => EmbedBuilder
 
-    data        : SubmissionSystem<datatype> = {submissions:[]}
+    data        : SubmissionSystem<datatype> = {submissions:[], favorites: {}}
 
     _readyEvent : BaseEvent   = new BaseEvent()
     readyEvent  : EventSignal = this._readyEvent.Event
@@ -52,6 +54,11 @@ export class ModeratedSubmissionSystem<datatype> {
         
         MSSData.ready().then(() => {
             this.data = MSSData.data[this.name] || this.data
+
+            if (!this.data.favorites) {
+                this.data.favorites = {}
+            }
+
             this.fetchChannel().then(() => this._readyEvent.Fire())
         })
     }
@@ -124,6 +131,12 @@ export class ModeratedSubmissionSystem<datatype> {
         let val = this.data.submissions.find(e => e.id == id)
         
         if (val && idx != -1) {
+            if (val.favorites) {
+                for (let v of val.favorites) {
+                    this._remove_favorite(id,v)
+                }
+            }
+
             let msg = await this.channel.messages.fetch(val.message).catch(() => null)
             if (msg) msg.delete()
             this.data.submissions.splice(idx,1)
@@ -160,5 +173,43 @@ export class ModeratedSubmissionSystem<datatype> {
                 })
             }
         }
+    }
+
+    private async _add_favorite(id:string, user:string) {
+        await this.ready()
+
+        let val = this.data.submissions.find(e => e.id == id)
+        if (!val) return
+        if (!val.favorites) val.favorites = [];
+        if (!this.data.favorites[user]) this.data.favorites[user] = [];
+
+        val.favorites.push(user)
+        this.data.favorites[user].push(id)
+    }
+    
+    private async _remove_favorite(id:string, user:string, favSplice:boolean=true) {
+        await this.ready()
+        
+        let val = this.data.submissions.find(e => e.id == id)
+        if (!val) return
+        if (!val.favorites) val.favorites = [];
+        if (!this.data.favorites[user]) this.data.favorites[user] = [];
+
+        val.favorites.splice(val.favorites.findIndex(e => e == user),1)
+        if (favSplice) this.data.favorites[user].splice(this.data.favorites[user].findIndex(e => e == id),1)
+    }
+
+    async userFavorites(user:string) {
+        await this.ready()
+        return this.data.favorites[user] || []
+    }
+
+    async favorite(id:string, user:string) {
+        await this.ready()
+
+        if (!(await this.userFavorites(user)).find(e => e == id)) await this._add_favorite(id,user)
+        else await this._remove_favorite(id,user)
+        
+        MSSData.set_record(this.name,this.data)
     }
 }

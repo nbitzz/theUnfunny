@@ -6,7 +6,7 @@ import { EZSave, getSave } from "../lib/ezsave"
 
 // you can change these if you're selfhosting i guess
 
-let MAX_PAGES = 10
+let MAX_PAGES = 50
 let save:EZSave<HistoryFrame[]> = getSave(`${process.cwd()}/.data/taghistory.json`)
 
 // init slash command
@@ -186,7 +186,9 @@ command.action = async (interaction) => {
         // meta tags
         "video_games", "digital_media_(artwork)", "absurd_res", "hi_res",
         // descriptors
-        "eyes", "hair"
+        "eyes", "hair",
+        // likely unneeded
+        "girls", "1girl", "boys", "1boy"
     ]
 
     let blocked = new RegExp(blocked_kwds.join("|"))
@@ -199,11 +201,11 @@ command.action = async (interaction) => {
 
     embed.setDescription(
         (embed.data.description||"")
-        + `\nTotal user score: ${apiPosts.map(e=>e.score).reduce((prev,cur) => prev+cur)}`
+        + `\nTotal user score: ${[0,...apiPosts.map(e=>e.score)].reduce((prev,cur) => prev+cur)}`
         + "\n\n**Popular associated tags**\n"
         + descriptorFiltered.slice(0,14).map(e => {
             let percentage = Math.floor((e[1]/stTotal)*100)
-            return `\`\`${createBar(e[1],stTotal)} ${e[1]} (${percentage}%)\`\` ${e[0].replace(/\*/g,"\\*")}`
+            return `\`\`${createBar(e[1],stTotal,14)} ${e[1]} (${percentage}%)\`\` ${e[0].replace(/\*/g,"\\*")}`
         }).join("\n")
     )
     .setColor("Blurple")
@@ -220,7 +222,7 @@ command.action = async (interaction) => {
                     + `https://github.com/nbitzz/theUnfunny\n${"-".repeat(40)}\n`
                     + sortedPopularity.map(e => {
                         let percentage = Math.floor((e[1]/stTotal)*100)
-                        return `${createBar(e[1],stTotal,16)} ${e[1]} (${percentage}%) ${e[0]}`
+                        return `${createBar(e[1],stTotal,24)} ${e[1]} (${percentage}%) ${e[0]}`
                     }).join("\n")
                 )
             )
