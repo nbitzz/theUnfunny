@@ -10,6 +10,7 @@ import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
 import { ModeratedSubmissionSystem, Systems } from "./lib/ModeratedSubmissionFramework"
+import startApi from "./lib/api/api"
 
 let csle = new Logger("theUnfunny")
 
@@ -29,7 +30,8 @@ let client = new Client({
 })
 
 let _config:{
-    token:string
+    token:string,
+    monofile: string,
 }
 
 let control:CommandAndControl
@@ -129,14 +131,23 @@ client.on("ready",async () => {
     csle.log("Creating ModeratedSubmissionSystems...")
     
     let Things_SOP = new ModeratedSubmissionSystem<{name:string,image:string}>("Things",control,(emb,data) => emb.setDescription(data.name).setImage(data.image))
+    let MemeSubmissionSystem = new ModeratedSubmissionSystem<string>("memes",control,(emb,url) => 
+        url.split("/")[0] == "video" 
+        ? emb.setDescription(`Sent a video: ${_config.monofile}/file/${url.split("/")[1]}`) 
+        : emb.setImage(`${_config.monofile}/file/${url.split("/")[1]}`)
+    )
     sts = new ModeratedSubmissionSystem<{name:string,activity:string}>("Statuses",control,(emb,data) => emb.setDescription(`${data.activity == "Listening" ? "Listening to" : data.activity} ${data.name}`))
 
     commands.share.set("Things",Things_SOP)
     commands.share.set("Statuses",sts)
+    commands.share.set("memeSubmissionSystem",MemeSubmissionSystem)
+
+    csle.log(`Starting API...`)
+    startApi(client,control,commands,_config)
 
     // collect commands
     
-    csle.log(`Collecting commands....`)
+    csle.log(`Collecting commands...`)
 
     fs.readdir(process.cwd()+"/out/commands").then((fn) => {
         fn.forEach((name) => {
@@ -285,8 +296,13 @@ client.on("interactionCreate",async (int) => {
 // error handling? i guess??
 
 client.on("error",(err) => {
-    csle.error("An error occured.")
-    console.error(err)
+    csle.error("An error occured [djs].")
+    csle.error(err.toString())
+})
+
+process.on("uncaughtException",(err) => {
+    csle.error("An error occured [global].")
+    csle.error(err.toString())
 })
 
 // login

@@ -95,11 +95,7 @@ async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
 }
 
 command.action = async (interaction, control, share) => {
-    if (!submissions) submissions = share.get("memeSubmissionSystem") || new ModeratedSubmissionSystem("memes",control,(emb,url) => 
-        url.split("/")[0] == "video" 
-        ? emb.setDescription(`Sent a video: ${_config.monofile}/file/${url.split("/")[1]}`) 
-        : emb.setImage(`${_config.monofile}/file/${url.split("/")[1]}`)
-    )
+    if (!submissions) submissions = share.get("memeSubmissionSystem")
     
     await submissions.ready()
 
@@ -186,17 +182,13 @@ command.action = async (interaction, control, share) => {
                         let coll = ms.createMessageComponentCollector({
                             componentType: ComponentType.Button,
                             filter: (int) => int.customId == "mfav",
-                            idle:60000
+                            idle:90000
                         })
 
                         coll.on("collect", async (int) => {
                             int.deferUpdate();
-                            if (int.user.id != interaction.user.id) {
-                                int.reply("This isn't your prompt!")
-                                return
-                            }
 
-                            await submissions.favorite(subs[id].id,interaction.user.id)
+                            await submissions.favorite(subs[id].id,int.user.id)
 
                             interaction.editReply({
                                 components: [
