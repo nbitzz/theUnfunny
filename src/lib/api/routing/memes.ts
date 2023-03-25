@@ -22,6 +22,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         
         let t = subs[Math.floor(Math.random()*subs.length)]
         
+        res.header("Cache-Control","no-store, must-revalidate")
         res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
     })
 
