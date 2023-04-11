@@ -23,7 +23,34 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         let t = subs[Math.floor(Math.random()*subs.length)]
         
         res.header("Cache-Control","no-store, must-revalidate")
-        res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
+        res.header("Expires","0")
+        res.header("Pragma","no-cache")
+
+        if (req.query.urlOnly == "1") res.send(`https://${config.monofile}/file/${t.split("/")[1]}`)
+        else res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
+    })
+
+    routes.get("/:number", async (req,res) => {
+        if (!mss) mss = commands.share.get("memeSubmissionSystem")
+
+        await mss.ready()
+        let subs = mss.getSubmissions().map((v) => v.data)
+        
+        let t = subs[parseInt(req.params.number,10)]
+
+        if (!t) {
+
+            res.sendStatus(404)
+            return
+
+        }
+        
+        res.header("Cache-Control","no-store, must-revalidate")
+        res.header("Expires","0")
+        res.header("Pragma","no-cache")
+
+        if (req.query.urlOnly == "1") res.send(`https://${config.monofile}/file/${t.split("/")[1]}`)
+        else res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
     })
 
     return routes
