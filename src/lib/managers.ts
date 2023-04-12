@@ -45,7 +45,7 @@ export class ChannelManagerController {
 
                 let manager:BaseChannelManager = 
                     require(process.cwd()+"/out/managers/"+name)
-                    ( control, command )
+                    .get( control, command )
                 
 
                 csle.success(`Loaded ${fn} as ${manager.name}`)

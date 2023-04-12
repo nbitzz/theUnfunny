@@ -104,7 +104,7 @@ class MemeChannelManager extends BaseChannelManager {
 
 let manager: MemeChannelManager
 
-export default function get(control:CommandAndControl, command:SlashCommandManager):MemeChannelManager {
+export function get(control:CommandAndControl, command:SlashCommandManager):MemeChannelManager {
     if (!manager) manager = new MemeChannelManager(control,command)
     return manager
 }
