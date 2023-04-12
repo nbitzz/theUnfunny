@@ -41,6 +41,8 @@ class MemeChannelManager extends BaseChannelManager {
     }
 
     async recieve(message: Message) {
+
+        if (message.author.bot) return
         
         let lnk = []
         
