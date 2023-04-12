@@ -91,7 +91,7 @@ export class ChannelManagerController {
             let j:{[key:string]:string} = JSON.parse(buf.toString())
 
             for (let [key,value] of Object.entries(j)) {
-                let man = this.ChannelManagers.get(key)
+                let man = this.ChannelManagers.get(value)
                 if (man) this.links.set(key, man)
             }
 
