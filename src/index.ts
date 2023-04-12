@@ -11,6 +11,7 @@ import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
 import { ModeratedSubmissionSystem, Systems } from "./lib/ModeratedSubmissionFramework"
 import startApi from "./lib/api/api"
+import { ChannelManagerController } from "./lib/managers"
 
 let csle = new Logger("theUnfunny")
 
@@ -144,6 +145,11 @@ client.on("ready",async () => {
 
     csle.log(`Starting API...`)
     startApi(client,control,commands,_config)
+
+    csle.log("Starting ChannelManagers...")
+    let cmc = new ChannelManagerController(control,commands)
+
+    commands.share.set("ChannelManagerController",cmc)
 
     // collect commands
     

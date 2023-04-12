@@ -21,7 +21,7 @@ let command = new SlashCommand(
 
 command.controlCenterOnly = true
 
-command.action = async (interaction,control) => {
+command.action = async (interaction,control,share) => {
     let owner = control.owner
 
     if (!owner) return
