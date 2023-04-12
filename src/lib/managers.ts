@@ -2,6 +2,8 @@ import { Message } from "discord.js";
 import { CommandAndControl } from "./CommandAndControl";
 import { SlashCommandManager } from "./SlashCommandManager";
 
+export let ChannelManagers: BaseChannelManager[] = [];
+
 export abstract class BaseChannelManager {
     
     control: CommandAndControl
@@ -12,9 +14,15 @@ export abstract class BaseChannelManager {
         this.control = control;
         this.commands = commands;
 
+        ChannelManagers.push(this)
+
     }
 
     abstract recieve ( message: Message ) : void
     abstract readonly name : string
 
+}
+
+export class ChannelManagerHandler {
+    
 }

@@ -3,6 +3,8 @@ import { BaseChannelManager } from "../lib/managers";
 import * as linkify from "linkifyjs"
 import axios from "axios"
 import { ModeratedSubmissionSystem } from "../lib/ModeratedSubmissionFramework";
+import { CommandAndControl } from "../lib/CommandAndControl";
+import { SlashCommandManager } from "../lib/SlashCommandManager";
 
 let _config = require("../../config.json")
 
@@ -96,4 +98,11 @@ class MemeChannelManager extends BaseChannelManager {
 
     }
 
+}
+
+let manager: MemeChannelManager
+
+export default function get(control:CommandAndControl, command:SlashCommandManager):MemeChannelManager {
+    if (!manager) manager = new MemeChannelManager(control,command)
+    return manager
 }
