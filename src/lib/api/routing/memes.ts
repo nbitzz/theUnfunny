@@ -36,7 +36,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         await mss.ready()
         let subs = mss.getSubmissions().map((v) => v.data)
         
-        let t = subs[parseInt(req.params.number,10)]
+        let t = subs[(parseInt(req.params.number,10)||-2)+1]
 
         if (!t) {
 

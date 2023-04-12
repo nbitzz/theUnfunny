@@ -37,6 +37,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
             save.set_record(tag.toLowerCase(),tagHist)
         }
 
+        res.header("Content-Type","application/json")
         res.send(tagHist)
     })
 
