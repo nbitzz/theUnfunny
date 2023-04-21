@@ -146,6 +146,18 @@ command.action = async (interaction) => {
 
     let sortedPopularity = Object.entries(popularity).sort((a,b) => b[1]-a[1])
 
+    /* Rating */
+
+    let rating = {
+        safe:0,
+        questionable:0,
+        explicit:0
+    }
+
+    for (let v of apiPosts) {
+        rating[v.rating]++
+    }
+
     /*
     
         Was testing this out on niko_(oneshot) and...
@@ -210,6 +222,17 @@ command.action = async (interaction) => {
     )
     .setColor("Blurple")
     .setFooter(null)
+
+    // now add bar graphs for ratings to description
+    // i let copilot do this cause lazy
+    // not like my code would be any better
+    embed.setDescription(
+        embed.data.description
+        + "\n\n**Rating distribution**\n"
+        + `\`\`${createBar(rating.safe,stTotal,14)} ${rating.safe} (${Math.floor((rating.safe/stTotal)*100)}%)\`\` rated safe`
+        + `\n\`\`${createBar(rating.questionable,stTotal,14)} ${rating.questionable} (${Math.floor((rating.questionable/stTotal)*100)}%)\`\` rated questionable`
+        + `\n\`\`${createBar(rating.explicit,stTotal,14)} ${rating.explicit} (${Math.floor((rating.explicit/stTotal)*100)}%)\`\` rated explicit`
+    )
 
     // Send it back
     

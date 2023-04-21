@@ -1,4 +1,4 @@
-import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction } from "discord.js";
+import { Client, SlashCommandBuilder, Routes, ChatInputCommandInteraction, Interaction, AutocompleteInteraction } from "discord.js";
 import { Logger, Groups } from "./logger"
 import { CommandAndControl } from "./CommandAndControl"
 
@@ -18,6 +18,7 @@ export class SlashCommand {
     readonly assetPath : string
     readonly type      : string = "SCM.SlashCommand"
     action?            : (interaction:ChatInputCommandInteraction, control:CommandAndControl, share:Map<string,any>) => Promise<any>
+    autocomplete?      : (interaction:AutocompleteInteraction, control:CommandAndControl, share:Map<string,any>) => Promise<any> | any
 
     ephmeralReply?     : boolean
     allowInDMs?        : boolean
