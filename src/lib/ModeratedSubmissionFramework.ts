@@ -30,6 +30,12 @@ export interface SubmissionSystem<datatype> {
     favorites    : {[key:string]:string[]}
 }
 
+export interface InternalSubmitOptions {
+    embed: EmbedBuilder, 
+    message?: string,
+    delay?: number
+}
+
 export class ModeratedSubmissionSystem<datatype> {
     name        : string
     safeName    : string
@@ -37,14 +43,14 @@ export class ModeratedSubmissionSystem<datatype> {
     control     : CommandAndControl
     logger      : Logger
     channel?    : TextChannel
-    embedPrc    : (emb:EmbedBuilder,data:datatype) => EmbedBuilder | { embed: EmbedBuilder, message: string }
+    embedPrc    : (emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions
 
     data        : SubmissionSystem<datatype> = {submissions:[], favorites: {}}
 
     _readyEvent : BaseEvent   = new BaseEvent()
     readyEvent  : EventSignal = this._readyEvent.Event
 
-    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | { embed: EmbedBuilder, message: string }) {
+    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions) {
         this.name     = name
         this.safeName = this.name.toLowerCase().replace(/[^a-z]/g,"-")
         this.embedPrc = embedProcessor
@@ -94,34 +100,39 @@ export class ModeratedSubmissionSystem<datatype> {
 
         let submissionid = Math.random().toString().slice(2)
 
-        let msg = await this.channel.send({
-            ...(!(mCmbo instanceof EmbedBuilder) && mCmbo.message ? {
-                content: mCmbo.message
-            } : []),
-            embeds:[emb],
-            components:[
-                new ActionRowBuilder<ButtonBuilder>()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setCustomId(`sub:approve:${submissionid}`)
-                            .setStyle(ButtonStyle.Success)
-                            .setLabel("Approve"),
-                        new ButtonBuilder()
-                            .setCustomId(`sub:delete:${submissionid}`)
-                            .setStyle(ButtonStyle.Danger)
-                            .setLabel("Block")
-                    )
-            ]
-        })
+        setTimeout(async () => {
+            if (!this.channel) return
 
-        this.data.submissions.push({
-            author:user.id,
-            message:msg.id,
-            moderated:false,
-            data:data,
-            id:submissionid
-        })
-        MSSData.set_record(this.name,this.data)
+            let msg = await this.channel.send({
+                ...(!(mCmbo instanceof EmbedBuilder) && mCmbo.message ? {
+                    content: mCmbo.message
+                } : []),
+                embeds:[emb],
+                components:[
+                    new ActionRowBuilder<ButtonBuilder>()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId(`sub:approve:${submissionid}`)
+                                .setStyle(ButtonStyle.Success)
+                                .setLabel("Approve"),
+                            new ButtonBuilder()
+                                .setCustomId(`sub:delete:${submissionid}`)
+                                .setStyle(ButtonStyle.Danger)
+                                .setLabel("Block")
+                        )
+                ]
+            })
+
+            this.data.submissions.push({
+                author:user.id,
+                message:msg.id,
+                moderated:false,
+                data:data,
+                id:submissionid
+            })
+            MSSData.set_record(this.name,this.data)
+        }, mCmbo instanceof EmbedBuilder ? 0 : mCmbo.delay || 0)
+
     }
 
     getSubmissions() {

@@ -99,11 +99,6 @@ async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
     })
 }
 
-let createBar = (val:number,max:number,size:number=10) => {
-    let per = Math.round((val/max)*size)
-    return "█".repeat(per)+"░".repeat(size-per)
-}
-
 command.action = async (interaction, control, share) => {
     if (!submissions) submissions = share.get("memeSubmissionSystem")
     

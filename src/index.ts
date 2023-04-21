@@ -87,7 +87,7 @@ client.on("ready",async () => {
         })
         
         csle.warn(`Your Command & Control center has not been set up.`)
-        csle.info ("Please wait for setup to begin.")
+        csle.info("Please wait for setup to begin.")
         // setup code here
         await control.setup()
     }
@@ -140,7 +140,8 @@ client.on("ready",async () => {
 
             return { 
                 embed: nemb, 
-                message: url.split("/")[0] == "video" ? `${_config.monofile}/file/${url.split("/")[1]}` : "" 
+                message: url.split("/")[0] == "video" ? `${_config.monofile}/file/${url.split("/")[1]}` : "",
+                delay: url.split("/")[0] == "video" ? 2000 : 0
             }
         }
     )
