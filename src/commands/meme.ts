@@ -270,7 +270,7 @@ command.action = async (interaction, control, share) => {
             for (let i = 0; i < 5; i++) {
                 if (!most_favorites[i]) break
                 let user = await interaction.client.users.fetch(most_favorites[i][1].author).then((user) => user.tag).catch(() => "❔")
-                favs_top5.push(`**${i+1}.** \`#${parseInt(most_favorites[i][0],10)+1}\` by ${user} with ⭐ ${(most_favorites[i][1].favorites||[]).length}`)
+                favs_top5.push(`**${i+1}.** \`#${parseInt(most_favorites[i][0],10)+1}\` by \`${user}\` with ⭐ **${(most_favorites[i][1].favorites||[]).length}**`)
             }
 
             let leaderboard_embed = new EmbedBuilder()
