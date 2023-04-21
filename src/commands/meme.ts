@@ -52,6 +52,11 @@ let command = new SlashCommand(
                         .setRequired(true)
                 )
         )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("leaderboard")
+                .setDescription("View leaderboards")
+        )
 )
 
 async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
@@ -256,7 +261,7 @@ command.action = async (interaction, control, share) => {
             if (!most_submissions.find(e => e[0] == interaction.user.id)) {
                 subs_top5.push(`***${most_submissions.findIndex(e => e[0] == interaction.user.id) || "?"}.*** ${interaction.user.tag} with ${userCounts[interaction.user.id] || 0} submission(s) (${Math.round((userCounts[interaction.user.id] || 0)/_subs.length*100)})`)
             }
-            
+
             // arr for most favorites leaderboard
 
             let favs_top5 = []
