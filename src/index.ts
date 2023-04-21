@@ -132,10 +132,17 @@ client.on("ready",async () => {
     csle.log("Creating ModeratedSubmissionSystems...")
     
     let Things_SOP = new ModeratedSubmissionSystem<{name:string,image:string}>("Things",control,(emb,data) => emb.setDescription(data.name).setImage(data.image))
-    let MemeSubmissionSystem = new ModeratedSubmissionSystem<string>("memes",control,(emb,url) => 
-        url.split("/")[0] == "video" 
-        ? emb.setDescription(`Sent a video: ${_config.monofile}/file/${url.split("/")[1]}`) 
-        : emb.setImage(`${_config.monofile}/file/${url.split("/")[1]}`)
+    let MemeSubmissionSystem = new ModeratedSubmissionSystem<string>("memes",control,
+        (emb,url) => {        
+            let nemb = url.split("/")[0] == "video" 
+                ? emb.setDescription(`Sent a video`) 
+                : emb.setImage(`${_config.monofile}/file/${url.split("/")[1]}`)
+
+            return { 
+                embed: nemb, 
+                message: url.split("/")[0] == "video" ? `${_config.monofile}/file/${url.split("/")[1]}` : "" 
+            }
+        }
     )
     sts = new ModeratedSubmissionSystem<{name:string,activity:string}>("Statuses",control,(emb,data) => emb.setDescription(`${data.activity == "Listening" ? "Listening to" : data.activity} ${data.name}`))
 

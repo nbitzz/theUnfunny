@@ -6,7 +6,7 @@
 
 import { Logger, Groups, use } from "./logger";
 import { CommandAndControl } from "./CommandAndControl";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, TextChannel, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, MessagePayload, TextChannel, User } from "discord.js";
 import { BaseEvent, EventSignal } from "./Events";
 import { EZSave, getSave } from "./ezsave";
 
@@ -37,14 +37,14 @@ export class ModeratedSubmissionSystem<datatype> {
     control     : CommandAndControl
     logger      : Logger
     channel?    : TextChannel
-    embedPrc    : (emb:EmbedBuilder,data:datatype) => EmbedBuilder
+    embedPrc    : (emb:EmbedBuilder,data:datatype) => EmbedBuilder | { embed: EmbedBuilder, message: string }
 
     data        : SubmissionSystem<datatype> = {submissions:[], favorites: {}}
 
     _readyEvent : BaseEvent   = new BaseEvent()
     readyEvent  : EventSignal = this._readyEvent.Event
 
-    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder) {
+    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | { embed: EmbedBuilder, message: string }) {
         this.name     = name
         this.safeName = this.name.toLowerCase().replace(/[^a-z]/g,"-")
         this.embedPrc = embedProcessor
@@ -84,15 +84,20 @@ export class ModeratedSubmissionSystem<datatype> {
         await this.ready();
         if (!this.channel) return
 
-        let emb = this.embedPrc(new EmbedBuilder()
+        let mCmbo = this.embedPrc(new EmbedBuilder()
             .setColor("Blurple")
             .setAuthor({name:user.tag,iconURL:user.avatarURL() || undefined})
             .setTitle(`Submission (${new Date().toUTCString()})`)
         ,data)
 
+        let emb = mCmbo instanceof EmbedBuilder ? mCmbo : mCmbo.embed
+
         let submissionid = Math.random().toString().slice(2)
 
         let msg = await this.channel.send({
+            ...(!(mCmbo instanceof EmbedBuilder) && mCmbo.message ? {
+                content: mCmbo.message
+            } : []),
             embeds:[emb],
             components:[
                 new ActionRowBuilder<ButtonBuilder>()
