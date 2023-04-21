@@ -94,6 +94,11 @@ async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
     })
 }
 
+let createBar = (val:number,max:number,size:number=10) => {
+    let per = Math.round((val/max)*size)
+    return "█".repeat(per)+"░".repeat(size-per)
+}
+
 command.action = async (interaction, control, share) => {
     if (!submissions) submissions = share.get("memeSubmissionSystem")
     
@@ -216,6 +221,67 @@ command.action = async (interaction, control, share) => {
         case "submit-url":
             submitURL(interaction,interaction.options.getString("url",true))
         break
+        case "leaderboard":
+            let _subs = submissions.getSubmissions()
+            // horrifying to wrap your head around so
+            // i just got copilot to write it lol
+            // god this is making me lazier by the second
+            let most_favorites = Object.entries(_subs).sort((a,b) => (b[1].favorites||[]).length-(a[1].favorites||[]).length)
+
+            let userCounts:{[key:string]:number} = {}
+
+            for (let sub of _subs) {
+                if (userCounts[sub.author]) userCounts[sub.author]++
+                else userCounts[sub.author] = 1
+            }
+
+            let most_submissions = Object.entries(userCounts).sort((a,b) => b[1]-a[1])
+
+            // arr for most submissions leaderboard
+
+            let subs_top5 = []
+
+            for (let i = 0; i < 5; i++) {
+                if (!most_submissions[i]) break
+                let user = await interaction.client.users.fetch(most_submissions[i][0]).then((user) => user.tag).catch(() => "❔")
+                subs_top5.push(`**${user == interaction.user.tag ? "*" : ""}${i+1}.${user == interaction.user.id ? "*" : ""}** ${user} with ${most_submissions[i][1]} submission(s) (${Math.round(most_submissions[i][1]/_subs.length*100)})`)
+            }
+
+            // NOT good 
+            // KILL ME.
+            // i can only hope that my future employer
+            // (if applicable, etc.) will NOT,
+            // under any circumstances, see this code
+            
+            if (!most_submissions.find(e => e[0] == interaction.user.id)) {
+                subs_top5.push(`***${most_submissions.findIndex(e => e[0] == interaction.user.id) || "?"}.*** ${interaction.user.tag} with ${userCounts[interaction.user.id] || 0} submission(s) (${Math.round((userCounts[interaction.user.id] || 0)/_subs.length*100)})`)
+            }
+            
+            // arr for most favorites leaderboard
+
+            let favs_top5 = []
+
+            for (let i = 0; i < 5; i++) {
+                if (!most_favorites[i]) break
+                let user = await interaction.client.users.fetch(most_favorites[i][1].author).then((user) => user.tag).catch(() => "❔")
+                favs_top5.push(`**${i+1}.** \`#${most_favorites[i][0]+1}\` by ${user} with ⭐ ${(most_favorites[i][1].favorites||[]).length}`)
+            }
+
+            let leaderboard_embed = new EmbedBuilder()
+                .setTitle("/meme leaderboards")
+                .addFields(
+                    {
+                        name:"Most Submissions",
+                        value:subs_top5.join("\n"),
+                    },
+                    {
+                        name:"Most Favorites",
+                        value:favs_top5.join("\n")
+                    }
+                )
+                .setColor("Blurple")
+
+            interaction.editReply({embeds:[leaderboard_embed]})
     }
 }
 
