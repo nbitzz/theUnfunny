@@ -249,7 +249,8 @@ command.action = async (interaction, control, share) => {
             for (let i = 0; i < 5; i++) {
                 if (!most_submissions[i]) break
                 let user = await interaction.client.users.fetch(most_submissions[i][0]).then((user) => user.tag).catch(() => "❔")
-                subs_top5.push(`**${user == interaction.user.tag ? "*" : ""}${i+1}.${user == interaction.user.id ? "*" : ""}** ${user} with ${most_submissions[i][1]} submission(s) (${Math.round(most_submissions[i][1]/_subs.length*100)})`)
+                let tpb = user == interaction.user.tag ? "*" : ""
+                subs_top5.push(`**${tpb}${i+1}${tpb}** \`${user}\` with \`${most_submissions[i][1]}\` submission(s) (${Math.round(most_submissions[i][1]/_subs.length*100)}%)`)
             }
 
             // NOT good 
@@ -259,7 +260,7 @@ command.action = async (interaction, control, share) => {
             // under any circumstances, see this code
             
             if (!most_submissions.find(e => e[0] == interaction.user.id)) {
-                subs_top5.push(`***${most_submissions.findIndex(e => e[0] == interaction.user.id) || "?"}.*** ${interaction.user.tag} with ${userCounts[interaction.user.id] || 0} submission(s) (${Math.round((userCounts[interaction.user.id] || 0)/_subs.length*100)})`)
+                subs_top5.push(`***${most_submissions.findIndex(e => e[0] == interaction.user.id) || "?"}.*** \`${interaction.user.tag}\` with \`${userCounts[interaction.user.id] || 0}\` submission(s) (${Math.round((userCounts[interaction.user.id] || 0)/_subs.length*100)})`)
             }
 
             // arr for most favorites leaderboard
@@ -269,7 +270,7 @@ command.action = async (interaction, control, share) => {
             for (let i = 0; i < 5; i++) {
                 if (!most_favorites[i]) break
                 let user = await interaction.client.users.fetch(most_favorites[i][1].author).then((user) => user.tag).catch(() => "❔")
-                favs_top5.push(`**${i+1}.** \`#${most_favorites[i][0]+1}\` by ${user} with ⭐ ${(most_favorites[i][1].favorites||[]).length}`)
+                favs_top5.push(`**${i+1}.** \`#${parseInt(most_favorites[i][0],10)+1}\` by ${user} with ⭐ ${(most_favorites[i][1].favorites||[]).length}`)
             }
 
             let leaderboard_embed = new EmbedBuilder()
