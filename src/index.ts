@@ -142,7 +142,7 @@ client.on("ready",async () => {
                 embed: nemb, 
                 reply: url.split("/")[0] == "video" ? `${_config.monofile}/file/${url.split("/")[1]}` : "",
             }
-        }
+        }, true
     )
     sts = new ModeratedSubmissionSystem<{name:string,activity:string}>("Statuses",control,(emb,data) => emb.setDescription(`${data.activity == "Listening" ? "Listening to" : data.activity} ${data.name}`))
 
