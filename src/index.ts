@@ -5,7 +5,7 @@ import { Logger, Groups, use } from "./lib/logger"
 new Groups.LoggerGroup("Library","0,255,150")
 
 import fs from "fs/promises"
-import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder, IntentsBitField, StringSelectMenuBuilder } from "discord.js"
+import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder, IntentsBitField, StringSelectMenuBuilder, TextInputBuilder } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
@@ -299,10 +299,51 @@ client.on("interactionCreate",async (int) => {
             let chn = Systems.get(int.channel.id)
             if (chn) {
                 await int.deferUpdate()
-                if (spl[1] == "approve") chn.acceptSubmission(spl[2]) 
-                else if (spl[1] == "delete") chn.deleteSubmission(spl[2])
+
+                switch(spl[1]) {
+                    case "approve":
+                        chn.acceptSubmission(spl[2])
+                    break
+                    case "delete":
+                        chn.deleteSubmission(spl[2])
+                    break
+                    case "addAltText":
+                        // prompt user for alt text using modal
+
+                        let modal = new Discord.ModalBuilder()
+
+                        modal
+                            .setTitle("Set alt text")
+                            .setCustomId("sub:altText:"+spl[2])
+                            .addComponents(
+                                new ActionRowBuilder<TextInputBuilder>()
+                                    .addComponents(
+                                        new TextInputBuilder()
+                                            .setRequired(true)
+                                            .setStyle(Discord.TextInputStyle.Paragraph)
+                                            .setPlaceholder("Alt text should describe the attached media in extreme detail. Type viewable text, transcribe audio, and describe objects or ideas found within an image or video.")
+                                            .setCustomId("text")
+                                            .setMaxLength(1024)
+                                            .setLabel("Alt text")
+                                )
+                            )
+                        
+                        int.showModal(modal)
+                }
             }
         }
+    } else if ( int.isModalSubmit() ) {
+
+        if (int.customId.startsWith("sub:altText:") && int.channel) {
+            let spl = int.customId.split(":")
+            let chn = Systems.get(int.channel.id)
+            if (chn) {
+                await int.deferUpdate()
+
+                chn.setAltText(spl[2],int.fields.getTextInputValue("text"))
+            }
+        }
+
     }
 })
 

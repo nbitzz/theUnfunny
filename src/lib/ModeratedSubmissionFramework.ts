@@ -22,7 +22,8 @@ export interface Submission<datatype> {
     message    : string
     id         : string
     data       : datatype,
-    favorites? : string[]
+    favorites? : string[],
+    altText?   : string
 } 
 
 export interface SubmissionSystem<datatype> {
@@ -49,7 +50,9 @@ export class ModeratedSubmissionSystem<datatype> {
     _readyEvent : BaseEvent   = new BaseEvent()
     readyEvent  : EventSignal = this._readyEvent.Event
 
-    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions) {
+    takeDescriptions: boolean = false
+
+    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions, descriptionsEnabled:boolean = false) {
         this.name     = name
         this.safeName = this.name.toLowerCase().replace(/[^a-z]/g,"-")
         this.embedPrc = embedProcessor
@@ -57,6 +60,8 @@ export class ModeratedSubmissionSystem<datatype> {
         this.control  = control
         this.logger   = new Logger(name,SubmissionSystemGroup)
         
+        this.takeDescriptions = descriptionsEnabled
+
         MSSData.ready().then(() => {
             this.data = MSSData.data[this.name] || this.data
 
@@ -182,11 +187,29 @@ export class ModeratedSubmissionSystem<datatype> {
                                 new ButtonBuilder()
                                     .setCustomId(`sub:delete:${id}`)
                                     .setStyle(ButtonStyle.Danger)
-                                    .setLabel("Delete submission")
+                                    .setLabel("Delete submission"),
+                                ...(this.takeDescriptions ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:addAltText:${id}`)
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setLabel("Add alt text")
+                                ] : [])
                             )
                     ]
                 })
             }
+        }
+    }
+
+    async setAltText(id:string, text: string) {
+        await this.ready()
+        if (!this.channel) return
+
+        let val = this.data.submissions.find(e => e.id == id)
+        
+        if (val) {
+            val.altText = text
+            MSSData.set_record(this.name,this.data)
         }
     }
 
