@@ -321,7 +321,7 @@ client.on("interactionCreate",async (int) => {
                                         new TextInputBuilder()
                                             .setRequired(true)
                                             .setStyle(Discord.TextInputStyle.Paragraph)
-                                            .setPlaceholder("Transcribe text and audio & describe viewable contents in extreme detail")
+                                            .setPlaceholder("Transcribe text and audio & describe contents in extreme detail")
                                             .setCustomId("text")
                                             .setMaxLength(1024)
                                             .setLabel("Alt text")
