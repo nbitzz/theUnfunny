@@ -140,10 +140,6 @@ export class ModeratedSubmissionSystem<datatype> {
             replyId: reply?.id
         })
         MSSData.set_record(this.name,this.data)
-        
-        if (!(mCmbo instanceof EmbedBuilder) && mCmbo.reply) {
-            msg.reply(mCmbo.reply)
-        }
 
     }
 
