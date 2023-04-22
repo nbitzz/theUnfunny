@@ -23,7 +23,8 @@ export interface Submission<datatype> {
     id         : string
     data       : datatype,
     favorites? : string[],
-    altText?   : string
+    altText?   : string,
+    replyId?   : string
 } 
 
 export interface SubmissionSystem<datatype> {
@@ -124,12 +125,19 @@ export class ModeratedSubmissionSystem<datatype> {
             ]
         })
 
+        let reply
+
+        if (!(mCmbo instanceof EmbedBuilder) && mCmbo.reply) {
+            reply = await msg.reply(mCmbo.reply)
+        }
+
         this.data.submissions.push({
             author:user.id,
             message:msg.id,
             moderated:false,
             data:data,
-            id:submissionid
+            id:submissionid,
+            replyId: reply?.id
         })
         MSSData.set_record(this.name,this.data)
         
@@ -159,6 +167,10 @@ export class ModeratedSubmissionSystem<datatype> {
 
             let msg = await this.channel.messages.fetch(val.message).catch(() => null)
             if (msg) msg.delete()
+            if (val.replyId) {
+                let reply = await this.channel.messages.fetch(val.replyId).catch(() => null)
+                if (reply) reply.delete()
+            }
             this.data.submissions.splice(idx,1)
             MSSData.set_record(this.name,this.data)
         }
