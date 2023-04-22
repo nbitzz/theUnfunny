@@ -321,10 +321,11 @@ client.on("interactionCreate",async (int) => {
                                         new TextInputBuilder()
                                             .setRequired(true)
                                             .setStyle(Discord.TextInputStyle.Paragraph)
-                                            .setPlaceholder("Alt text should describe the attached media in extreme detail. Type viewable text, transcribe audio, and describe objects or ideas found within an image or video.")
+                                            .setPlaceholder("Transcribe text and audio & describe viewable contents in extreme detail")
                                             .setCustomId("text")
                                             .setMaxLength(1024)
                                             .setLabel("Alt text")
+                                            .setValue(chn.getSubmissions().find(e => e.id == spl[2])?.altText || "")
                                 )
                             )
                         
