@@ -135,13 +135,12 @@ client.on("ready",async () => {
     let MemeSubmissionSystem = new ModeratedSubmissionSystem<string>("memes",control,
         (emb,url) => {        
             let nemb = url.split("/")[0] == "video" 
-                ? emb.setDescription(`Sent a video`) 
+                ? emb.setDescription(`Sent a video: ${_config.monofile}/file/${url.split("/")[1]}`) 
                 : emb.setImage(`${_config.monofile}/file/${url.split("/")[1]}`)
 
             return { 
                 embed: nemb, 
-                message: url.split("/")[0] == "video" ? `${_config.monofile}/file/${url.split("/")[1]}` : "",
-                delay: url.split("/")[0] == "video" ? 2000 : 0
+                reply: url.split("/")[0] == "video" ? `${_config.monofile}/file/${url.split("/")[1]}` : "",
             }
         }
     )

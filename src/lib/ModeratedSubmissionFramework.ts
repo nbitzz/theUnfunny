@@ -32,8 +32,7 @@ export interface SubmissionSystem<datatype> {
 
 export interface InternalSubmitOptions {
     embed: EmbedBuilder, 
-    message?: string,
-    delay?: number
+    reply?: string
 }
 
 export class ModeratedSubmissionSystem<datatype> {
@@ -100,38 +99,38 @@ export class ModeratedSubmissionSystem<datatype> {
 
         let submissionid = Math.random().toString().slice(2)
 
-        setTimeout(async () => {
-            if (!this.channel) return
+        
+        if (!this.channel) return
 
-            let msg = await this.channel.send({
-                ...(!(mCmbo instanceof EmbedBuilder) && mCmbo.message ? {
-                    content: mCmbo.message
-                } : []),
-                embeds:[emb],
-                components:[
-                    new ActionRowBuilder<ButtonBuilder>()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId(`sub:approve:${submissionid}`)
-                                .setStyle(ButtonStyle.Success)
-                                .setLabel("Approve"),
-                            new ButtonBuilder()
-                                .setCustomId(`sub:delete:${submissionid}`)
-                                .setStyle(ButtonStyle.Danger)
-                                .setLabel("Block")
-                        )
-                ]
-            })
+        let msg = await this.channel.send({
+            embeds:[emb],
+            components:[
+                new ActionRowBuilder<ButtonBuilder>()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(`sub:approve:${submissionid}`)
+                            .setStyle(ButtonStyle.Success)
+                            .setLabel("Approve"),
+                        new ButtonBuilder()
+                            .setCustomId(`sub:delete:${submissionid}`)
+                            .setStyle(ButtonStyle.Danger)
+                            .setLabel("Block")
+                    )
+            ]
+        })
 
-            this.data.submissions.push({
-                author:user.id,
-                message:msg.id,
-                moderated:false,
-                data:data,
-                id:submissionid
-            })
-            MSSData.set_record(this.name,this.data)
-        }, mCmbo instanceof EmbedBuilder ? 0 : mCmbo.delay || 0)
+        this.data.submissions.push({
+            author:user.id,
+            message:msg.id,
+            moderated:false,
+            data:data,
+            id:submissionid
+        })
+        MSSData.set_record(this.name,this.data)
+        
+        if (!(mCmbo instanceof EmbedBuilder) && mCmbo.reply) {
+            msg.reply(mCmbo.reply)
+        }
 
     }
 
