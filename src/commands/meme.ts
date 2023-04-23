@@ -224,7 +224,6 @@ command.action = async (interaction, control, share) => {
                                                     new ButtonBuilder()
                                                         .setStyle(ButtonStyle.Success)
                                                         .setLabel("Suggest alt text")
-                                                        .setDisabled(true)
                                                         .setCustomId("suggest")
                                                 )
                                         ] : [])
