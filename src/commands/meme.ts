@@ -227,7 +227,8 @@ command.action = async (interaction, control, share) => {
                                                         .setCustomId("___")
                                                 )
                                         ] : [])
-                                    ]
+                                    ],
+                                    ephemeral: true
                                 })
                             }
                         })
