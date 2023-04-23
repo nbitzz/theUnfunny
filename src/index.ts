@@ -12,6 +12,7 @@ import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operator
 import { ModeratedSubmissionSystem, Systems } from "./lib/ModeratedSubmissionFramework"
 import startApi from "./lib/api/api"
 import { ChannelManagerController } from "./lib/managers"
+import { AltTextSuggestions } from "./lib/AltTextSubmission"
 
 let csle = new Logger("theUnfunny")
 
@@ -149,6 +150,7 @@ client.on("ready",async () => {
     commands.share.set("Things",Things_SOP)
     commands.share.set("Statuses",sts)
     commands.share.set("memeSubmissionSystem",MemeSubmissionSystem)
+    commands.share.set("memeAltTextSubmissionSystem", new AltTextSuggestions(control, MemeSubmissionSystem))
 
     csle.log(`Starting API...`)
     startApi(client,control,commands,_config)
@@ -307,6 +309,13 @@ client.on("interactionCreate",async (int) => {
                     case "delete":
                         chn.deleteSubmission(spl[2])
                     break
+                    case "edit":
+                        let sub = chn.data.submissions.find(e => e.id == spl[2])
+                        if (!sub || !chn.getEditModal) return
+                        let editModal = chn.getEditModal(sub)
+                        editModal.setCustomId("sub:edit:"+spl[2])
+                        int.showModal(editModal)
+                    break
                     case "addAltText":
                         // prompt user for alt text using modal
 
@@ -335,13 +344,26 @@ client.on("interactionCreate",async (int) => {
         }
     } else if ( int.isModalSubmit() ) {
 
-        if (int.customId.startsWith("sub:altText:") && int.channel) {
+        if (int.customId.startsWith("sub:") && int.channel) {
             let spl = int.customId.split(":")
             let chn = Systems.get(int.channel.id)
             if (chn) {
                 await int.deferUpdate()
 
-                chn.setAltText(spl[2],int.fields.getTextInputValue("text"))
+                switch(spl[1]) {
+                    case "altText":
+                        chn.setAltText(spl[2],int.fields.getTextInputValue("text"))
+                    break
+                    case "edit":
+                        if (chn.modalHandler && chn.enableEditing) {
+                            let sub = chn.data.submissions.find(e => e.id == spl[2])
+                            if (!sub) return
+                            let newData = chn.modalHandler(sub.data, int)
+
+                            chn.editSubmission(spl[2],newData)
+                        }    
+                    break
+                }
             }
         }
 

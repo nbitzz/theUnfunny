@@ -1,7 +1,8 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, ModalBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { ModeratedSubmissionSystem } from "../lib/ModeratedSubmissionFramework";
 import axios from "axios";
+import { AltTextSuggestions } from "../lib/AltTextSubmission";
 
 // init slash commands
 
@@ -209,7 +210,7 @@ command.action = async (interaction, control, share) => {
                                     ]
                                 })
                             } else {
-                                int.reply({
+                                let rep = await int.reply({
                                     embeds: [
                                         new EmbedBuilder()
                                             .setColor(subs[id].altText ? "Blurple" : "Red")
@@ -224,11 +225,56 @@ command.action = async (interaction, control, share) => {
                                                         .setStyle(ButtonStyle.Success)
                                                         .setLabel("Suggest alt text")
                                                         .setDisabled(true)
-                                                        .setCustomId("___")
+                                                        .setCustomId("suggest")
                                                 )
                                         ] : [])
                                     ],
                                     ephemeral: true
+                                })
+
+                                if (subs[id].altText) return
+
+                                let cl2 = rep.createMessageComponentCollector({
+                                    componentType: ComponentType.Button,
+                                    filter: (int) => int.customId == "suggest",
+                                    time:120000
+                                })
+
+                                let mdlId = Math.random().toString()
+
+                                cl2.on("collect", (int) => {
+                                    int.showModal(
+                                        new ModalBuilder()
+                                            .setCustomId(mdlId)
+                                            .setTitle("Suggest alt text")
+                                            .addComponents(
+                                                new ActionRowBuilder<TextInputBuilder>()
+                                                    .addComponents(
+                                                        new TextInputBuilder()
+                                                            .setRequired(true)
+                                                            .setStyle(TextInputStyle.Paragraph)
+                                                            .setPlaceholder("Transcribe text and audio & describe contents in extreme detail")
+                                                            .setCustomId("text")
+                                                            .setMaxLength(2048)
+                                                            .setLabel("Alt text")
+                                                    )
+                                            )
+                                    )
+
+                                    int.awaitModalSubmit({
+                                        "time": 120000,
+                                        filter: (int) => int.customId == mdlId 
+                                    }).then((mdlSub) => {
+                                        int.deleteReply()
+
+                                        let alt = mdlSub.fields.getTextInputValue("text")
+
+                                        if (alt) {
+                                            let s = share.get("memeAltTextSubmissionSystem") as AltTextSuggestions
+                                            s.submit(int.user, { text: alt, submissionid: subs[id].id })
+                                        }
+                                    }).catch(() => {int.deleteReply()})
+                                    
                                 })
                             }
                         })

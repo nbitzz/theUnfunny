@@ -6,7 +6,7 @@
 
 import { Logger, Groups, use } from "./logger";
 import { CommandAndControl } from "./CommandAndControl";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, MessagePayload, TextChannel, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, MessagePayload, ModalBuilder, ModalSubmitInteraction, TextChannel, User } from "discord.js";
 import { BaseEvent, EventSignal } from "./Events";
 import { EZSave, getSave } from "./ezsave";
 
@@ -53,6 +53,9 @@ export class ModeratedSubmissionSystem<datatype> {
 
     takeDescriptions: boolean = false
     enableEditing: boolean = false
+    
+    getEditModal?: (submission:Submission<datatype>) => ModalBuilder
+    modalHandler?: (data:datatype,int:ModalSubmitInteraction) => datatype
 
     constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions, descriptionsEnabled:boolean = false) {
         this.name     = name
