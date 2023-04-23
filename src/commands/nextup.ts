@@ -10,7 +10,7 @@ let csle = new Logger("nextup","commands")
 
 let command = new SlashCommand(
     new SlashCommandBuilder()
-        .setName("upNext")
+        .setName("upnext")
         .setDescription("What's next?")
 )
 
