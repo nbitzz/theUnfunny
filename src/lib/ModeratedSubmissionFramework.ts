@@ -218,6 +218,32 @@ export class ModeratedSubmissionSystem<datatype> {
         if (val) {
             val.altText = text
             MSSData.set_record(this.name,this.data)
+
+            let msg = await this.channel.messages.fetch(val.message).catch(() => null)
+            if (msg) {
+                msg.edit({
+                    components:[
+                        new ActionRowBuilder<ButtonBuilder>()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId("___")
+                                    .setDisabled(true)
+                                    .setStyle(ButtonStyle.Success)
+                                    .setLabel("Submission approved"),
+                                new ButtonBuilder()
+                                    .setCustomId(`sub:delete:${id}`)
+                                    .setStyle(ButtonStyle.Danger)
+                                    .setLabel("Delete submission"),
+                                ...(this.takeDescriptions ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:addAltText:${id}`)
+                                        .setStyle(val.altText ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                        .setLabel(val.altText ? "Edit alt text" : "Add alt text")
+                                ] : [])
+                            )
+                    ]
+                })
+            }
         }
     }
 
