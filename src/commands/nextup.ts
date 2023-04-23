@@ -34,7 +34,7 @@ command.action = async (interaction,control,share) => {
         if (s.takeDescriptions && s.data.submissions.find(e => !e.altText && e.moderated)) {
             nextMessages.push(
                 `${s.getSubmissions().length-s.data.submissions.filter(e => !e.altText && e.moderated).length} unsearchable in ${s.name}:`
-                + ` [https://discord.com/channels/${control.guild?.id}/${s.channel?.id}/${s.data.submissions.find(e => !e.altText && e.moderated}](view)`
+                + ` [https://discord.com/channels/${control.guild?.id}/${s.channel?.id}/${s.data.submissions.find(e => !e.altText && e.moderated)}](view)`
             )
         }
     })
