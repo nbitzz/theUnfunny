@@ -176,7 +176,7 @@ command.action = async (interaction, control, share) => {
                                     .setCustomId(`search`)
                                     .setEmoji(subs[id].altText ? "✔️" : "✖️")
                                     .setLabel(subs[id].altText ? "Searchable" : "Not searchable"),
-                                ...(interaction.channelId && interaction.channelId == submissions.channel?.id ? [new ButtonBuilder()
+                                ...(interaction.guildId && interaction.guildId == control?.guild?.id ? [new ButtonBuilder()
                                     .setLabel("Trace")
                                     .setStyle(ButtonStyle.Link)
                                     .setURL(`https://discord.com/channels/${submissions.channel?.guild.id}/${submissions.channel?.id}/${subs[id].message}`)
