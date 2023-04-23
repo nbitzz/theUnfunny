@@ -52,6 +52,7 @@ export class ModeratedSubmissionSystem<datatype> {
     readyEvent  : EventSignal = this._readyEvent.Event
 
     takeDescriptions: boolean = false
+    enableEditing: boolean = false
 
     constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions, descriptionsEnabled:boolean = false) {
         this.name     = name
@@ -117,6 +118,12 @@ export class ModeratedSubmissionSystem<datatype> {
                             .setCustomId(`sub:approve:${submissionid}`)
                             .setStyle(ButtonStyle.Success)
                             .setLabel("Approve"),
+                        ...(this.enableEditing ? [
+                            new ButtonBuilder()
+                                .setCustomId(`sub:edit:${submissionid}`)
+                                .setStyle(ButtonStyle.Secondary)
+                                .setLabel("Edit")
+                        ] : []),
                         new ButtonBuilder()
                             .setCustomId(`sub:delete:${submissionid}`)
                             .setStyle(ButtonStyle.Danger)
@@ -192,6 +199,12 @@ export class ModeratedSubmissionSystem<datatype> {
                                     .setDisabled(true)
                                     .setStyle(ButtonStyle.Success)
                                     .setLabel("Submission approved"),
+                                ...(this.enableEditing ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:edit:${id}`)
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setLabel("Edit")
+                                ] : []),
                                 new ButtonBuilder()
                                     .setCustomId(`sub:delete:${id}`)
                                     .setStyle(ButtonStyle.Danger)
@@ -206,6 +219,41 @@ export class ModeratedSubmissionSystem<datatype> {
                     ]
                 })
             }
+        }
+    }
+
+    async editSubmission(id:string, data:datatype) {
+        await this.ready()
+        if (!this.channel) return
+        if (!this.enableEditing) return
+
+        let val = this.data.submissions.find(e => e.id == id)
+        
+        if (val) {
+            val.data = data
+            let msg = await this.channel.messages.fetch(val.message).catch(() => null)
+            if (msg) {
+                let mCmbo = this.embedPrc(new EmbedBuilder()
+                    .setColor("Blurple")
+                    .setAuthor(msg.embeds[0].author)
+                    .setTitle(msg.embeds[0].title)
+                ,data)
+
+                let emb = mCmbo instanceof EmbedBuilder ? mCmbo : mCmbo.embed
+
+                msg.edit({
+                    embeds:[emb]
+                })
+
+                if (val.replyId) {
+                    let reply = await this.channel.messages.fetch(val.replyId).catch(() => null)
+                    if (reply) reply.edit(mCmbo instanceof EmbedBuilder ? "[No reply]" : mCmbo.reply || "[No reply]")
+                } else if (!(mCmbo instanceof EmbedBuilder) && mCmbo.reply) {
+                    let reply = await msg.reply(mCmbo.reply)
+                    val.replyId = reply.id
+                }
+            }
+            MSSData.set_record(this.name,this.data)
         }
     }
 
