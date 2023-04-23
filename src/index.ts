@@ -323,7 +323,7 @@ client.on("interactionCreate",async (int) => {
                                             .setStyle(Discord.TextInputStyle.Paragraph)
                                             .setPlaceholder("Transcribe text and audio & describe contents in extreme detail")
                                             .setCustomId("text")
-                                            .setMaxLength(1024)
+                                            .setMaxLength(2048)
                                             .setLabel("Alt text")
                                             .setValue(chn.getSubmissions().find(e => e.id == spl[2])?.altText || "")
                                 )
