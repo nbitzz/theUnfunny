@@ -193,20 +193,43 @@ command.action = async (interaction, control, share) => {
 
                         let coll = ms.createMessageComponentCollector({
                             componentType: ComponentType.Button,
-                            filter: (int) => int.customId == "mfav",
+                            filter: (int) => int.customId == "mfav" || int.customId == "search",
                             idle:300000
                         })
 
                         coll.on("collect", async (int) => {
-                            int.deferUpdate();
+                            if (int.customId == "mfav") {
+                                int.deferUpdate();
 
-                            await submissions.favorite(subs[id].id,int.user.id)
+                                await submissions.favorite(subs[id].id,int.user.id)
 
-                            interaction.editReply({
-                                components: [
-                                    getComp()
-                                ]
-                            })
+                                interaction.editReply({
+                                    components: [
+                                        getComp()
+                                    ]
+                                })
+                            } else {
+                                int.reply({
+                                    embeds: [
+                                        new EmbedBuilder()
+                                            .setColor(subs[id].altText ? "Blurple" : "Red")
+                                            .setTitle(`This meme has ${subs[id].altText ? "" : "no"} alt text available`)
+                                            .setDescription(subs[id].altText || "This meme has no alt text available. You can suggest alt text by clicking the button below. (Button will be enabled when suggestion feature is complete.)\nAlt text is used in theUnfunny memedb for search features (upcoming.) We expect submitted alt text to be of a high quality, including grammar & correct spelling.")
+                                    ],
+                                    components: [
+                                        ...(!subs[id].altText ? [
+                                            new ActionRowBuilder<ButtonBuilder>()
+                                                .addComponents(
+                                                    new ButtonBuilder()
+                                                        .setStyle(ButtonStyle.Success)
+                                                        .setLabel("Suggest alt text")
+                                                        .setDisabled(true)
+                                                        .setCustomId("___")
+                                                )
+                                        ] : [])
+                                    ]
+                                })
+                            }
                         })
                         
                     })
