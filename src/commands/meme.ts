@@ -171,9 +171,16 @@ command.action = async (interaction, control, share) => {
                                     .setEmoji("⭐")
                                     .setLabel((subs[id].favorites||[]).length.toString()),
                                 new ButtonBuilder()
+                                    .setStyle(subs[id].altText ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                    .setDisabled(false)
+                                    .setCustomId(`search`)
+                                    .setEmoji(subs[id].altText ? "✔️" : "✖️")
+                                    .setLabel(subs[id].altText ? "Searchable" : "Not searchable"),
+                                ...(interaction.channelId && interaction.channelId == submissions.channel?.id ? [new ButtonBuilder()
                                     .setLabel("Trace")
                                     .setStyle(ButtonStyle.Link)
                                     .setURL(`https://discord.com/channels/${submissions.channel?.guild.id}/${submissions.channel?.id}/${subs[id].message}`)
+                                ] : [])
                             )
                     }
 
@@ -187,7 +194,7 @@ command.action = async (interaction, control, share) => {
                         let coll = ms.createMessageComponentCollector({
                             componentType: ComponentType.Button,
                             filter: (int) => int.customId == "mfav",
-                            idle:90000
+                            idle:300000
                         })
 
                         coll.on("collect", async (int) => {
