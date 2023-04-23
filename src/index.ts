@@ -300,7 +300,7 @@ client.on("interactionCreate",async (int) => {
             let spl = int.customId.split(":")
             let chn = Systems.get(int.channel.id)
             if (chn) {
-                if (spl[1] != "addAltText") await int.deferUpdate()
+                if (spl[1] != "addAltText" && spl[1] != "edit") await int.deferUpdate()
 
                 switch(spl[1]) {
                     case "approve":

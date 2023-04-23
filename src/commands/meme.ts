@@ -265,6 +265,7 @@ command.action = async (interaction, control, share) => {
                                         filter: (int) => int.customId == mdlId 
                                     }).then((mdlSub) => {
                                         int.deleteReply()
+                                        mdlSub.deferUpdate()
 
                                         let alt = mdlSub.fields.getTextInputValue("text")
 

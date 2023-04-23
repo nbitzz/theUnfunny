@@ -18,7 +18,7 @@ export class AltTextSuggestions extends ModeratedSubmissionSystem<{ text: string
                 return emb.setDescription("[Submission not found]").setColor("Red")
             }
             
-            emb.addFields({name: "Submission", value:`[https://discord.com/channels/${control.guild?.id}/${targetSubmissionSystem.channel?.id}/${fdd.id}](view)`})
+            emb.addFields({name: "Submission", value:`https://discord.com/channels/${control.guild?.id}/${targetSubmissionSystem.channel?.id}/${fdd.id}`})
 
             return emb
         },false)
