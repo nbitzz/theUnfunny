@@ -43,6 +43,7 @@ command.action = async (interaction,control,share) => {
         embeds: [
             new EmbedBuilder()
                 .setTitle(`Hey ${interaction.user.username}, here's what's next`)
+                .setDescription(nextMessages.join("\n") || "Nothing to show")
         ]
     })
 }
