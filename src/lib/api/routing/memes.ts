@@ -26,7 +26,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         res.header("Expires","0")
         res.header("Pragma","no-cache")
 
-        if (req.query.urlOnly == "1") res.send(`https://${config.monofile}/file/${t.split("/")[1]}`)
+        if (req.query.urlOnly == "1") res.send(`${config.monofile}/file/${t.split("/")[1]}`)
         else res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
     })
 
@@ -49,7 +49,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         res.header("Expires","0")
         res.header("Pragma","no-cache")
 
-        if (req.query.urlOnly == "1") res.send(`https://${config.monofile}/file/${t.split("/")[1]}`)
+        if (req.query.urlOnly == "1") res.send(`${config.monofile}/file/${t.split("/")[1]}`)
         else res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
     })
 
