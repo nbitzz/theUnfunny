@@ -12,7 +12,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
     let mss:ModeratedSubmissionSystem<string> = commands.share.get("memeSubmissionSystem")
 
     routes.get("/random/:type", async (req,res) => {
-        if (!mss) mss = commands.share.get("memeSubmissionSystem")
+        if (!mss) mss = commands.share.get("memeSubmissionSystem")  as ModeratedSubmissionSystem<string>
 
         if (!["video","image","any"].find(e => e == req.params.type)) { res.sendStatus(400); return }
 
@@ -30,8 +30,26 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         else res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
     })
 
+    routes.get("/geturls", async (req,res) => {
+        if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
+
+        await mss.ready()
+        let subs = mss.getSubmissions().map((v) => v.data)
+        
+        res.header("Cache-Control","no-store, must-revalidate")
+        res.header("Expires","0")
+        res.header("Pragma","no-cache")
+
+        let pg = parseInt(req.query.page?.toString() || "0",10) || 0
+        let amt = parseInt(req.query.amount?.toString() ?? "0",10) || 10
+
+        res.send(
+            subs.slice(pg*amt,pg*amt+amt).map(t => `${config.monofile}/file/${t.split("/")[1]}`)
+        )
+    })
+
     routes.get("/:number", async (req,res) => {
-        if (!mss) mss = commands.share.get("memeSubmissionSystem")
+        if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
 
         await mss.ready()
         let subs = mss.getSubmissions().map((v) => v.data)
