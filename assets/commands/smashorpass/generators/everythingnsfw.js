@@ -24,7 +24,7 @@ module.exports = function(interaction,a,b) {
             everything_arr.push(require(assetPath+"json/"+e.file))
         })
 
-        let generated = meta.filter(e => e.type=="generator" && e.file != "everything.js" && e.file !="everythingnsfw.js" && e.file != "characters.js")
+        let generated = meta.filter(e => e.type=="generator" && e.file != "everything.js" && e.file !="everythingnsfw.js" && e.file != "characters.js" && e.file != "allpokemon.js")
         for (let i = 0; i < generated.length; i++) {
             let e = generated[i]
 

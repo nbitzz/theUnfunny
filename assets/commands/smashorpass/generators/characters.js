@@ -34,7 +34,7 @@ module.exports = function(interaction,a,b) {
             everything_arr.push(require(assetPath+"json/"+e.file))
         })
 
-        let generated = meta.filter(e => e.type=="generator" && !video_files.find(a => a == e.file) && !e.nsfw)
+        let generated = meta.filter(e => e.type=="generator" && !video_files.find(a => a == e.file) && e.file != "allpokemon.js" && !e.nsfw)
         for (let i = 0; i < generated.length; i++) {
             let e = generated[i]
 

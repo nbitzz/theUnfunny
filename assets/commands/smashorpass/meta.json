@@ -36,6 +36,14 @@
         "description":"Please kill me"
     },
     {
+        "name":"All Pokemon",
+        "emoji": "🐩",
+        "type": "generator",
+        "shuffle": false,
+        "file":"allpokemon.js",
+        "description":"All Pokemon currently added to theUnfunny"
+    },
+    {
         "name":"US Presidents",
         "emoji": "🇺🇸",
         "type": "json",
@@ -116,15 +124,6 @@
         "type":"generator",
         "shuffle":true,
         "file":"r34_latest_500.js",
-        "nsfw":true
-    },
-    {
-        "name":"Rule34 Latest 500 (gay edition)",
-        "emoji":"🥛",
-        "type":"generator",
-        "shuffle":true,
-        "file":"r34_latest_500_onepieceisreal.js",
-        "description":"Filter: posts marked 'gay'",
         "nsfw":true
     },
     {
