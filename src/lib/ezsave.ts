@@ -42,7 +42,7 @@ export class EZSave<datatype> {
                 clearTimeout(v)
                 this.expire.delete(x)
             })
-            for (let [key] of Object.keys(this.metadata)) {
+            for (let key of Object.keys(this.metadata)) {
                 this.refresh_expiration(key)
             }
 
