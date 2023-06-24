@@ -28,7 +28,7 @@ module.exports = function(interaction,a,b) {
             embeds:[{description:"Reading...",color:resolveColor("Blurple")}]
         })
 
-        meta.filter(e => e.type=="json" && pokemon.includes(e.file)).forEach((e) => {
+        meta.filter(e => e.type=="json" && pokemon.includes(e.name)).forEach((e) => {
             pokemon_lists.push(require(assetPath+"json/"+e.file))
         })
 
