@@ -32,6 +32,6 @@ module.exports = function(interaction,a,b) {
             pokemon_lists.push(require(assetPath+"json/"+e.file))
         })
 
-        resolve(JSON.stringify([].concat(...everything_arr)))
+        resolve(JSON.stringify([].concat(...pokemon_lists)))
     })
 }
