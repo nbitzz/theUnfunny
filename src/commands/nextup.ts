@@ -27,14 +27,14 @@ command.action = async (interaction,control,share) => {
         if (s.data.submissions.find(e => !e.moderated)) {
             nextMessages.push(
                 `${s.data.submissions.length-s.getSubmissions().length} pending in ${s.name}:`
-                + ` [https://discord.com/channels/${control.guild?.id}/${s.channel?.id}/${s.data.submissions.find(e => !e.moderated)?.id}](view)`
+                + ` https://discord.com/channels/${control.guild?.id}/${s.channel?.id}/${s.data.submissions.find(e => !e.moderated)?.id}`
             )
         }
 
-        if (s.takeDescriptions && s.data.submissions.find(e => !e.altText && e.moderated)) {
+        if (s.takeDescriptions && s.getSubmissions().find(e => !e.altText)) {
             nextMessages.push(
-                `${s.getSubmissions().length-s.data.submissions.filter(e => !e.altText && e.moderated).length} unsearchable in ${s.name}:`
-                + ` [https://discord.com/channels/${control.guild?.id}/${s.channel?.id}/${s.data.submissions.find(e => !e.altText && e.moderated)}](view)`
+                `${s.getSubmissions().length-s.getSubmissions().filter(e => !e.altText).length} unsearchable in ${s.name}:`
+                + ` https://discord.com/channels/${control.guild?.id}/${s.channel?.id}/${s.getSubmissions().find(e => !e.altText)}`
             )
         }
     })
