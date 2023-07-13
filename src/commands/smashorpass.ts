@@ -1,5 +1,5 @@
 import fs from "fs/promises"
-import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder, VoiceChannel, NewsChannel } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, TextChannel, GuildMember, ChatInputCommandInteraction, GuildTextBasedChannel, ButtonBuilder, ButtonStyle, ColorResolvable, PermissionFlagsBits, AttachmentBuilder, VoiceChannel, NewsChannel, StageChannel } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { EZSave, getSave } from "../lib/ezsave"
 import { Logger } from "../lib/logger"
@@ -370,7 +370,7 @@ command.action = async (interaction,control,share) => {
     let sav = saves.data[interaction.user.id]
     let seconds = sav ? Math.floor(sav.timeSoFar/1000) : 0
     let expirMin = sav ? Math.floor((saves.metadata[interaction.user.id].expire-Date.now())/60000) : 0
-    let chnl:TextChannel|VoiceChannel|NewsChannel = interaction.channel
+    let chnl:TextChannel|VoiceChannel|StageChannel|NewsChannel = interaction.channel
 
     let repl = await interaction.editReply({
         embeds: [
@@ -385,7 +385,7 @@ command.action = async (interaction,control,share) => {
                 .addComponents(
                     new StringSelectMenuBuilder()
                         .setOptions(
-                            ...meta.filter((v:Meta) => chnl.nsfw || !v.nsfw).map((e:Meta) => {
+                            ...meta.filter((v:Meta) => (!(chnl instanceof StageChannel) && chnl.nsfw) || !v.nsfw).map((e:Meta) => {
                                 return {
                                     label:e.name,
                                     emoji:e.emoji,
@@ -395,7 +395,7 @@ command.action = async (interaction,control,share) => {
                             }),
                             // god bless any poor soul who tries to understand this
                             ...((sav) ? (
-                                sav.meta.nsfw && !chnl.nsfw ? [{
+                                sav.meta.nsfw && !(!(chnl instanceof StageChannel) && chnl.nsfw) ? [{
                                     label:`Continue NSFW list "${sav.meta.name}"`,
                                     description:`Move to an 18+ channel to continue | expires in ${Math.floor(expirMin/60)}h ${expirMin%60}m`,
                                     emoji:"⚠",
@@ -455,7 +455,7 @@ command.action = async (interaction,control,share) => {
                     return
                 }
 
-                if (sav.meta.nsfw && !chnl.nsfw) {
+                if (sav.meta.nsfw && !(!(chnl instanceof StageChannel) && chnl.nsfw)) {
                     interaction.editReply({
                         embeds:[{color:0xff0000,description:"To continue, please run /smashorpass in a NSFW channel."}]
                     })
