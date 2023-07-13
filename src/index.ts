@@ -367,7 +367,7 @@ client.on("interactionCreate",async (int) => {
 
                         int.reply({
                             content: "Please set your rating according to this graph.\n```\n\
-                   Clean | Insensitive | Slurs\n\
+                    Clean | Insensitive | Slurs\n\
                    ------------------------------\n\
 Clean              |      |             |       |\n\
 Suggestive         |      |             |       |\n\
