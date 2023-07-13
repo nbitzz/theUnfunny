@@ -365,7 +365,7 @@ client.on("interactionCreate",async (int) => {
                             hazardCpnts.push(builder)
                         }
 
-                        int.editReply({
+                        int.reply({
                             content: "Please set your rating according to this graph.\n```\n\
                    Clean | Insensitive | Slurs\n\
                    ------------------------------\n\
