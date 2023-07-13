@@ -121,7 +121,7 @@ command.action = async (interaction, control, share) => {
                             new ButtonBuilder()
                                 .setCustomId(`___`)
                                 .setStyle(ButtonStyle.Secondary)
-                                .setLabel(sbs.filter(e => e.hazards && e.hazards.insensitivity == x && e.hazards.sexualContent == y).toString())
+                                .setLabel(sbs.filter(e => e.hazards && e.hazards.insensitivity == x && e.hazards.sexualContent == y).length.toString())
                         )
                     }
                     hazardCpnts.push(builder)
