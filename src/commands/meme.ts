@@ -156,7 +156,7 @@ command.action = async (interaction, control, share) => {
                 // @ts-ignore tired
                 let isL = ilibpolicy.policies.permittedLanguage.choices.indexOf(getPolicy(interaction.guild?.id,"permittedLanguage"))
 
-                fSubs = subs.filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL)
+                fSubs = subs.filter(e => (e.hazards||{sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2}).insensitivity <= isL)
             }
 
             if (subs.length == 0) {
@@ -179,7 +179,7 @@ command.action = async (interaction, control, share) => {
                         // @ts-ignore tired
                         let isL = ilibpolicy.policies.permittedLanguage.choices.indexOf(getPolicy(interaction.guild?.id,"permittedLanguage"))
                         
-                        if ((subs[id].hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (subs[id].hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL) {
+                        if ((subs[id].hazards||{sexualContent:2}).sexualContent > scL || (subs[id].hazards||{insensitivity:2}).insensitivity > isL) {
                             interaction.editReply({embeds:[
                                 new EmbedBuilder()
                                     .setTitle("Uh-oh!")
