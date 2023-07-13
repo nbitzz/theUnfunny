@@ -173,6 +173,25 @@ command.action = async (interaction, control, share) => {
                 let id = (interaction.options.getNumber("number") || _realSubs.indexOf(subs[Math.floor(Math.random()*subs.length)])+1)-1
 
                 if (subs[id]) {
+                    if (interaction.guild && interaction.options.getNumber("number")) {
+                        // @ts-ignore tired
+                        let scL = ilibpolicy.policies.permittedSexualContent.choices.indexOf(getPolicy(interaction.guild?.id,"permittedSexualContent"))
+                        // @ts-ignore tired
+                        let isL = ilibpolicy.policies.permittedLanguage.choices.indexOf(getPolicy(interaction.guild?.id,"permittedLanguage"))
+                        
+                        if ((subs[id].hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (subs[id].hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL) {
+                            interaction.editReply({embeds:[
+                                new EmbedBuilder()
+                                    .setTitle("Uh-oh!")
+                                    .setDescription(
+                                        "This meme does not match this server's content ratings. Please either weaken your policies or use this command in your direct messages."
+                                    )
+                                    .setColor("Red")
+                            ]})
+                            return
+                        }
+                    }
+
                     let file_id = subs[id].data.split("/")[1]
 
                     let userTag = await interaction.client.users.fetch(subs[id].author).then((user) => user.tag).catch(() => "❔")

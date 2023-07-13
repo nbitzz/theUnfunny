@@ -17,6 +17,7 @@ let command = new SlashCommand(
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("sexualcontent")
+                .setDescription("Configure your server settings")
                 .addStringOption(
                     new SlashCommandStringOption()
                         .setName("value")
@@ -40,6 +41,7 @@ let command = new SlashCommand(
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName("language")
+                .setDescription("Configure your server settings")
                 .addStringOption(
                     new SlashCommandStringOption()
                         .setName("value")
