@@ -109,6 +109,25 @@ command.action = async (interaction, control, share) => {
         case "info":
             let sbs = submissions.getSubmissions()
             let userSbs = sbs.filter(e => e.author == interaction.user.id)
+
+            let hazardCpnts:ActionRowBuilder<ButtonBuilder>[] = []
+
+            if (interaction.guild?.id && interaction.guild?.id == control.guild?.id) {
+                // this could probably be optimized but itll look worse + it'll be a matter of milliseconds to nanoseconds
+                for (let y = 0; y < 3; y++) {
+                    let builder = new ActionRowBuilder<ButtonBuilder>()
+                    for (let x = 0; x < 3; x++) {
+                        builder.addComponents(
+                            new ButtonBuilder()
+                                .setCustomId(`___`)
+                                .setStyle(ButtonStyle.Secondary)
+                                .setLabel(sbs.filter(e => e.hazards && e.hazards.insensitivity == x && e.hazards.sexualContent == y).toString())
+                        )
+                    }
+                    hazardCpnts.push(builder)
+                }
+            }
+
             interaction.editReply({embeds:[
                 new EmbedBuilder()
                     .setTitle("/meme")
@@ -121,11 +140,11 @@ command.action = async (interaction, control, share) => {
                         + ` and will be visible to others.`
                     )
                     .setFields(
-                        {name:"In Database",value:`${sbs.length} accepted\n${sbs.filter(e => e.altText).length} (${Math.round(sbs.filter(e => e.altText).length/sbs.length*100)}%) searchable\n${submissions.data.submissions.filter(e => !e.moderated).length} pending`, inline:true},
+                        {name:"In Database",value:`${sbs.length} accepted\n${sbs.filter(e => e.altText).length} (${Math.round(sbs.filter(e => e.altText).length/sbs.length*100)}%) searchable\n${sbs.filter(e => e.hazards).length} (${Math.round(sbs.filter(e => e.hazards).length/sbs.length*100)}%) content-rated\n\n${submissions.data.submissions.filter(e => !e.moderated).length} pending`, inline:true},
                         {name:"Your Submissions",value:`${userSbs.length} accepted (${Math.round(userSbs.length/sbs.length*100)}%)\n${submissions.data.submissions.filter(e => e.author == interaction.user.id && !e.moderated).length} pending`,inline:true}
                     )
                     .setColor("Blurple")
-            ]})
+            ], components: hazardCpnts})
         break
         case "get":
             let subs = submissions.getSubmissions()
