@@ -140,7 +140,7 @@ command.action = async (interaction, control, share) => {
                         + ` and will be visible to others.`
                     )
                     .setFields(
-                        {name:"In Database",value:`${sbs.length} accepted\n${sbs.filter(e => e.altText).length} (${Math.round(sbs.filter(e => e.altText).length/sbs.length*100)}%) searchable\n${sbs.filter(e => e.hazards).length} (${Math.round(sbs.filter(e => e.hazards).length/sbs.length*100)}%) content-rated\n\n${submissions.data.submissions.filter(e => !e.moderated).length} pending`, inline:true},
+                        {name:"In Database",value:`${sbs.length} accepted\n${sbs.filter(e => e.altText).length} (${Math.round(sbs.filter(e => e.altText).length/sbs.length*100)}%) searchable\n${sbs.filter(e => e.hazards).length} (${Math.round(sbs.filter(e => e.hazards).length/sbs.length*100)}%) content-rated\n${submissions.data.submissions.filter(e => !e.moderated).length} pending`, inline:true},
                         {name:"Your Submissions",value:`${userSbs.length} accepted (${Math.round(userSbs.length/sbs.length*100)}%)\n${submissions.data.submissions.filter(e => e.author == interaction.user.id && !e.moderated).length} pending`,inline:true}
                     )
                     .setColor("Blurple")
