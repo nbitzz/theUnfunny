@@ -34,7 +34,7 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
 
         await mss.ready()
-        let subs = mss.getSubmissions().map((v) => v.data)
+        let subs = mss.getSubmissions()
         
         res.header("Cache-Control","no-store, must-revalidate")
         res.header("Expires","0")
@@ -42,9 +42,14 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
 
         let pg = parseInt(req.query.page?.toString() || "0",10) || 0
         let amt = parseInt(req.query.amount?.toString() ?? "0",10) || 10
+        let scL = parseInt(req.query.sexualContent?.toString() || "0",10) || 2
+        let isL = parseInt(req.query.insensitivity?.toString() || "0",10) || 2
 
         res.send(
-            subs.slice(pg*amt,pg*amt+amt).map(t => `${config.monofile}/file/${t.split("/")[1]}`)
+            subs
+                .filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL)
+                .slice(pg*amt,pg*amt+amt)
+                .map(t => `${config.monofile}/file/${t.data.split("/")[1]}`)
         )
     })
 
