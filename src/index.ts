@@ -359,7 +359,7 @@ client.on("interactionCreate",async (int) => {
                                     new ButtonBuilder()
                                         .setCustomId(`sub:hazard:${spl[2]}:${x}x${y}`)
                                         .setStyle(ButtonStyle.Secondary)
-                                        .setEmoji("")
+                                        .setEmoji(x == 0 && y == 0 ? "✅" : (x == 2 && y == 2 ? "‼" : "⚠"))
                                 )
                             }
                             hazardCpnts.push(builder)
