@@ -36,6 +36,7 @@ let command = new SlashCommand(
                                 value: "Heavily suggestive content"
                             },
                         )
+                        .setRequired(true)
                 )
         )
         .addSubcommand(
@@ -60,6 +61,7 @@ let command = new SlashCommand(
                                 value: "Allow slurs"
                             },
                         )
+                        .setRequired(true)
                 )
         )
 )

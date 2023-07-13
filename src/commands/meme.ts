@@ -149,14 +149,14 @@ command.action = async (interaction, control, share) => {
         break
         case "get":
             let subs = submissions.getSubmissions()
-            let _realSubs = subs
+            let fSubs = subs
             if (interaction.guild) {
                 // @ts-ignore tired
                 let scL = ilibpolicy.policies.permittedSexualContent.choices.indexOf(getPolicy(interaction.guild?.id,"permittedSexualContent"))
                 // @ts-ignore tired
                 let isL = ilibpolicy.policies.permittedLanguage.choices.indexOf(getPolicy(interaction.guild?.id,"permittedLanguage"))
 
-                subs = subs.filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL)
+                fSubs = subs.filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL)
             }
 
             if (subs.length == 0) {
@@ -170,7 +170,7 @@ command.action = async (interaction, control, share) => {
                 ]})
             } else {
                 // serious mess but it's.. fine for now.
-                let id = (interaction.options.getNumber("number") || _realSubs.indexOf(subs[Math.floor(Math.random()*subs.length)])+1)-1
+                let id = (interaction.options.getNumber("number") || subs.indexOf(fSubs[Math.floor(Math.random()*fSubs.length)])+1)-1
 
                 if (subs[id]) {
                     if (interaction.guild && interaction.options.getNumber("number")) {
