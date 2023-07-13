@@ -1,8 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, ModalBuilder, SlashCommandAttachmentOption, SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { SlashCommand } from "../lib/SlashCommandManager";
-import { ModeratedSubmissionSystem } from "../lib/ModeratedSubmissionFramework";
+import { ModeratedSubmissionSystem, type Submission } from "../lib/ModeratedSubmissionFramework";
 import axios from "axios";
 import { AltTextSuggestions } from "../lib/AltTextSubmission";
+import { getPolicy, ilibpolicy } from "../lib/ServerPolicy";
 
 // init slash commands
 
@@ -148,6 +149,16 @@ command.action = async (interaction, control, share) => {
         break
         case "get":
             let subs = submissions.getSubmissions()
+            let _realSubs = subs
+            if (interaction.guild) {
+                // @ts-ignore tired
+                let scL = ilibpolicy.policies.permittedSexualContent.choices.indexOf(getPolicy(interaction.guild?.id,"permittedSexualContent"))
+                // @ts-ignore tired
+                let isL = ilibpolicy.policies.permittedLanguage.choices.indexOf(getPolicy(interaction.guild?.id,"permittedLanguage"))
+
+                subs = subs.filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL)
+            }
+
             if (subs.length == 0) {
                 interaction.editReply({embeds:[
                     new EmbedBuilder()
@@ -158,7 +169,8 @@ command.action = async (interaction, control, share) => {
                         .setColor("Red")
                 ]})
             } else {
-                let id = (interaction.options.getNumber("number") || Math.floor(Math.random()*subs.length)+1)-1
+                // serious mess but it's.. fine for now.
+                let id = (interaction.options.getNumber("number") || _realSubs.indexOf(subs[Math.floor(Math.random()*subs.length)])+1)-1
 
                 if (subs[id]) {
                     let file_id = subs[id].data.split("/")[1]

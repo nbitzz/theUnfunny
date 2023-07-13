@@ -34,7 +34,7 @@ export namespace Generators {
 
         await menu_channel.permissionOverwrites.create(menu_channel.guild.roles.everyone,{
             SendMessages:   false,
-            ViewChannel : false
+            ViewChannel :   false
         })
         
         await menu_channel.send({
