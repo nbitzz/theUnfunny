@@ -301,7 +301,7 @@ client.on("interactionCreate",async (int) => {
             let spl = int.customId.split(":")
             let chn = Systems.get(int.channel.id)
             if (chn) {
-                if (spl[1] != "addAltText" && spl[1] != "edit") await int.deferUpdate()
+                if (spl[1] != "addAltText" && spl[1] != "edit" && spl[1] != "hazard") await int.deferUpdate()
 
                 switch(spl[1]) {
                     case "approve":
@@ -366,12 +366,12 @@ client.on("interactionCreate",async (int) => {
                         }
 
                         int.editReply({
-                            content: "Please set your rating according to this graph.\n```\
-                   Clean | Insensitive | Slurs\
-                   ------------------------------\
-Clean              |      |             |       |\
-Suggestive         |      |             |       |\
-Heavily Suggestive |      |             |       |\
+                            content: "Please set your rating according to this graph.\n```\n\
+                   Clean | Insensitive | Slurs\n\
+                   ------------------------------\n\
+Clean              |      |             |       |\n\
+Suggestive         |      |             |       |\n\
+Heavily Suggestive |      |             |       |\n\
 ```",
                     
                             components: hazardCpnts
