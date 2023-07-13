@@ -346,7 +346,7 @@ client.on("interactionCreate",async (int) => {
                             let iands = spl[3].split("x").map(e => parseInt(e,10))
                             // @ts-ignore too lazy to write proper defs here
                             chn.setHazards(spl[2],iands[0],iands[1])
-                            if (int.message) csle.log(int.message.toString())
+                            if (int.message) int.message.delete()
                             return
                         }
                         let hazardCpnts:ActionRowBuilder<ButtonBuilder>[] = []
@@ -365,7 +365,7 @@ client.on("interactionCreate",async (int) => {
                             hazardCpnts.push(builder)
                         }
 
-                        int.reply({
+                        int.editReply({
                             content: "Please set your rating according to this graph.\n```\
                    Clean | Insensitive | Slurs\
                    ------------------------------\
@@ -374,8 +374,7 @@ Suggestive         |      |             |       |\
 Heavily Suggestive |      |             |       |\
 ```",
                     
-                            components: hazardCpnts,
-                            ephemeral: true
+                            components: hazardCpnts
 
                         })
                     break
