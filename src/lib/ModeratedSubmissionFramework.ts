@@ -24,7 +24,12 @@ export interface Submission<datatype> {
     data       : datatype,
     favorites? : string[],
     altText?   : string,
-    replyId?   : string
+    replyId?   : string,
+
+    hazards?   : {
+        insensitivity: 0 | 1 | 2,
+        sexualContent: 0 | 1 | 2
+    }
 } 
 
 export interface SubmissionSystem<datatype> {
@@ -53,11 +58,12 @@ export class ModeratedSubmissionSystem<datatype> {
 
     takeDescriptions: boolean = false
     enableEditing: boolean = false
+    enableContentRatings: boolean = false
     
     getEditModal?: (submission:Submission<datatype>) => ModalBuilder
     modalHandler?: (data:datatype,int:ModalSubmitInteraction) => datatype
 
-    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions, descriptionsEnabled:boolean = false) {
+    constructor(name:string,control:CommandAndControl,embedProcessor:(emb:EmbedBuilder,data:datatype) => EmbedBuilder | InternalSubmitOptions, descriptionsEnabled:boolean = false, contentRatingsEnabled: boolean = false) {
         this.name     = name
         this.safeName = this.name.toLowerCase().replace(/[^a-z]/g,"-")
         this.embedPrc = embedProcessor
@@ -66,6 +72,7 @@ export class ModeratedSubmissionSystem<datatype> {
         this.logger   = new Logger(name,SubmissionSystemGroup)
         
         this.takeDescriptions = descriptionsEnabled
+        this.enableContentRatings = contentRatingsEnabled
 
         MSSData.ready().then(() => {
             this.data = MSSData.data[this.name] || this.data
@@ -208,6 +215,12 @@ export class ModeratedSubmissionSystem<datatype> {
                                         .setStyle(ButtonStyle.Secondary)
                                         .setLabel("Edit")
                                 ] : []),
+                                ...(this.enableContentRatings ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:hazard:${id}`)
+                                        .setStyle(val.hazards ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                        .setLabel(val.hazards ? `${["SFW", "Suggestive", "H. Suggestive"][val.hazards.sexualContent]}; ${["Clean","Insensitive", "Slurs"][val.hazards.insensitivity]}` : "Set hazards")
+                                ] : []),
                                 new ButtonBuilder()
                                     .setCustomId(`sub:delete:${id}`)
                                     .setStyle(ButtonStyle.Danger)
@@ -215,8 +228,8 @@ export class ModeratedSubmissionSystem<datatype> {
                                 ...(this.takeDescriptions ? [
                                     new ButtonBuilder()
                                         .setCustomId(`sub:addAltText:${id}`)
-                                        .setStyle(ButtonStyle.Secondary)
-                                        .setLabel("Add alt text")
+                                        .setStyle(val.altText ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                        .setLabel(val.altText ? "Edit alt text" : "Add alt text")
                                 ] : [])
                             )
                     ]
@@ -260,6 +273,8 @@ export class ModeratedSubmissionSystem<datatype> {
         }
     }
 
+    // todo: DRY this up
+
     async setAltText(id:string, text: string) {
         await this.ready()
         if (!this.channel) return
@@ -281,6 +296,72 @@ export class ModeratedSubmissionSystem<datatype> {
                                     .setDisabled(true)
                                     .setStyle(ButtonStyle.Success)
                                     .setLabel("Submission approved"),
+                                ...(this.enableEditing ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:edit:${id}`)
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setLabel("Edit")
+                                ] : []),
+                                ...(this.enableContentRatings ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:hazard:${id}`)
+                                        .setStyle(val.hazards ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                        .setLabel(val.hazards ? `${["SFW", "Suggestive", "H. Suggestive"][val.hazards.sexualContent]}; ${["Clean","Insensitive", "Slurs"][val.hazards.insensitivity]}` : "Set hazards")
+                                ] : []),
+                                new ButtonBuilder()
+                                    .setCustomId(`sub:delete:${id}`)
+                                    .setStyle(ButtonStyle.Danger)
+                                    .setLabel("Delete submission"),
+                                ...(this.takeDescriptions ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:addAltText:${id}`)
+                                        .setStyle(val.altText ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                        .setLabel(val.altText ? "Edit alt text" : "Add alt text")
+                                ] : [])
+                            )
+                    ]
+                })
+            }
+        }
+    }
+
+    async setHazards(id:string, insensitivity: 0 | 1 | 2, sexualContent: 0 | 1 | 2) {
+        await this.ready()
+        if (!this.channel) return
+
+        let val = this.data.submissions.find(e => e.id == id)
+        
+        if (val) {
+            val.hazards = {
+                insensitivity,
+                sexualContent
+            }
+
+            MSSData.set_record(this.name,this.data)
+
+            let msg = await this.channel.messages.fetch(val.message).catch(() => null)
+            if (msg) {
+                msg.edit({
+                    components:[
+                        new ActionRowBuilder<ButtonBuilder>()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId("___")
+                                    .setDisabled(true)
+                                    .setStyle(ButtonStyle.Success)
+                                    .setLabel("Submission approved"),
+                                ...(this.enableEditing ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:edit:${id}`)
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setLabel("Edit")
+                                ] : []),
+                                ...(this.enableContentRatings ? [
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:hazard:${id}`)
+                                        .setStyle(val.hazards ? ButtonStyle.Success : ButtonStyle.Secondary)
+                                        .setLabel(val.hazards ? `${["SFW", "Suggestive", "H. Suggestive"][val.hazards.sexualContent]}; ${["Clean","Insensitive", "Slurs"][val.hazards.insensitivity]}` : "Set hazards")
+                                ] : []),
                                 new ButtonBuilder()
                                     .setCustomId(`sub:delete:${id}`)
                                     .setStyle(ButtonStyle.Danger)

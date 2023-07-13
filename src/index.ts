@@ -5,7 +5,7 @@ import { Logger, Groups, use } from "./lib/logger"
 new Groups.LoggerGroup("Library","0,255,150")
 
 import fs from "fs/promises"
-import Discord, { ActionRowBuilder, APIApplicationCommand, Client, EmbedBuilder, IntentsBitField, StringSelectMenuBuilder, TextInputBuilder } from "discord.js"
+import Discord, { ActionRowBuilder, APIApplicationCommand, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, IntentsBitField, StringSelectMenuBuilder, TextInputBuilder } from "discord.js"
 import { SlashCommandManager, isSlashCommand } from "./lib/SlashCommandManager"
 import { CommandAndControl } from "./lib/CommandAndControl"
 import { operatorMenuDisplay, operatorMenuOptions } from "./lib/control/operatorMenu"
@@ -241,8 +241,9 @@ client.on("guildCreate",(guild) => {
                     .setTitle("Hi there.")
                     .setDescription(
                         "Hi there, I'm theUnfunny. I'm a bot." +
-                        "\nI'd personally recommend allowing my commands to be run outside of your commands" +
-                        "\n channel - it's just more fun if you do that - although it's your server, do what you want." +
+                        "\nIt's recommended that you allow my commands to be run outside of your bot commands channel, " +
+                        "but it's your server; do what you want." +
+                        "\nBy the way, don't forget to configure your content policies using the `/policy` command." +
                         "\n\n[contributors](https://github.com/nbitzz/theUnfunny/graphs/contributors)" + 
                         " — [dependencies](https://github.com/nbitzz/theUnfunny/network/dependencies)" +
                         " — [source](https://github.com/nbitzz/theUnfunny)"
@@ -339,6 +340,45 @@ client.on("interactionCreate",async (int) => {
                             )
                         
                         int.showModal(modal)
+                    break
+                    case "hazard":
+                        if (spl[3]) {
+                            let iands = spl[3].split("x").map(e => parseInt(e,10))
+                            // @ts-ignore too lazy to write proper defs here
+                            chn.setHazards(spl[2],iands[0],iands[1])
+                            if (int.message) csle.log(int.message.toString())
+                            return
+                        }
+                        let hazardCpnts:ActionRowBuilder<ButtonBuilder>[] = []
+
+                        // this could probably be optimized but itll look worse + it'll be a matter of milliseconds to nanoseconds
+                        for (let y = 0; y < 3; y++) {
+                            let builder = new ActionRowBuilder<ButtonBuilder>()
+                            for (let x = 0; x < 3; x++) {
+                                builder.addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId(`sub:hazard:${spl[2]}:${x}x${y}`)
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setEmoji("")
+                                )
+                            }
+                            hazardCpnts.push(builder)
+                        }
+
+                        int.reply({
+                            content: "Please set your rating according to this graph.\n```\
+                   Clean | Insensitive | Slurs\
+                   ------------------------------\
+Clean              |      |             |       |\
+Suggestive         |      |             |       |\
+Heavily Suggestive |      |             |       |\
+```",
+                    
+                            components: hazardCpnts,
+                            ephemeral: true
+
+                        })
+                    break
                 }
             }
         }
