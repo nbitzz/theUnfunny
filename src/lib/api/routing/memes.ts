@@ -42,8 +42,8 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
 
         let pg = parseInt(req.query.page?.toString() || "0",10) || 0
         let amt = parseInt(req.query.amount?.toString() ?? "0",10) || 10
-        let scL = parseInt(req.query.sexualContent?.toString() || "0",10) || 2
-        let isL = parseInt(req.query.insensitivity?.toString() || "0",10) || 2
+        let scL = parseInt(req.query.sexualContent?.toString() || "0",10) ?? 2
+        let isL = parseInt(req.query.insensitivity?.toString() || "0",10) ?? 2
 
         res.send(
             subs
