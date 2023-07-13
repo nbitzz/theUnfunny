@@ -119,7 +119,7 @@ command.action = async (interaction, control, share) => {
                     for (let x = 0; x < 3; x++) {
                         builder.addComponents(
                             new ButtonBuilder()
-                                .setCustomId(`___`)
+                                .setCustomId(`___:${x}${y}`)
                                 .setStyle(ButtonStyle.Secondary)
                                 .setLabel(sbs.filter(e => e.hazards && e.hazards.insensitivity == x && e.hazards.sexualContent == y).length.toString())
                         )

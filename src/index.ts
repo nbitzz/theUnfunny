@@ -293,7 +293,7 @@ client.on("interactionCreate",async (int) => {
         }
     } else if (int.isButton()) {
 
-        if (int.customId=="___") {int.deferUpdate();return} // dummy button
+        if (int.customId=="___"||int.customId.startsWith("___:")) {int.deferUpdate();return} // dummy button
 
         // actually, like, kill me please
 
