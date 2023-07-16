@@ -42,12 +42,13 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
 
         let pg = parseInt(req.query.page?.toString() || "0",10) || 0
         let amt = parseInt(req.query.amount?.toString() ?? "0",10) || 10
-        let scL = parseInt(req.query.sexualContent?.toString() || "0",10) ?? 2
-        let isL = parseInt(req.query.insensitivity?.toString() || "0",10) ?? 2
+        let scL = parseInt(req.query.sexualContent?.toString() || "0",10) || 2
+        let isL = parseInt(req.query.insensitivity?.toString() || "0",10) || 2
+        let type = req.query.type?.toString() || "any"
 
         res.send(
             subs
-                .filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL)
+                .filter(e => (e.hazards||{insensitivity:2,sexualContent:2}).sexualContent <= scL && (e.hazards||{insensitivity:2,sexualContent:2}).insensitivity <= isL && e.data.startsWith(type == "any" ? "" : type))
                 .slice(pg*amt,pg*amt+amt)
                 .map(t => `${config.monofile}/file/${t.data.split("/")[1]}`)
         )
