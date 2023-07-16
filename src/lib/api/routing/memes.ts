@@ -33,6 +33,8 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
     routes.get("/geturls", async (req,res) => {
         if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
 
+        if (req.query.type && !["video","image","any"].find(e => e == req.query.type)) { res.sendStatus(400); return }
+
         await mss.ready()
         let subs = mss.getSubmissions()
         
