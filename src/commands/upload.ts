@@ -15,7 +15,7 @@ let command = new SlashCommand(
         .setDescription(`Upload files to the monofile instance used by this bot, ${_config.monofile.split("//")[1]}`)
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("upload")
+                .setName("file")
                 .setDescription("Uploads files to monofile")
                 .addAttachmentOption(
                     new SlashCommandAttachmentOption()
@@ -31,12 +31,28 @@ let command = new SlashCommand(
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
-                .setName("clone")
+                .setName("url")
                 .setDescription("Clone a file using its URL to monofile")
                 .addStringOption(
                     new SlashCommandStringOption()
                         .setName("url")
                         .setDescription("URL of the file you would like to clone")
+                        .setRequired(true)
+                )
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setName("custom-id")
+                        .setDescription("Custom ID for your new file")
+                )
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName("video")
+                .setDescription("Clone a file using projectlounge's ytdlp API to monofile")
+                .addStringOption(
+                    new SlashCommandStringOption()
+                        .setName("url")
+                        .setDescription("URL of the YouTube video you would like to clone")
                         .setRequired(true)
                 )
                 .addStringOption(
@@ -73,11 +89,14 @@ command.action = async (interaction, control, share) => {
 
     switch(interaction.options.getSubcommand()) {
         
-        case "upload":
+        case "file":
             submitURL(interaction,interaction.options.getAttachment("file",true).url)
         break
-        case "clone":
+        case "url":
             submitURL(interaction,interaction.options.getString("url",true))
+        break
+        case "video":
+            submitURL(interaction,`https://projectlounge.pw/ytdl/download?url=${encodeURIComponent(interaction.options.getString("url",true))}`)
         break
 
     }
