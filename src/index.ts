@@ -168,7 +168,7 @@ client.on("ready",async () => {
         fn.forEach((name) => {
             let command = require(process.cwd()+"/out/commands/"+name)
 
-            if (isSlashCommand(command)) {
+            if (command && isSlashCommand(command)) {
                 commands.add(command)
             }
         })

@@ -413,4 +413,5 @@ command.action = async (interaction, control, share) => {
     }
 }
 
-module.exports = command
+// check for monofile before enabling the funny command
+if (_config.monofile) module.exports = command
