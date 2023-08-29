@@ -26,6 +26,7 @@ command.action = async (interaction,control,share) => {
 
     if (!owner) return
 
+    /*
     if (interaction.user.id != owner.id) {
         interaction.editReply({
             embeds: [
@@ -34,7 +35,9 @@ command.action = async (interaction,control,share) => {
                     .setColor("Red")
             ]
         })
+        return
     }
+    */
     
     try {
         interaction.editReply({

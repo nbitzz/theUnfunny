@@ -241,7 +241,7 @@ export class ModeratedSubmissionSystem<datatype> {
     async editSubmission(id:string, data:datatype) {
         await this.ready()
         if (!this.channel) return
-        if (!this.enableEditing) return
+        //if (!this.enableEditing) return
 
         let val = this.data.submissions.find(e => e.id == id)
         

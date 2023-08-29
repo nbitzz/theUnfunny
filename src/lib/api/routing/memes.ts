@@ -79,5 +79,27 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         else res.redirect(`${config.monofile}/file/${t.split("/")[1]}`)
     })
 
+    routes.get("/alt_text/:number", async (req,res) => {
+        if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
+
+        await mss.ready()
+        let subs = mss.getSubmissions()
+        
+        let t = subs[(parseInt(req.params.number,10)||0)-1]
+
+        if (!t) {
+
+            res.sendStatus(404)
+            return
+
+        }
+        
+        res.header("Cache-Control","no-store, must-revalidate")
+        res.header("Expires","0")
+        res.header("Pragma","no-cache")
+
+        res.send(t.altText)
+    })
+
     return routes
 }
