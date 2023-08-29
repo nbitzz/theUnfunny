@@ -49,7 +49,7 @@ command.action = async (interaction, control, share) => {
     await (axios.get(`${_config.monofile}/auth/me`, 
         { 
             headers: { 
-                "Cookie": `authToken=${share.get("monofileAuthKey")}` 
+                "Cookie": `auth=${share.get("monofileAuthKey")};` 
             }, 
             withCredentials: true 
         }
@@ -70,14 +70,14 @@ command.action = async (interaction, control, share) => {
         }, 
         { 
             headers: { 
-                "Cookie": `authToken=${share.get("monofileAuthKey")}` 
+                "Cookie": `auth=${share.get("monofileAuthKey")};` 
             }, 
             withCredentials: true 
         }
     ).catch((err) => err))
 
-    if (result.status != 200) {
-        interaction.editReply(`Got error ${result.status}`)
+    if (!result.status) {
+        interaction.editReply(`Got error ${result.response.statusCode}`)
     } else {
         await submissions.editSubmission(target.id, `${target.data.split('/')[0]}/${interaction.options.getString("new-id", true)}`)
         interaction.editReply(`Done!`)
