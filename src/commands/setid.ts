@@ -30,9 +30,10 @@ let command = new SlashCommand(
 command.controlCenterOnly = true
 
 async function authenticate_monofile(share: Map<string, any>) {
-    share.set("monofileAuthKey", (await
+    // please just work
+    share.set("monofileAuthKey", ((await
         axios.post(`${_config.monofile}/auth/login`, { username: _config.monofile_credentials.username, password: _config.monofile_credentials.password })
-    ).data)
+    ).headers["set-cookie"] || [""])[0].split("=")[1])
 }
 
 command.action = async (interaction, control, share) => {
