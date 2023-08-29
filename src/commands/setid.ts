@@ -56,7 +56,7 @@ command.action = async (interaction, control, share) => {
     ).catch(() => authenticate_monofile))
     
     // get meme
-    let target = submissions.getSubmissions()[interaction.options.getNumber("meme-id",true)]
+    let target = submissions.getSubmissions()[interaction.options.getNumber("meme-id",true)+1]
 
     if (!target) {
         interaction.editReply("Unknown meme")
