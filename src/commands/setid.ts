@@ -50,8 +50,7 @@ command.action = async (interaction, control, share) => {
         { 
             headers: { 
                 "Cookie": `auth=${share.get("monofileAuthKey")};` 
-            }, 
-            withCredentials: true 
+            }
         }
     ).catch(() => authenticate_monofile))
     
@@ -71,13 +70,12 @@ command.action = async (interaction, control, share) => {
         { 
             headers: { 
                 "Cookie": `auth=${share.get("monofileAuthKey")};` 
-            }, 
-            withCredentials: true 
+            } 
         }
-    ).catch((err) => err))
+    ).catch((err) => console.error(err)))
 
-    if (!result.status) {
-        interaction.editReply(`Got error ${result.response.statusCode}`)
+    if (!result) {
+        interaction.editReply(`An error occured`)
     } else {
         await submissions.editSubmission(target.id, `${target.data.split('/')[0]}/${interaction.options.getString("new-id", true)}`)
         interaction.editReply(`Done!`)
