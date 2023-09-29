@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandAttachmentOption
 import { SlashCommand } from "../lib/SlashCommandManager";
 import { ModeratedSubmissionSystem, type Submission } from "../lib/ModeratedSubmissionFramework";
 import axios from "axios";
+import authenticate_monofile from "../lib/authenticate_monofile";
 
 // init slash commands
 
@@ -28,13 +29,6 @@ let command = new SlashCommand(
 )
 
 command.controlCenterOnly = true
-
-async function authenticate_monofile(share: Map<string, any>) {
-    // please just work
-    share.set("monofileAuthKey", ((await
-        axios.post(`${_config.monofile}/auth/login`, { username: _config.monofile_credentials.username, password: _config.monofile_credentials.password })
-    ).headers["set-cookie"] || [""])[0].split("=")[1])
-}
 
 command.action = async (interaction, control, share) => {
 

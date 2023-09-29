@@ -4,6 +4,7 @@ import { ModeratedSubmissionSystem, type Submission } from "../lib/ModeratedSubm
 import axios from "axios";
 import { AltTextSuggestions } from "../lib/AltTextSubmission";
 import { getPolicy, ilibpolicy } from "../lib/ServerPolicy";
+import authenticate_monofile from "../lib/authenticate_monofile";
 
 // init slash commands
 
@@ -61,10 +62,44 @@ let command = new SlashCommand(
         )
 )
 
-async function submitURL(interaction:ChatInputCommandInteraction,url:string) {
-    await interaction.editReply("Requesting file clone...")                 // discord developers are genius, need to do this to fix gif playback
-                                                                            // could probably check content-type but would rather not have to reupload etc                               
-    axios.post(`${_config.monofile}/clone`,JSON.stringify({url:url,uploadId:url.endsWith(".gif") ? Math.random().toString().slice(2)+".gif" : undefined}),{headers:{"Content-Type":"text/plain"}}).then(async (data) => {
+async function submitURL(interaction:ChatInputCommandInteraction,url:string,share:Map<string,any>) {
+    
+    if (_config.monofile_credentials) {
+        if (!share.get("monofileAuthKey")) {
+            await interaction.editReply(`Logging in as ${_config.monofile_credentials.username}...`)
+            await authenticate_monofile(share)
+        }
+
+        // test auth
+        await (axios.get(`${_config.monofile}/auth/me`, 
+            { 
+                headers: { 
+                    "Cookie": `auth=${share.get("monofileAuthKey")};` 
+                }
+            }
+        ).catch(async () => {
+            await interaction.editReply(`Logging in as ${_config.monofile_credentials.username}...`); return authenticate_monofile(share)
+        }))
+    }
+
+    await interaction.editReply("Requesting file clone...")
+    axios.post(
+        `${_config.monofile}/clone`,
+        JSON.stringify({
+            url,
+            uploadId:url.endsWith(".gif") ? Math.random().toString().slice(2)+".gif" : undefined
+        }),
+        {
+            headers: {
+                "Content-Type":"text/plain",
+                ...(
+                    share.has("monofileAuthKey") 
+                    ? {"Cookie": `auth=${share.get("monofileAuthKey")};`} 
+                    : {}
+                )
+            }
+        }
+    ).then(async (data) => {
         await interaction.editReply("Reviewing file...")
 
         let d = await axios.get(`${_config.monofile}/file/${data.data}`,{responseType:"arraybuffer"})
@@ -343,10 +378,10 @@ command.action = async (interaction, control, share) => {
             }
         break
         case "submit-file":
-            submitURL(interaction,interaction.options.getAttachment("file",true).url)
+            submitURL(interaction,interaction.options.getAttachment("file",true).url, share)
         break
         case "submit-url":
-            submitURL(interaction,interaction.options.getString("url",true))
+            submitURL(interaction,interaction.options.getString("url",true), share)
         break
         case "leaderboard":
             let _subs = submissions.getSubmissions()

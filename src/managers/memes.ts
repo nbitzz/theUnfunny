@@ -5,6 +5,7 @@ import axios from "axios"
 import { ModeratedSubmissionSystem } from "../lib/ModeratedSubmissionFramework";
 import { CommandAndControl } from "../lib/CommandAndControl";
 import { SlashCommandManager } from "../lib/SlashCommandManager";
+import authenticate_monofile from "../lib/authenticate_monofile"
 
 let _config = require("../../config.json")
 
@@ -12,12 +13,48 @@ class MemeChannelManager extends BaseChannelManager {
     
     name = "MemeChannelManager"
 
-    submit(url:string, user: User, tries: number=0) {
+    async submit(url:string, user: User, tries: number=0) {
+        // todo: move this to authenticate_monofile.ts?
+        if (_config.monofile_credentials) {
+            if (!this.commands.share.get("monofileAuthKey")) {
+                console.log(`Logging in as ${_config.monofile_credentials.username}...`)
+                await authenticate_monofile(this.commands.share)
+            }
+    
+            // test auth
+            await (axios.get(`${_config.monofile}/auth/me`, 
+                { 
+                    headers: { 
+                        "Cookie": `auth=${this.commands.share.get("monofileAuthKey")};` 
+                    }
+                }
+            ).catch(async () => {
+                console.log(`Logging in as ${_config.monofile_credentials.username}...`); 
+                return authenticate_monofile(this.commands.share)
+            }))
+        }
+
         let mss:ModeratedSubmissionSystem<string> = this.commands.share.get("memeSubmissionSystem")
         if (!mss) return
 
         return new Promise<void>(async (resolve,reject) => {
-            axios.post(`${_config.monofile}/clone`,JSON.stringify({url:url,uploadId:url.endsWith(".gif") ? Math.random().toString().slice(2)+".gif" : undefined}),{headers:{"Content-Type":"text/plain"}}).then(async (data) => {
+            axios.post(
+                `${_config.monofile}/clone`,
+                JSON.stringify({
+                    url,
+                    uploadId:url.endsWith(".gif") ? Math.random().toString().slice(2)+".gif" : undefined
+                }),
+                {
+                    headers: {
+                        "Content-Type":"text/plain",
+                        ...(
+                            this.commands.share.has("monofileAuthKey") 
+                            ? {"Cookie": `auth=${this.commands.share.get("monofileAuthKey")};`} 
+                            : {}
+                        )
+                    }
+                }
+            ).then(async (data) => {
                 let d = await axios.get(`${_config.monofile}/file/${data.data}`,{responseType:"arraybuffer"})
         
                 if (
@@ -53,14 +90,14 @@ class MemeChannelManager extends BaseChannelManager {
 
         if (lnk.length == 0) return
 
-        if (lnk.length > 5) {
+        if (lnk.length > 10) {
             
             message.reply(
                 {
                     embeds: [
                         new EmbedBuilder()
                             .setColor("Red")
-                            .setDescription(`Please attach less than 5 files per bulk submission.`)
+                            .setDescription(`Please attach less than 10 files per bulk submission.`)
                     ]
                 }
             )
