@@ -184,7 +184,8 @@ command.action = async (interaction) => {
 
     let createBar = (val:number,max:number,size:number=10) => {
         let per = Math.round((val/max)*size)
-        return "█".repeat(per)+"░".repeat(size-per)
+        // hoping this fixes it
+        return "█".repeat(Math.min(Math.max(per,0),size))+"░".repeat(Math.min(Math.max(size-per,0),size))
     }
 
     // We don't need descriptors of the character.
