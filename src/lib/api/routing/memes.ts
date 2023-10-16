@@ -56,6 +56,22 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         )
     })
 
+    routes.get("/getdata", async (req,res) => {
+        if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
+
+        await mss.ready()
+        let subs = mss.getSubmissions()
+        
+        res.header("Cache-Control","no-store, must-revalidate")
+        res.header("Expires","0")
+        res.header("Pragma","no-cache")
+
+        res.send(
+            subs
+                .slice(pg*amt,pg*amt+amt)
+        )
+    })
+
     routes.get("/:number", async (req,res) => {
         if (!mss) mss = commands.share.get("memeSubmissionSystem") as ModeratedSubmissionSystem<string>
 
