@@ -66,6 +66,9 @@ export function start(client:Discord.Client, control:CommandAndControl, commands
         res.header("Expires","0")
         res.header("Pragma","no-cache")
 
+        let pg = parseInt(req.query.page?.toString() || "0",10) || 0
+        let amt = parseInt(req.query.amount?.toString() ?? "0",10) || 10
+
         res.send(
             subs
                 .slice(pg*amt,pg*amt+amt)
