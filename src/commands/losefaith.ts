@@ -6,7 +6,7 @@ import { EZSave, getSave } from "../lib/ezsave"
 
 // you can change these if you're selfhosting i guess
 
-let MAX_PAGES = 50
+let MAX_PAGES = 100
 let save:EZSave<HistoryFrame[]> = getSave(`${process.cwd()}/.data/taghistory.json`)
 
 // init slash command
